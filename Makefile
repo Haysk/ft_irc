@@ -8,7 +8,7 @@ CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP
 
 # No need to edit the path of th file
 # This will be automaticaly
-FILES = main.cpp \
+FILES = Server.cpp \
 
 
 SRC_PATH = $(shell find src -type d)
