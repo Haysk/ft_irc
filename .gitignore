@@ -1,2 +1,5 @@
 ircserv
 objs/
+CMake*
+cmake*/
+.idea/
