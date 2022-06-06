@@ -23,7 +23,7 @@ int main(int ac, char **av){
 
     if (ac != 3){
         std::cout << "Wrong input" << std::endl;
-        std::cout << "note: ./ircserv <port> <password" << std::endl;
+        std::cout << "note: ./ircserv <port> <password>" << std::endl;
         return (0);
     }
     /* [1] == SOCKET SERVER == */
