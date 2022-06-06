@@ -6,38 +6,53 @@
 #define FT_IRC_CHANNEL_H
 
 #include "../headers/utils.hpp"
-#include "User.h"
+#include "Datas.h"
 
+class User;
 
-class Channel {
+class Channel : public Datas {
+
+public:
+
+    typedef map<string, bool>::const_iterator users_const_it;
 
 private:
+
+    string _chanName;
 
     int _mode;
 
     map<string, bool> _users; // pair array (userName, role)
 
+    Channel();
+
 public:
 
-    Channel(int mode, string userName);
+    Channel(const string &chanName, int mode, const string &userName);
 
     virtual ~Channel();
 
+    Channel &operator=(const Channel &rhs);
+
     //GETTER
+
+    string getChanName() const;
 
     int getMode() const;
 
-    const map<string, bool> &getUsers() const;
+    map<string, bool> getUsers() const;
 
-    map<string, bool>::const_iterator getUser(const string &userName) const;
+    User &getUser(const string &userName) const;
 
     //SETTER
 
-    void setMod(int mode);
+    void setChanName(const string newName);
 
-    void addUser(const string &userName, bool role);
+    void setMod(int newMode);
 
-    void deleteUser(string &userName);
+    void addUser(const string userName , bool role);
+
+    void deleteUser(const string userName);
 };
 
 #endif //FT_IRC_CHANNEL_H

@@ -6,22 +6,27 @@
 #define FT_IRC_USER_H
 
 #include "../headers/utils.hpp"
+#include "Datas.h"
 
 class Channel;
 
 using namespace std;
 
-class User {
+class User : public Datas{
+
+public:
+
+typedef map<string, bool>::const_iterator channels_const_it; 
 
 private:
 
-    //string _userName;
+    string _userName;
 
     string _nickName;
 
     string _ipAddress;
 
-    string _port;
+    int _port;
 
     map<string, bool> _channels; //chan
 
@@ -29,7 +34,7 @@ public:
 
     User();
 
-    User(const string &nickName);
+    User(const string &userName, const string &nickName, const string &ipAddress, int port);
 
     virtual ~User();
 
@@ -41,9 +46,11 @@ public:
 
     const string &getIpAddress() const;
 
-    const string &getPort() const;
+    const int &getPort() const;
 
     const map<string, bool> &getChannels() const;
+
+    const string &getChannel(const string &chanName) const;
 
     //SETTER
 
@@ -51,9 +58,17 @@ public:
 
     void setIpAddress(const string &ipAddress);
 
-    void setPort(const string &port);
+    void setPort(const int &port);
 
-    void addChannel(string chanName, bool role);
+    void createChannel(Datas datasServ, const string &chanName, const int mode);
+
+    void joinChannel(Datas datasServ, const string &chanName);
+
+    void quitChannel(const string &chanName);
+
+    void sendChanMessage();
+
+    void sendPrivateMessage();
 };
 
 
