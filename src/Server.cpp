@@ -39,7 +39,7 @@ int main(int ac, char **av){
 
     bzero(reinterpret_cast<struct sockadrr *> (&myaddr), sizeof(myaddr));
     myaddr.sin_family = AF_INET;
-    inet_aton(IP, &myaddr.sin_addr);
+    myaddr.sin_addr.s_addr = inet_addr(IP);
     myaddr.sin_port = htons(atoi(av[1]));
 
     /* [1.c] Bind socket fd and sockeadrr_in */
@@ -71,6 +71,7 @@ int main(int ac, char **av){
                 exit(1);
             }
             memset(buff, 0, LIMIT_MSG);
+            buff[LIMIT_MSG] = '\0';
             if (FD_ISSET(sockfd, &readfs)){
     /* [2.c] Accept socket */
                 if ((csock = accept(sockfd, 
@@ -82,16 +83,21 @@ int main(int ac, char **av){
                      std::cout << "client " << id++ << ": [" << inet_ntoa(myaddr.sin_addr)
                         << ":" << ntohs(myaddr.sin_port) << "]" << std::endl;
                 }
-                    if ((r = recv(csock, buff, LIMIT_MSG, MSG_DONTWAIT)) < 0){
+                    if ((r = recv(csock, buff, LIMIT_MSG, 0)) < 0){
                        perror("connection server failed. Error");
                     }
                     else {
                         std::cout << "r: " << r << std::endl;
                         std::cout << "client send:" << buff << std::endl;
                     }
-                    // close(csock);
+                    if (send(csock, "CAP * LS",4, 0) < 0){
+                        perror("send failed . Error");
+                        exit(1);
+                    }
+
+                    close(csock);
             }
-            delete[] buff;
         }
+        delete[] buff;
     return (0);
 }

@@ -4,7 +4,7 @@ HEAD = -Iinclude
 
 # Flag [-MMD -MP] create an depedance with a [.d] files to hpp files
 # Used to check if the hpp files changed
-CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP
+CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP -g3
 
 # No need to edit the path of th file
 # This will be automaticaly
