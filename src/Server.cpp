@@ -66,6 +66,7 @@ int main(int ac, char **av){
         while(1) {
             FD_ZERO(&readfs);
             FD_SET(sockfd, &readfs);
+            // change to poll
             if (select(sockfd + 1, &readfs, NULL, NULL, NULL) < 0){
                 perror("select failed. Error");
                 exit(1);

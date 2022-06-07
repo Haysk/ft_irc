@@ -1,12 +1,12 @@
 #include "Socket.hpp"
 
-Socket::Socket():
-_addr(NULL),
-_len(0){};
-
-Socket::Socket(const Socket &ref){
-    *this = &ref;
+Socket::Socket(){
+    std::cout <<"socket default constructor" << std::endl;
 }
+
+// Socket::Socket(const Socket &ref){
+//     *this = &ref;
+// }
 
 Socket::~Socket(){};
 

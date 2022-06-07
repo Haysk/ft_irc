@@ -18,9 +18,9 @@ class Socket {
 
     public:
         // Constructor / Destructor
-            Socket();
-            Socket(const Socket &ref);
-            ~Socket();
+        Socket();
+        Socket(const Socket &ref);
+        ~Socket();
 
         // Operator
             Socket &operator=(const Socket &ref);
@@ -35,5 +35,4 @@ class Socket {
         int CreateFd();
         int SetAddr();
         int Bind();
-
-}
+};
