@@ -68,12 +68,14 @@ void Datas::newUser(const string &userName, const string &nickName, const string
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)
 {
-	if (!_channelsDatas.empty())
+	try {
 		getChannel(chanName);
-	Channel *chan;
-	chan = new Channel(chanName, mode, userName);
-	if (!_channelsDatas.insert(make_pair(chanName, chan)).second)
-		throw datasException("Channel already exist");
+	} catch (exception &e) {
+		Channel *chan;
+		chan = new Channel(chanName, mode, userName);
+		if (!_channelsDatas.insert(make_pair(chanName, chan)).second)
+			throw datasException("Channel already exist");
+	}
 }
 
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)

@@ -102,9 +102,9 @@ ostream& operator<<(ostream& os, const User& rhs)
 {
 	os << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName()
 	<< "\n\tIp Address : " << rhs.getIpAddress() << "\n\tPort : " << rhs.getPort();
-	os << "\n\tChannels :";
+	os << "\n\tChannels :\n";
 	const User::userChannels &channels = rhs.getChannels();
 	for (User::userChannels_const_it it = channels.begin(); it != channels.end(); it++)
-		os << "\n\t\t" << it->first << "\n\t\t\trole : " << it->second << endl;
+		os << "\n\t\t" << it->first << "\n\t\trole : " << it->second << endl;
 	return os;
 }

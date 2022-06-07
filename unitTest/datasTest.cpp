@@ -28,6 +28,7 @@ int main () {
 	} catch (exception &e) {
 		cout << e.what() << endl;
 	}
+	toto.createChannel(*servDatas, "totoChannel2", 0);
 	cout << toto << endl;
 
 	delete servDatas;
