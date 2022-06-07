@@ -1,11 +1,7 @@
-//
-// Created by adylewsk on 5/31/22.
-//
-
 #ifndef FT_IRC_USER_H
 #define FT_IRC_USER_H
 
-#include "../headers/utils.hpp"
+#include "../include/utils.hpp"
 #include "Datas.h"
 
 class Channel;
@@ -16,7 +12,9 @@ class User : public Datas{
 
 public:
 
-typedef map<string, bool>::const_iterator channels_const_it; 
+typedef map<string, bool> userChannels;
+typedef map<string, bool>::const_iterator userChannels_const_it;
+typedef map<string, bool>::iterator userChannels_it;
 
 private:
 
@@ -28,7 +26,7 @@ private:
 
     int _port;
 
-    map<string, bool> _channels; //chan
+    userChannels _channels; // map (chanName | role)
 
 public:
 
@@ -38,9 +36,11 @@ public:
 
     virtual ~User();
 
-    //GETTER
+    User &operator=(const User &rhs);
 
-    //const string &getUserName() const;
+    //GETTERS
+
+    const string &getUserName() const;
 
     const string &getNickName() const;
 
@@ -48,11 +48,11 @@ public:
 
     const int &getPort() const;
 
-    const map<string, bool> &getChannels() const;
+    const userChannels &getChannels() const;
 
-    const string &getChannel(const string &chanName) const;
+    Channel &getChannel(const string &chanName) const;
 
-    //SETTER
+    //SETTERS
 
     void setNickName(const string &nickName);
 
@@ -60,16 +60,33 @@ public:
 
     void setPort(const int &port);
 
-    void createChannel(Datas datasServ, const string &chanName, const int mode);
+    //FUNCTIONS
 
-    void joinChannel(Datas datasServ, const string &chanName);
+    void createChannel(Datas &datas, const string &chanName, const int mode);
 
-    void quitChannel(const string &chanName);
+    void joinChannel(Datas &datas, const string &chanName);
 
-    void sendChanMessage();
+    void quitChannel(Datas &datas, const string &chanName);
 
-    void sendPrivateMessage();
+//    void sendChanMessage();
+
+//    void sendPrivateMessage();
+
+	//EXCEPTIONS
+
+public:	
+	class userException : public exception
+	{
+		const char *_msg;
+
+	public:
+		userException(const char *msg) : _msg(msg) {
+		}
+
+		const char *what() const throw (){ return _msg; }
+	};
 };
 
+ostream& operator<<(ostream& os, const User& rhs);
 
 #endif //FT_IRC_USER_H

@@ -1,7 +1,3 @@
-//
-// Created by adylewsk on 5/31/22.
-//
-
 #include "User.h"
 #include "Channel.h"
 
@@ -11,69 +7,104 @@ User::User(const string &userName, const string &nickName, const string &ipAddre
 _userName(userName),
 _nickName(nickName),
 _ipAddress(ipAddress),
-_port(port) {
-
+_port(port)
+{
 }
-User::~User() {}
-
-//GETTER
-
-//const string &User::getUserName() const {
-//    return _userName;
-//}
-
-const string &User::getNickName() const {
-    return _nickName;
+User::~User()
+{
+	_channels.clear();
 }
 
-const string &User::getIpAddress() const {
-    return _ipAddress;
+User &User::operator=(const User &rhs)
+{
+	_userName = rhs.getUserName();
+	_nickName = rhs.getNickName();
+	_ipAddress = rhs.getIpAddress();
+	_port = rhs.getPort();
+	_channels = rhs.getChannels();
+	return *this;
 }
 
-const int &User::getPort() const {
-    return _port;
+// GETTERS
+
+const string &User::getUserName() const
+{
+	return _userName;
 }
 
-const map<string, bool> &User::getChannels() const {
-    return _channels;
+const string &User::getNickName() const
+{
+	return _nickName;
 }
 
-const string &User::getChannel(const string &chanName) const {
-    channels_const_it it;
-    it = _channels.find(chanName);
-    if (it != _channels.end())
-        return it->first;
-    //throw
+const string &User::getIpAddress() const
+{
+	return _ipAddress;
 }
 
-//SETTER
-
-void User::setNickName(const string &nickName) {
-    _nickName = nickName;
+const int &User::getPort() const
+{
+	return _port;
 }
 
-void User::setIpAddress(const string &ipAddress) {
-    _ipAddress = ipAddress;
+const User::userChannels &User::getChannels() const
+{
+	return _channels;
 }
 
-void User::setPort(const int &port) {
-    _port = port;
+Channel &User::getChannel(const string &chanName) const
+{
+	userChannels_const_it it;
+	it = _channels.find(chanName);
+	if (it != _channels.end())
+		return Datas::getChannel(it->first);
+	throw userException("User not in this Channel");
 }
 
-void User::createChannel(Datas datasServ, const string &chanName, const int mode) {
-    datasServ.newChannel(chanName, mode, _userName);
-    _channels.insert(make_pair(chanName, true));
+// SETTERS
+
+void User::setNickName(const string &nickName)
+{
+	_nickName = nickName;
 }
 
-void User::joinChannel(Datas datasServ, const string &chanName) {
-    datasServ.addUserInChannel(_userName, chanName, false);
+void User::setIpAddress(const string &ipAddress)
+{
+	_ipAddress = ipAddress;
 }
 
-void User::quitChannel(const string &chanName) {
-    //try {
-        getChannel(chanName);
-        _channels.erase(chanName);
-    //}
-    //catch
-    //trow exception
+void User::setPort(const int &port)
+{
+	_port = port;
+}
+
+// FUNCTIONS
+
+void User::createChannel(Datas &datas, const string &chanName, const int mode)
+{
+	datas.newChannel(chanName, mode, _userName);
+	_channels.insert(make_pair(chanName, true));
+}
+
+void User::joinChannel(Datas &datas, const string &chanName)
+{
+	datas.addUserInChannel(_userName, chanName, false);
+}
+
+void User::quitChannel(Datas &datas, const string &chanName)
+{
+	if (_channels.erase(chanName) > 0)
+		datas.removeUserFromChannel(_userName, chanName);
+	throw userException("User not in this Channel");
+}
+
+ostream& operator<<(ostream& os, const User& rhs)
+{
+	os << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName()
+	<< "\n\tIp Address : " << rhs.getIpAddress() << "\n\tPort : " << rhs.getPort();
+	os << "\n\tChannels :";
+	const User::userChannels &channels = rhs.getChannels();
+	for (User::userChannels_const_it it = channels.begin(); it != channels.end(); it++)
+		os << "\n\t\t" << it->first << "\n\t\t\trole : " << it->second << endl;
+	return os;
 }

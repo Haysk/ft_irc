@@ -1,9 +1,6 @@
-#include "headers/utils.hpp"
+#include "include/utils.hpp"
+#include "model/Datas.h"
 
 int main(){
-    if (PORT == 1)
-        cout << "toto\n";
-    else
-        cout << "tata\n";
     return (0);
 }

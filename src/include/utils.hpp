@@ -18,6 +18,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <stdexcept>
+#include <exception>
 
 #define IP "127.0.0.1"
 #define PORT 8081

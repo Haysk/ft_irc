@@ -1,58 +1,74 @@
-//
-// Created by adylewsk on 5/31/22.
-//
-
 #ifndef FT_IRC_CHANNEL_H
 #define FT_IRC_CHANNEL_H
 
-#include "../headers/utils.hpp"
+#include "../include/utils.hpp"
 #include "Datas.h"
 
 class User;
 
-class Channel : public Datas {
+class Channel : public Datas
+{
 
 public:
 
-    typedef map<string, bool>::const_iterator users_const_it;
+	typedef map<string, bool> usersInChannel;
+	typedef map<string, bool>::const_iterator usersInChannel_const_it;
 
 private:
 
-    string _chanName;
+	string _chanName;
 
-    int _mode;
+	int _mode;
 
-    map<string, bool> _users; // pair array (userName, role)
+	usersInChannel _users; // map (userName | role)
 
-    Channel();
+	Channel();
 
 public:
 
-    Channel(const string &chanName, int mode, const string &userName);
+	Channel(const string &chanName, int mode, const string &userName);
 
-    virtual ~Channel();
+	virtual ~Channel();
 
-    Channel &operator=(const Channel &rhs);
+	Channel &operator=(const Channel &rhs);
 
-    //GETTER
+	// GETTERS
 
-    string getChanName() const;
+	string getChanName() const;
 
-    int getMode() const;
+	int getMode() const;
 
-    map<string, bool> getUsers() const;
+	usersInChannel getUsers() const;
 
-    User &getUser(const string &userName) const;
+	User &getUser(const string &userName) const;
 
-    //SETTER
+	bool userIsOperator(const string &userName) const;
 
-    void setChanName(const string newName);
+	// SETTERS
 
-    void setMod(int newMode);
+	void setChanName(const string newName);
 
-    void addUser(const string userName , bool role);
+	void setMod(int newMode);
 
-    void deleteUser(const string userName);
+	// FUNCTIONS
+
+	void addUser(const string userName, bool role);
+
+	void deleteUser(const string userName);
+	
+	//EXCEPTIONS
+
+public:	
+	class channelException : public exception
+	{
+		const char *_msg;
+
+	public:
+		channelException(const char *msg) : _msg(msg) {
+		}
+
+		const char *what() const throw (){ return _msg; }
+	};
 };
 
-#endif //FT_IRC_CHANNEL_H
+#endif // FT_IRC_CHANNEL_H

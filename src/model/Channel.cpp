@@ -1,77 +1,91 @@
-//
-// Created by adylewsk on 5/31/22.
-//
-
 #include "Channel.h"
 #include "User.h"
 
 Channel::Channel() {}
 
-Channel::Channel(const string &chanName, int mode, const string &userName):
+Channel::Channel(const string &chanName, int mode, const string &userName) :
 _chanName(chanName),
-_mode(mode) {
-    addUser(userName, true);
+_mode(mode)
+{
+	addUser(userName, true);
 }
 
-Channel::~Channel() {
-
+Channel::~Channel()
+{
+	_users.clear();
 }
 
-Channel &Channel::operator=(const Channel &rhs) {
-    this->_chanName = rhs.getChanName();
-    this->_mode = rhs.getMode();
-    this->_users = rhs.getUsers();
-    return *this;
+Channel &Channel::operator=(const Channel &rhs)
+{
+	this->_chanName = rhs.getChanName();
+	this->_mode = rhs.getMode();
+	this->_users = rhs.getUsers();
+	return *this;
 }
 
-//GETTERS
+// GETTERS
 
-string Channel::getChanName() const {
-    return _chanName;
+string Channel::getChanName() const
+{
+	return _chanName;
 }
 
-int Channel::getMode() const {
-    return _mode;
+int Channel::getMode() const
+{
+	return _mode;
 }
 
-map<string, bool> Channel::getUsers() const {
-    return _users;
+Channel::usersInChannel Channel::getUsers() const
+{
+	return _users;
 }
 
-User &Channel::getUser(const string &userName) const {
-    users_const_it it;
-    it = _users.find(userName);
-    if (it != _users.end()) {
-        return Datas::getUser(it->first);
-    }
-    //throw exception
+User &Channel::getUser(const string &userName) const
+{
+	usersInChannel_const_it it;
+	it = _users.find(userName);
+	if (it != _users.end())
+	{
+		return Datas::getUser(it->first);
+	}
+	throw channelException("User not in this Channel");
 }
 
-//SETTERS
-
-void Channel::setChanName(const string newName) {
-    _chanName = newName;
+bool Channel::userIsOperator(const string &userName) const {
+	usersInChannel_const_it it;
+	it = _users.find(userName);
+	if (it != _users.end())
+	{
+		return it->second;
+	}
+	throw channelException("User not in this Channel");
 }
 
-void Channel::setMod(int newMode) {
-    _mode = newMode;
+// SETTERS
+
+void Channel::setChanName(const string newName)
+{
+	_chanName = newName;
 }
 
-void Channel::addUser(const string userName, bool role = false) {
-    //try {
-    // getUser(userName);
-    // throw exception
-    //}
-    //catch { if chan doesn't exist
-    _users.insert(make_pair(userName, role));
-    //}
+void Channel::setMod(int newMode)
+{
+	_mode = newMode;
 }
 
-void Channel::deleteUser(const string userName) {
-    //try {
-    getUser(userName).quitChannel(_chanName);
-    _users.erase(userName);
-    //}
-    //trow exception
+// FUNCTIONS
+
+void Channel::addUser(const string userName, bool role = false)
+{
+	try {
+		getUser(userName);
+	} catch (exception &e) {
+		_users.insert(make_pair(userName, role));
+	}
 }
 
+void Channel::deleteUser(const string userName)
+{
+	if (_users.erase(userName) <= 0)
+		throw channelException("User not in This Channel");
+}

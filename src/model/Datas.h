@@ -1,52 +1,71 @@
-//
-// Created by adylewsk on 6/2/22.
-//
-
 #ifndef FT_IRC_DATAS_H
 #define FT_IRC_DATAS_H
 
-#include "../headers/utils.hpp"
+#include "../include/utils.hpp"
 
 class User;
 class Channel;
 
-class Datas {
+class Datas
+{
 
 public:
-    typedef map<string, User &> usersTab;
-    typedef map<string, Channel &> channelsTab;
-    typedef usersTab::iterator usersDatas_it;
-    typedef usersTab::const_iterator usersDatas_const_it;
-    typedef channelsTab::iterator channelsDatas_it;
-    typedef channelsTab::const_iterator channelsDatas_const_it;
+
+	typedef map<string, User *> usersDatas;
+	typedef map<string, Channel *> channelsDatas;
+	typedef usersDatas::iterator usersDatas_it;
+	typedef usersDatas::const_iterator usersDatas_const_it;
+	typedef channelsDatas::iterator channelsDatas_it;
+	typedef channelsDatas::const_iterator channelsDatas_const_it;
 
 private:
 
-    usersTab _usersTab; //pair userName | userSettings
-    channelsTab _channelsTab; //pair chanName | chanSettings
+	usersDatas _usersDatas;		  // map (userName | userSettings)
+	channelsDatas _channelsDatas; // map (chanName | chanSettings)
 
 public:
 
-    Datas();
+	Datas();
 
-    virtual ~Datas();
+	virtual ~Datas();
 
-    const usersTab &getUsers() const;
+	Datas &operator=(const Datas &rhs);
 
-    const channelsTab &getChannels() const;
+	// GETTERS
 
-    User &getUser(const string &userName) const;
+	const usersDatas &getUsers() const;
 
-    Channel &getChannel(const string &chanName) const;
+	const channelsDatas &getChannels() const;
 
-    void newUser(const string &userName, const string &nickName, const string &ipAddress, int port);
+	User &getUser(const string &userName) const;
 
-    void newChannel(const string &chanName, const int mode, const string &userName);
+	Channel &getChannel(const string &chanName) const;
 
-    void addUserInChannel(const string &userName, const string &chanName, bool role);
+	// FUNCTIONS
 
-    void removeUserFromChannel();
+	void newUser(const string &userName, const string &nickName, const string &ipAddress, int port);
+
+	void newChannel(const string &chanName, const int mode, const string &userName);
+
+	void addUserInChannel(const string &userName, const string &chanName, bool role);
+
+	void removeUserFromChannel(const string &userName, const string &chanName);
+
+	void deleteChannel(const string chanName);
+
+	//EXCEPTIONS
+
+public :
+		class datasException : public exception
+		{
+			const char *_msg;
+
+		public:
+			datasException(const char *msg) : _msg(msg) {
+			}
+
+			const char *what() const throw (){ return _msg; }
+		};
 };
 
-
-#endif //FT_IRC_DATAS_H
+#endif // FT_IRC_DATAS_H
