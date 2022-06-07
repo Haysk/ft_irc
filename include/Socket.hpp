@@ -18,7 +18,7 @@ class Socket {
 
     public:
         // Constructor / Destructor
-        Socket();
+        Socket(const char *ip, int port);
         Socket(const Socket &ref);
         ~Socket();
 
@@ -28,14 +28,18 @@ class Socket {
     private:
         // Attribut
         struct sockaddr_in _addr;
+        const char *_ip;
+        int _port;
         int _fd;
     
     public:
         // Method
         void CreateFd(int domain, int type, int protocol);
-        void SetAddr(int domain, const char *ip, int port);
-        void Bind(int sockfd, struct sockaddr_in *addr);
+        void SetAddr(int domain);
+        void Bind();
 
         int GetFd()const ;
+        int GetPort()const;
+        const char *GetIp();
         struct sockaddr_in *GetAddr();
 };
