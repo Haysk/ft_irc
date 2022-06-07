@@ -11,8 +11,8 @@
 #include <fcntl.h>
 #include <iostream>
 #include <string.h>
-#define IP "127.0.0.1"
-#define LIMIT_MSG 512
+#include <arpa/inet.h>
+
 
 class Socket {
 
@@ -28,11 +28,14 @@ class Socket {
     private:
         // Attribut
         struct sockaddr_in _addr;
-        socklen_t _len;
+        int _fd;
     
     public:
         // Method
-        int CreateFd();
-        int SetAddr();
-        int Bind();
+        void CreateFd(int domain, int type, int protocol);
+        void SetAddr(int domain, const char *ip, int port);
+        void Bind(int sockfd, struct sockaddr_in *addr);
+
+        int GetFd()const ;
+        struct sockaddr_in *GetAddr();
 };

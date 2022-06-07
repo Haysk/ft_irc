@@ -11,8 +11,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <string.h>
-#define IP "127.0.0.1"
-#define LIMIT_MSG 512
+
 
 int main(int ac, char **av){
     struct sockaddr_in myaddr;
