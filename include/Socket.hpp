@@ -43,7 +43,7 @@ class Socket {
         const char *GetIp();
         struct sockaddr_in *GetAddr();
     
-    //exception
+    //Exception
     class SocketFailed : public std::exception{
         public:
 		const char* what() const throw();

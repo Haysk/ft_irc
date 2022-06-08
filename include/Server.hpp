@@ -43,6 +43,24 @@ class Server {
     int GetClientSocket();
     int GetId();
 
+    //Exception
+    class ListenFailed : public std::exception{
+        public:
+    	const char* what() const throw();
+    };
 
-        
+    class SelectFailed : public std::exception{
+        public:
+    	const char* what() const throw();
+    };     
+
+    class AcceptFailed : public std::exception{
+        public:
+    	const char* what() const throw();
+    };
+
+    class RecvFailed : public std::exception{
+        public:
+    	const char* what() const throw();
+    };
 };

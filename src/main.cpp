@@ -1,5 +1,13 @@
 #include "Socket.hpp"
 #include "Server.hpp"
+#include <csignal>
+
+
+void signal_handler (int n){
+    std::cerr<<std::endl;
+    std::cerr << "interruption by signal " << n << std::endl;
+    throw std::invalid_argument("Force quit server");
+}
 
 int main(int ac, char **av){
 
@@ -13,11 +21,13 @@ int main(int ac, char **av){
         return (0);
     }
     try {
+
         sk.CreateFd(AF_INET, SOCK_STREAM, 0);
         sk.SetAddr(AF_INET);
         sk.Bind();
         sv.Listen(sk, 10);
         while(sv.GetId() < 10){
+            signal(SIGINT, signal_handler);
             FD_ZERO(sv.GetReadFs());
             FD_SET(sk.GetFd(), sv.GetReadFs());
             sv.Select(sk, sv.GetReadFs(), 0, 0, 0);
