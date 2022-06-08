@@ -1,8 +1,9 @@
-#ifndef FT_IRC_CHANNEL_H
-#define FT_IRC_CHANNEL_H
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
 #include "../include/utils.hpp"
-#include "Datas.h"
+#include "../include/datasException.hpp"
+#include "Datas.hpp"
 
 class User;
 
@@ -46,29 +47,17 @@ public:
 
 	// SETTERS
 
-	void setChanName(const string newName);
+	void setChanName(const string &newName);
 
 	void setMod(int newMode);
 
 	// FUNCTIONS
 
-	void addUser(const string userName, bool role);
+	void addUser(const string &userName, bool role);
 
-	void deleteUser(const string userName);
-	
-	//EXCEPTIONS
-
-public:	
-	class channelException : public exception
-	{
-		const char *_msg;
-
-	public:
-		channelException(const char *msg) : _msg(msg) {
-		}
-
-		const char *what() const throw (){ return _msg; }
-	};
+	void deleteUser(const string &userName);
 };
 
-#endif // FT_IRC_CHANNEL_H
+ostream& operator<<(ostream& os, const Channel& rhs);
+
+#endif // CHANNEL_HPP

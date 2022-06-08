@@ -1,6 +1,6 @@
-#include "Datas.h"
-#include "User.h"
-#include "Channel.h"
+#include "Datas.hpp"
+#include "User.hpp"
+#include "Channel.hpp"
 
 Datas::Datas() {}
 
@@ -41,7 +41,7 @@ User &Datas::getUser(const string &userName) const
 	if (it != _usersDatas.end()) {
 		return *it->second;
 	}
-	throw datasException("User doesn't exist");
+	throw datasException("User doesn't exist", userName);
 }
 
 Channel &Datas::getChannel(const string &chanName) const
@@ -51,37 +51,41 @@ Channel &Datas::getChannel(const string &chanName) const
 	it = _channelsDatas.find(chanName);
 	if (it != _channelsDatas.end())
 		return *it->second;
-	throw datasException("Channel doesn't exist");
+	throw datasException("Channel doesn't exist", chanName);
 }
 
 // FUNCTIONS
 
 void Datas::newUser(const string &userName, const string &nickName, const string &ipAddress, int port)
 {
-	if (!_usersDatas.empty())
+	try {
 		getUser(userName);
-	User *user;
-	user = new User(userName, nickName, ipAddress, port);
-	if (!_usersDatas.insert(make_pair(userName, user)).second)
-		throw datasException("User already exist");
+	} catch (datasException &e) {
+		User *user;
+		user = new User(userName, nickName, ipAddress, port);
+		_usersDatas.insert(make_pair(userName, user));
+		return;
+	}
+	throw datasException("User already exist", userName);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)
 {
 	try {
 		getChannel(chanName);
-	} catch (exception &e) {
+	} catch (datasException &e) {
 		Channel *chan;
 		chan = new Channel(chanName, mode, userName);
-		if (!_channelsDatas.insert(make_pair(chanName, chan)).second)
-			throw datasException("Channel already exist");
+		_channelsDatas.insert(make_pair(chanName, chan));
+		return;
 	}
+	throw datasException("Channel already exist", chanName);
 }
 
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)
 {
-	getChannel(chanName);
 	getChannel(chanName).addUser(userName, role);
+	getUser(userName).addChannel(chanName, role);
 }
 
 void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
@@ -91,5 +95,5 @@ void Datas::removeUserFromChannel(const string &userName, const string &chanName
 void Datas::deleteChannel(const string chanName)
 {
 	if (_channelsDatas.erase(chanName) <= 0)
-		throw datasException("Channel doesn't exist");
+		throw datasException("Channel doesn't exist", chanName);
 }

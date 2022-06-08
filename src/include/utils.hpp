@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include <unistd.h>
 #include <cerrno>

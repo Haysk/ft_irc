@@ -1,7 +1,8 @@
-#ifndef FT_IRC_DATAS_H
-#define FT_IRC_DATAS_H
+#ifndef DATAS_H
+#define DATAS_H
 
 #include "../include/utils.hpp"
+#include "../include/datasException.hpp"
 
 class User;
 class Channel;
@@ -53,19 +54,6 @@ public:
 
 	void deleteChannel(const string chanName);
 
-	//EXCEPTIONS
-
-public :
-		class datasException : public exception
-		{
-			const char *_msg;
-
-		public:
-			datasException(const char *msg) : _msg(msg) {
-			}
-
-			const char *what() const throw (){ return _msg; }
-		};
 };
 
-#endif // FT_IRC_DATAS_H
+#endif // DATAS_HPP

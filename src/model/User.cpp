@@ -1,5 +1,5 @@
-#include "User.h"
-#include "Channel.h"
+#include "User.hpp"
+#include "Channel.hpp"
 
 User::User() {}
 
@@ -58,7 +58,7 @@ Channel &User::getChannel(const string &chanName) const
 	it = _channels.find(chanName);
 	if (it != _channels.end())
 		return Datas::getChannel(it->first);
-	throw userException("User not in this Channel");
+	throw datasException("User not in " + chanName + "Channel", _userName);
 }
 
 // SETTERS
@@ -78,6 +78,14 @@ void User::setPort(const int &port)
 	_port = port;
 }
 
+// UTILS
+
+void User::addChannel(const string &chanName, bool role) {
+	if (_channels.insert(make_pair(chanName, role)).second == false)
+		throw datasException("User aleady in " + chanName , _userName);
+
+}
+
 // FUNCTIONS
 
 void User::createChannel(Datas &datas, const string &chanName, const int mode)
@@ -95,12 +103,12 @@ void User::quitChannel(Datas &datas, const string &chanName)
 {
 	if (_channels.erase(chanName) > 0)
 		datas.removeUserFromChannel(_userName, chanName);
-	throw userException("User not in this Channel");
+	throw datasException("User not in this Channel", _userName);
 }
 
 ostream& operator<<(ostream& os, const User& rhs)
 {
-	os << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName()
+	os << "\n" << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName()
 	<< "\n\tIp Address : " << rhs.getIpAddress() << "\n\tPort : " << rhs.getPort();
 	os << "\n\tChannels :\n";
 	const User::userChannels &channels = rhs.getChannels();

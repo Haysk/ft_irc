@@ -8,12 +8,13 @@ CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP
 
 # No need to edit the path of th file
 # This will be automaticaly
-FILES = datasTest.cpp \
+FILES = mainTest.cpp \
 		Datas.cpp \
 		User.cpp \
 		Channel.cpp \
+		userTest.cpp
 
-SRC_PATH = $(shell find ../src -type d)
+SRC_PATH = $(shell find .. -type d)
 vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))
 
 OBJ_PATH = objs
