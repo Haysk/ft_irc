@@ -27,18 +27,21 @@ class Server {
 
     private:
         //Attribut
+        int _csock; //client socket
         int _id;
         char *_buff;
-        int _csock; //client socket
         fd_set _readfs;
 
     public:
     void    Listen(Socket sk, int backlog);
-    void    Select(int nfds, fd_set *readfds, fd_set *writefds,
+    void    Select(Socket sk, fd_set *readfds, fd_set *writefds,
            fd_set *exceptfds, struct timeval *timeout);
-    void    Accept(int sockfd, struct sockaddr *addr, socklen_t *len);
+    void    Accept(Socket sk);
+    void    Recv(int flag);
 
     fd_set *GetReadFs();
+    int GetClientSocket();
+    int GetId();
 
 
         

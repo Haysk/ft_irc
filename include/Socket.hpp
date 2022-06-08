@@ -42,4 +42,15 @@ class Socket {
         int GetPort()const;
         const char *GetIp();
         struct sockaddr_in *GetAddr();
+    
+    //exception
+    class SocketFailed : public std::exception{
+        public:
+		const char* what() const throw();
+    };
+
+    class BindFailed : public std::exception{
+        public:
+    	const char* what() const throw();
+    };
 };

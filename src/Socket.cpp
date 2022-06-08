@@ -22,10 +22,8 @@ Socket::~Socket(){};
 void Socket::CreateFd(int domain, int type, int protocol){
     int sockfd = socket(domain, type, protocol);
 
-    if (sockfd < 0){
-        perror("socket failed. Error:");
-        exit(1);
-    }
+    if (sockfd < 0)
+        throw Socket::SocketFailed();
     this->_fd = sockfd;
 };
 
@@ -41,10 +39,8 @@ void Socket::SetAddr(int domain){
 void Socket::Bind(){
     struct sockaddr *cast_addr = reinterpret_cast<struct sockaddr *>(&this->_addr);
 
-    if (bind(this->_fd, cast_addr, sizeof(this->_addr)) < 0){
-        perror("bind failed. Error");
-        exit (1);
-    }
+    if (bind(this->_fd, cast_addr, sizeof(this->_addr)) < 0)
+        throw Socket::BindFailed();
 
 }
 
@@ -64,3 +60,10 @@ struct sockaddr_in *Socket::GetAddr(){
     return (&this->_addr);
 }
 
+const char *Socket::SocketFailed::what()const throw(){
+    return ("Socket failed");
+}
+
+const char *Socket::BindFailed::what()const throw(){
+    return ("Bind failed");
+}
