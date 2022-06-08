@@ -38,6 +38,8 @@ class Server {
            fd_set *exceptfds, struct timeval *timeout);
     void    Accept(int sockfd, struct sockaddr *addr, socklen_t *len);
 
+    fd_set *GetReadFs();
+
 
         
 };
