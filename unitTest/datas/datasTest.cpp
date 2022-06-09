@@ -52,8 +52,20 @@ void datasTest(Datas &servDatas) {
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
+		cout << "--------------------QUIT CHANNEL--------------------" << endl;
+		tata.quitChannel(servDatas, "totoChannel");
+		cout << servDatas.getChannel("totoChannel") << endl;
+		cout << tata << endl;
+		cout << toto << endl;
+			toto.quitChannel(servDatas, "totoChannel");
+		try {
+		cout << servDatas.getChannel("totoChannel") << endl;
+		} catch (datasException &e) {
+			cout << e.getOption() << " : " << e.what() << endl;
+		}
+		cout << tata << endl;
+		cout << toto << endl;
 
-		
 
 	} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;

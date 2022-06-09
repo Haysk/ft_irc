@@ -89,7 +89,12 @@ void Datas::addUserInChannel(const string &userName, const string &chanName, boo
 }
 
 void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
-	getChannel(chanName).deleteUser(userName);
+	Channel &chan =  getChannel(chanName);
+	chan.deleteUser(userName);
+	if (chan.getUsers().empty()) {
+		delete &chan;
+		_channelsDatas.erase(chanName);
+	}
 }
 
 void Datas::deleteChannel(const string chanName)

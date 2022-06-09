@@ -12,7 +12,7 @@ FILES = mainTest.cpp \
 		Datas.cpp \
 		User.cpp \
 		Channel.cpp \
-		userTest.cpp
+		datasTest.cpp
 
 SRC_PATH = $(shell find .. -type d)
 vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))

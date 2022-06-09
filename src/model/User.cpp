@@ -103,7 +103,8 @@ void User::quitChannel(Datas &datas, const string &chanName)
 {
 	if (_channels.erase(chanName) > 0)
 		datas.removeUserFromChannel(_userName, chanName);
-	throw datasException("User not in this Channel", _userName);
+	else
+		throw datasException("User not in this Channel", _userName);
 }
 
 ostream& operator<<(ostream& os, const User& rhs)
