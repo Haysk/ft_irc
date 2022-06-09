@@ -23,7 +23,7 @@ class Socket {
         ~Socket();
 
         // Operator
-            Socket &operator=(const Socket &ref);
+        Socket &operator=(const Socket &ref);
 
     private:
         // Attribut

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string.h>
 #include <arpa/inet.h>
+#include <vector>
 
 class Socket;
 
@@ -27,7 +28,8 @@ class Server {
 
     private:
         //Attribut
-        int _csock; //client socket
+        std::vector<int> _csock; // client socket
+        // int _csock;
         int _id;
         char *_buff;
         fd_set _readfs;
@@ -37,11 +39,12 @@ class Server {
     void    Select(Socket sk, fd_set *readfds, fd_set *writefds,
            fd_set *exceptfds, struct timeval *timeout);
     void    Accept(Socket sk);
-    void    Recv(int flag);
+    void    Recv(int fd,int flag);
 
-    fd_set *GetReadFs();
-    int GetClientSocket();
-    int GetId();
+    fd_set        *GetReadFs();
+    int           GetFdMax();
+    int           GetId();
+    char          *GetBuff();
 
     //Exception
     class ListenFailed : public std::exception{
@@ -54,13 +57,13 @@ class Server {
     	const char* what() const throw();
     };     
 
-    class AcceptFailed : public std::exception{
-        public:
-    	const char* what() const throw();
-    };
+    // class AcceptFailed : public std::exception{
+    //     public:
+    // 	const char* what() const throw();
+    // };
 
-    class RecvFailed : public std::exception{
-        public:
-    	const char* what() const throw();
-    };
+    // class RecvFailed : public std::exception{
+    //     public:
+    // 	const char* what() const throw();
+    // };
 };

@@ -4,7 +4,6 @@
 
 
 Server::Server():
-_csock(-1),
 _id(0){
     this->_buff = new char[LIMIT_MSG];
     memset(this->_buff, 0, LIMIT_MSG);
@@ -39,28 +38,28 @@ void Server::Select(Socket sk, fd_set *readfds, fd_set *writefds,
 }
 
 void Server::Accept(Socket sk){
-    socklen_t len;
-    this->_csock = accept(sk.GetFd(), 
+    socklen_t len = 0;
+    int fd = accept(sk.GetFd(), 
        reinterpret_cast<struct sockaddr *> (sk.GetAddr()), &len);
 
-    if (this->_csock  < 0)
-        throw Server::AcceptFailed();
+    if (fd < 0){
+        std::cout << "fd " << fd << "failed" << std::endl;
+    }
     else {
         std::cout << "client " << this->_id++ << ": [" << inet_ntoa(sk.GetAddr()->sin_addr)
            << ":" << ntohs(sk.GetAddr()->sin_port) << "]" << std::endl;
+        this->_csock.push_back(fd);
     }
 }
 
-void Server::Recv(int flag){
-    if (recv(this->_csock, this->_buff, LIMIT_MSG, flag) < 0)
-        throw Server::RecvFailed();
-    else {
+void Server::Recv(int fd, int flag){
+    if (recv(fd, this->_buff, LIMIT_MSG, flag) > 0)
         std::cout << "client send:" << this->_buff << std::endl;
-    }
 }
 
-int Server::GetClientSocket(){
-    return (this->_csock);
+int Server::GetFdMax(){
+    std::vector<int>::reverse_iterator rit = this->_csock.rbegin();
+    return (*rit);
 }
 
 fd_set *Server::GetReadFs(){
@@ -71,6 +70,10 @@ int Server::GetId(){
     return (this->_id);
 }
 
+char *Server::GetBuff(){
+    return (this->_buff);
+}
+
 const char *Server::ListenFailed::what()const throw(){
     return ("Listen failed");
 }
@@ -79,10 +82,10 @@ const char *Server::SelectFailed::what()const throw(){
     return ("Select failed");
 }
 
-const char *Server::AcceptFailed::what()const throw(){
-    return ("Accept failed");
-}
+// const char *Server::AcceptFailed::what()const throw(){
+//     return ("Accept failed");
+// }
 
-const char *Server::RecvFailed::what()const throw(){
-    return ("Recv failed");
-}
+// const char *Server::RecvFailed::what()const throw(){
+//     return ("Recv failed");
+// }
