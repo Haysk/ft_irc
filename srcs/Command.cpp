@@ -1,6 +1,6 @@
 #include "../includes/Command.hpp"
 
-Command::Command(std::string type, std::string line) : _type(type)
+Command::Command(bool type, std::string line) : _type(type)
 {
 	size_t	nOpt = countOccurrences(" ", line) + 1;
 
@@ -94,7 +94,7 @@ void	Command::quit(void)
 
 void	Command::kick(void)
 {
-	if (_type.compare("operator"))
+	if (!_type)
 		throw std::domain_error("You're not allowed to use this command");
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /kick <nickname>");
@@ -103,7 +103,7 @@ void	Command::kick(void)
 
 void	Command::mode(void)
 {
-	if (_type.compare("operator"))
+	if (!_type)
 		throw std::domain_error("You're not allowed to use this command");
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /mode [msg]");
@@ -112,17 +112,17 @@ void	Command::mode(void)
 
 void	Command::invite(void)
 {
-	if (_type.compare("operator"))
+	if (!_type)
 		throw std::domain_error("You're not allowed to use this command");
 	// check channel mode
-	if (_cmd.size() > 2)
+	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /invite <nickname>");
 	// User.Execute(this)
 }
 
 void	Command::topic(void)
 {
-	if (_type.compare("operator"))
+	if (!_type)
 		throw std::domain_error("You're not allowed to user this command");
 	// check channel mode
 	if (_cmd.size() > 2)

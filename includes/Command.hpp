@@ -14,7 +14,7 @@ typedef	std::map<std::string, void (Command::*) ()>	mapper;
 class	Command
 {
 	private:
-		std::string	_type;
+		bool	_type;
 		mapper	_cmdMap;
 		std::deque<std::string>	_cmd;
 		void	join(void);
@@ -28,7 +28,7 @@ class	Command
 		void	topic(void);
 
 	public:
-		Command(std::string, std::string);
+		Command(bool, std::string);
 		~Command(void);
 		void	BuildCmd(size_t, std::string);
 		void	CheckCmd(void);

@@ -1,6 +1,9 @@
 # include "../includes/Command.hpp"
 
-void	checker(std::string type, std::string cmd)
+# define OPERATOR 1
+# define BASIC 0
+
+void	checker(bool type, std::string cmd)
 {
 	Command	test(type, cmd);
 
@@ -21,45 +24,45 @@ int	main(void)
 {
 	/*------TEST WITH VALID OPERATOR CMDS------*/
 	std::cout << "\n------TEST WITH VALID OPERATOR CMDS------\n" << std::endl;
-	checker("operator", "join channel");
-	checker("operator", "part");
-	checker("operator", "part channel");
-	checker("operator", "part channel msg");
-	checker("operator", "msg nickname msg");
-	checker("operator", "query nickname");
-	checker("operator", "query nickname msg");
-	checker("operator", "quit");
-	checker("operator", "quit msg");
-	checker("operator", "kick nickname");
-	checker("operator", "mode");
-	checker("operator", "mode msg");
-	checker("operator", "invite nickname");
-	checker("operator", "topic");
-	checker("operator", "topic msg");
+	checker(OPERATOR, "join channel");
+	checker(OPERATOR, "part");
+	checker(OPERATOR, "part channel");
+	checker(OPERATOR, "part channel msg");
+	checker(OPERATOR, "msg nickname msg");
+	checker(OPERATOR, "query nickname");
+	checker(OPERATOR, "query nickname msg");
+	checker(OPERATOR, "quit");
+	checker(OPERATOR, "quit msg");
+	checker(OPERATOR, "kick nickname");
+	checker(OPERATOR, "mode");
+	checker(OPERATOR, "mode msg");
+	checker(OPERATOR, "invite nickname");
+	checker(OPERATOR, "topic");
+	checker(OPERATOR, "topic msg");
 
 	/*------TEST WITH BASIC TRYING TO EXEC OPERATOR CMDS------*/
 	std::cout << "\n------TEST WITH BASIC TRYING TO EXEC OPERATOR CMDS------\n" << std::endl;
-	checker("basic", "kick");
-	checker("basic", "mode");
-	checker("basic", "invite");
-	checker("basic", "topic");
+	checker(BASIC, "kick");
+	checker(BASIC, "mode");
+	checker(BASIC, "invite");
+	checker(BASIC, "topic");
 
 	/*------TEST WITH OPERATOR TRYING TO EXEC INVALID CMDS------*/
 	std::cout << "\n------TEST WITH OPERATOR TRYING TO EXEC INVALID CMDS------\n" << std::endl;
-	checker("operator", "join");
-	checker("operator", "join channel msg");
-	checker("operator", "part channel msg nickname");
-	checker("operator", "msg");
-	checker("operator", "msg ncikname");
-	checker("operator", "msg nickname msg channel");
-	checker("operator", "query");
-	checker("operator", "query nickname msg channel");
-	checker("operator", "quit msg channel");
-	checker("operator", "kick nickname msg");
-	checker("operator", "kick");
-	checker("operator", "mode msg channel");
-	checker("operator", "invite nickname msg");
-	checker("operator", "invite");
-	checker("operator", "topic msg channel");
+	checker(OPERATOR, "join");
+	checker(OPERATOR, "join channel msg");
+	checker(OPERATOR, "part channel msg nickname");
+	checker(OPERATOR, "msg");
+	checker(OPERATOR, "msg ncikname");
+	checker(OPERATOR, "msg nickname msg channel");
+	checker(OPERATOR, "query");
+	checker(OPERATOR, "query nickname msg channel");
+	checker(OPERATOR, "quit msg channel");
+	checker(OPERATOR, "kick nickname msg");
+	checker(OPERATOR, "kick");
+	checker(OPERATOR, "mode msg channel");
+	checker(OPERATOR, "invite nickname msg");
+	checker(OPERATOR, "invite");
+	checker(OPERATOR, "topic msg channel");
 	return (0);
 }
