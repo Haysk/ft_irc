@@ -1,16 +1,20 @@
 # include "../includes/Command.hpp"
+# include "../src/model/User.hpp"
+# include "../src/model/Channel.hpp"
+# include "../src/model/Datas.hpp"
 
 # define OPERATOR 1
 # define BASIC 0
 
-void	checker(bool type, std::string cmd)
+void	checker(User user, Datas servData, Channel channel, std::string cmd)
 {
-	Command	test(type, cmd);
+	Command	test(std::string cmd);
 
 	std::cout << "CMD: " << cmd << std::endl;
 	try
 	{
-		test.CheckCmd();
+		// Parsing cmd : get User and channel and commands with options
+		test.checkCmd();
 		std::cout << "EXECUTION: " << cmd << std::endl;
 	}
 	catch (std::exception& e)

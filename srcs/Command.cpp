@@ -1,6 +1,6 @@
 #include "../includes/Command.hpp"
 
-Command::Command(bool type, std::string line) : _type(type)
+Command::Command(std::string line)
 {
 	size_t	nOpt = countOccurrences(" ", line) + 1;
 
@@ -14,7 +14,7 @@ Command::Command(bool type, std::string line) : _type(type)
 	_cmdMap["mode"] = &Command::mode;
 	_cmdMap["invite"] = &Command::invite;
 	_cmdMap["topic"] = &Command::topic;
-	BuildCmd(nOpt, line);
+	buildCmd(nOpt, line);
 }
 
 Command::~Command(void)
@@ -22,9 +22,9 @@ Command::~Command(void)
 //	std::cout << "Command destructor called" << std::endl;
 }
 
-void	Command::CheckCmd(void)
+void	Command::checkCmd(Datas &servDatas, User &user)
 {
-	void	(Command::*fct) (void);
+	void	(Command::*fct) (Datas&, User&);
 	std::string	str;
 
 	str = _cmd.front();
@@ -34,13 +34,13 @@ void	Command::CheckCmd(void)
 		if (!(str.compare(it->first)))
 		{
 			fct = it->second;
-			return ((this->*fct) ());
+			return ((this->*fct) (servDatas, user));
 		}
 	}
 	throw std::invalid_argument("You've entered a invalid command");
 }
 
-void	Command::BuildCmd(size_t nOpt, std::string line)
+void	Command::buildCmd(size_t nOpt, std::string line)
 {
 	int	tmp = -1;
 	size_t	pos;
@@ -57,77 +57,93 @@ void	Command::BuildCmd(size_t nOpt, std::string line)
 	_cmd.push_back(line.substr(tmp + 1));
 }
 
-void	Command::join(void)
+void	Command::join(Datas &servDatas, User &user)
 {
+	(void)user;
+	(void)servDatas;
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /join <channel>");
-	// User.Execute(this)
+	// user.join(channel);
 }
 
-void	Command::part(void)
+void	Command::part(Datas &servDatas, User &user)
 {
+	(void)user;
+	(void)servDatas;
 	if (_cmd.size() > 3)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /part [channel] [msg]");
-	// User.Execute(this)
+	// User.part(channel, msg)
 }
 
-void	Command::msg(void)
+void	Command::msg(Datas &servDatas, User &user)
 {
+	(void)user;
+	(void)servDatas;
 	if (_cmd.size() != 3)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /msg <nickname> <msg>");
-	// User.Execute(this)
+	// user.msg(nickname, msg))
 }
 
-void	Command::query(void)
+void	Command::query(Datas &servDatas, User &user)
 {
+	(void)user;
+	(void)servDatas;
 	if (_cmd.size() < 2 || _cmd.size() > 3)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /query <nickname> [msg]");
-	// User.Execute(this)
+	// user.query(nickname, msg)
 }
 
-void	Command::quit(void)
+void	Command::quit(Datas &servDatas, User &user)
 {
+	(void)user;
+	(void)servDatas;
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /quit [msg]");
-	// User.Execute(this)
+	// user.quit(msg)
 }
 
-void	Command::kick(void)
+void	Command::kick(Datas &servDatas, User &user)
 {
-	if (!_type)
-		throw std::domain_error("You're not allowed to use this command");
+	(void)user;
+	(void)servDatas;
+//	if (user.getRole(chanName))
+//		throw std::domain_error("You're not allowed to use this command");
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /kick <nickname>");
-	// User.Execute(this)
+	// user.kick(nickname)
 }
 
-void	Command::mode(void)
+void	Command::mode(Datas &servDatas, User &user)
 {
-	if (!_type)
-		throw std::domain_error("You're not allowed to use this command");
+	(void)user;
+	(void)servDatas;
+//	if (user.getRole(chanName))
+//		throw std::domain_error("You're not allowed to use this command");
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /mode [msg]");
-	// User.Execute(this)
+	// user.mode(msg)
 }
 
-void	Command::invite(void)
+void	Command::invite(Datas &servDatas, User &user)
 {
-	if (!_type)
-		throw std::domain_error("You're not allowed to use this command");
-	// check channel mode
+	(void)user;
+	(void)servDatas;
+//	if (user.getrole(channame))
+//		throw std::domain_error("you're not allowed to use this command");
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /invite <nickname>");
-	// User.Execute(this)
+	// user.invite(nickname)
 }
 
-void	Command::topic(void)
+void	Command::topic(Datas &servDatas, User &user)
 {
-	if (!_type)
-		throw std::domain_error("You're not allowed to user this command");
-	// check channel mode
+	(void)user;
+	(void)servDatas;
+//	if (user.getrole(channame))
+//		throw std::domain_error("you're not allowed to use this command");
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /topic [msg]");
-	// User.Execute(this)
+	// user.topic(msg)
 }
 
 size_t	countOccurrences(std::string charset, std::string str)

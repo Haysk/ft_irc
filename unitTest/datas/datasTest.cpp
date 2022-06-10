@@ -38,7 +38,7 @@ void datasTest(Datas &servDatas) {
 		}
 
 		cout << "--------------------JOIN CHANNEL--------------------" << endl;
-		tata.joinChannel(servDatas, "totoChannel");
+		servDatas.getUser("tata").joinChannel(servDatas, "totoChannel");
 		cout << tata << endl;
 		cout << servDatas.getChannel("totoChannel") << endl;
 		

@@ -2,7 +2,7 @@
 #include "../src/model/Datas.hpp"
 #include "../src/model/User.hpp"
 #include "../src/model/Channel.hpp"
-#include "datas/datasTest.hpp"
+#include "unitTest.hpp"
 
 int main () {
 	Datas *servDatas;
@@ -10,6 +10,9 @@ int main () {
 
 	// DATAS USERTEST
 	datasTest(*servDatas);
+	
+	// PARSING UNITTEST
+	parsingTest(*servDatas);
 
 	delete servDatas;
 }
