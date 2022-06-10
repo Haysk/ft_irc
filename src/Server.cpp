@@ -30,11 +30,10 @@ void Server::Listen(Socket sk, int backlog){
         std::cout << "listening on " << sk.GetIp() << ":" << sk.GetPort() << std::endl;
 }
 
-void Server::Select(Socket sk, fd_set *readfds, fd_set *writefds,
+void Server::Select(int fd, fd_set *readfds, fd_set *writefds,
     fd_set *exceptfds, struct timeval *timeout){
-    if (select(sk.GetFd() + 1, readfds, writefds, exceptfds, timeout) < 0)
+    if (select(fd + 1, readfds, writefds, exceptfds, timeout) < 0)
         throw Server::SelectFailed();
-
 }
 
 void Server::Accept(Socket sk){
@@ -46,8 +45,10 @@ void Server::Accept(Socket sk){
         std::cout << "fd " << fd << "failed" << std::endl;
     }
     else {
-        std::cout << "client " << this->_id++ << ": [" << inet_ntoa(sk.GetAddr()->sin_addr)
-           << ":" << ntohs(sk.GetAddr()->sin_port) << "]" << std::endl;
+        std::cout << "== client " << this->_id++ << " =="<< std::endl;
+        std::cout << "addres: [" << inet_ntoa(sk.GetAddr()->sin_addr)
+        << ":" << ntohs(sk.GetAddr()->sin_port) << "]" << std::endl;
+
         this->_csock.push_back(fd);
     }
 }

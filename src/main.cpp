@@ -23,22 +23,25 @@ int main(int ac, char **av){
         sk.SetAddr(AF_INET);
         sk.Bind();
         sv.Listen(sk, 10);
-        while(sv.GetId() < 10){
+        FD_ZERO(sv.GetReadFs());
+        FD_SET(sk.GetFd(), sv.GetReadFs());
+        while(1){
             signal(SIGINT, signal_handler);
-            FD_ZERO(sv.GetReadFs());
-            FD_SET(sk.GetFd(), sv.GetReadFs());
-            //change 1st param of select
-            sv.Select(sk, sv.GetReadFs(), 0, 0, 0);
-            //connexion
-            if (FD_ISSET(sk.GetFd(), sv.GetReadFs())){
-                sv.Accept(sk);
+
+            //waiting for a new client
+            sv.Select(FD_SETSIZE, sv.GetReadFs(), 0, 0, 0);
+
+            //connexion client
+            for (int i = 0; i < FD_SETSIZE; i++){
+                if (FD_ISSET(i, sv.GetReadFs()))
+                    sv.Accept(sk);
             }
-            //send 
-            // check if enter
-            if (FD_ISSET(sv.GetFdMax(),sv.GetReadFs())){
-                memset(sv.GetBuff(), 0, LIMIT_MSG);
-                sv.Recv(sv.GetFdMax(), 0);
-            }
+            //send
+            // if (FD_ISSET(sv.GetFdMax()-1,sv.GetReadFs())){
+                    // sv.Recv(sv.GetFdMax(), 0);
+            //         memset(sv.GetBuff(), 0, LIMIT_MSG);
+            //         std::cout << "3)" << std::endl;
+            // }
         }
     }
     catch (std::exception &e){

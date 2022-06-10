@@ -3,7 +3,7 @@
 Socket::Socket(const char *ip, int port):
 _ip(ip),
 _port(port),
-_fd(-1){};
+_fd(0){};
 
 Socket::Socket(const Socket &ref){
     *this = ref;

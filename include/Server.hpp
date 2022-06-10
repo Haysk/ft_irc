@@ -1,5 +1,6 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <stdio.h>
 #include <functional>
 #include <netinet/in.h>
@@ -27,8 +28,8 @@ class Server {
         Server &operator=(const Server &ref);
 
     private:
-        //Attribut
         std::vector<int> _csock; // client socket
+        //Attribut
         // int _csock;
         int _id;
         char *_buff;
@@ -36,7 +37,7 @@ class Server {
 
     public:
     void    Listen(Socket sk, int backlog);
-    void    Select(Socket sk, fd_set *readfds, fd_set *writefds,
+    void    Select(int fd, fd_set *readfds, fd_set *writefds,
            fd_set *exceptfds, struct timeval *timeout);
     void    Accept(Socket sk);
     void    Recv(int fd,int flag);
