@@ -1,0 +1,7 @@
+ircserv
+objs/
+CMake*
+cmake*/
+.idea/
+.vscode
+ircTest

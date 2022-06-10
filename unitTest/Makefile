@@ -1,4 +1,4 @@
-NAME = ircserv
+NAME = ircTest
 CC = clang++
 HEAD = -Iinclude
 
@@ -8,13 +8,13 @@ CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP
 
 # No need to edit the path of th file
 # This will be automaticaly
-FILES = Server.cpp \
+FILES = mainTest.cpp \
 		Datas.cpp \
 		User.cpp \
 		Channel.cpp \
+		datasTest.cpp
 
-
-SRC_PATH = $(shell find src -type d)
+SRC_PATH = $(shell find .. -type d)
 vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))
 
 OBJ_PATH = objs
@@ -32,18 +32,6 @@ $(OBJ_PATH):
 $(OBJ_PATH)/%.o : %.cpp
 	@$(CC) $(CPPFLAGS) $(HEAD) $< -o $@ -c
 
-test:
-	make -C unitTest
-
-tclean:
-	make -C unitTest clean
-
-tfclean:
-	make -C unitTest fclean
-
-tre:
-	make -C unitTest re
-
 clean:
 	rm -rf $(OBJ)
 	rm -rf $(OBJ_PATH)
@@ -54,3 +42,4 @@ fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+
