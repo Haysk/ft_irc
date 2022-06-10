@@ -44,21 +44,6 @@ void Socket::Bind(){
 
 }
 
-int Socket::GetFd()const{
-    return (this->_fd);
-}
-
-int Socket::GetPort()const{
-    return (this->_port);
-}
-
-const char *Socket::GetIp(){
-    return (this->_ip);
-}
-
-struct sockaddr_in *Socket::GetAddr(){
-    return (&this->_addr);
-}
 
 const char *Socket::SocketFailed::what()const throw(){
     return ("Socket failed");

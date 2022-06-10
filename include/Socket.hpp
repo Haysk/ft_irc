@@ -25,23 +25,19 @@ class Socket {
         // Operator
         Socket &operator=(const Socket &ref);
 
-    private:
         // Attribut
         struct sockaddr_in _addr;
         const char *_ip;
         int _port;
         int _fd;
+        int _max_fd;
+        fd_set _readfs;
     
     public:
         // Method
         void CreateFd(int domain, int type, int protocol);
         void SetAddr(int domain);
         void Bind();
-
-        int GetFd()const ;
-        int GetPort()const;
-        const char *GetIp();
-        struct sockaddr_in *GetAddr();
     
     //Exception
     class SocketFailed : public std::exception{

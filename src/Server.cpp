@@ -24,55 +24,41 @@ Server &Server::operator=(const Server &ref){
 
 
 void Server::Listen(Socket sk, int backlog){
-    if (listen(sk.GetFd(), backlog) < 0)
+    if (listen(sk._fd, backlog) < 0)
         throw Server::ListenFailed();
     else 
-        std::cout << "listening on " << sk.GetIp() << ":" << sk.GetPort() << std::endl;
+        std::cout << "listening on " << sk._ip << ":" << sk._port << std::endl;
 }
 
-void Server::Select(int fd, fd_set *readfds, fd_set *writefds,
-    fd_set *exceptfds, struct timeval *timeout){
-    if (select(fd + 1, readfds, writefds, exceptfds, timeout) < 0)
+void Server::Select(Socket sk, struct timeval *timeout){
+    std::cout << "in select" << std::endl;
+    if (select(sk._max_fd + 1, &sk._readfs, 0, 0, timeout) < 0)
         throw Server::SelectFailed();
+    else {
+        sk._max_fd++;
+        std::cout << "max_fd: " << sk._max_fd << std::endl;
+    }
 }
 
 void Server::Accept(Socket sk){
-    socklen_t len = 0;
-    int fd = accept(sk.GetFd(), 
-       reinterpret_cast<struct sockaddr *> (sk.GetAddr()), &len);
+    socklen_t len;
+    int fd = accept(sk._fd, 
+       reinterpret_cast<struct sockaddr *> (&sk._addr), &len);
 
     if (fd < 0){
         std::cout << "fd " << fd << "failed" << std::endl;
     }
     else {
         std::cout << "== client " << this->_id++ << " =="<< std::endl;
-        std::cout << "addres: [" << inet_ntoa(sk.GetAddr()->sin_addr)
-        << ":" << ntohs(sk.GetAddr()->sin_port) << "]" << std::endl;
-
-        this->_csock.push_back(fd);
+        std::cout << "addres: [" << inet_ntoa(sk._addr.sin_addr)
+        << ":" << ntohs(sk._addr.sin_port) << "]" << std::endl;
+        std::cout << "fd: " << fd << std::endl;
     }
 }
 
 void Server::Recv(int fd, int flag){
     if (recv(fd, this->_buff, LIMIT_MSG, flag) > 0)
         std::cout << "client send:" << this->_buff << std::endl;
-}
-
-int Server::GetFdMax(){
-    std::vector<int>::reverse_iterator rit = this->_csock.rbegin();
-    return (*rit);
-}
-
-fd_set *Server::GetReadFs(){
-    return (&this->_readfs);
-}
-
-int Server::GetId(){
-    return (this->_id);
-}
-
-char *Server::GetBuff(){
-    return (this->_buff);
 }
 
 const char *Server::ListenFailed::what()const throw(){
@@ -82,11 +68,3 @@ const char *Server::ListenFailed::what()const throw(){
 const char *Server::SelectFailed::what()const throw(){
     return ("Select failed");
 }
-
-// const char *Server::AcceptFailed::what()const throw(){
-//     return ("Accept failed");
-// }
-
-// const char *Server::RecvFailed::what()const throw(){
-//     return ("Recv failed");
-// }

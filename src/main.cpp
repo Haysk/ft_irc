@@ -19,29 +19,35 @@ int main(int ac, char **av){
     Socket sk("127.0.0.1", atoi(av[1]));
     Server sv;
     try {
+        signal(SIGINT, signal_handler);
         sk.CreateFd(AF_INET, SOCK_STREAM, 0);
         sk.SetAddr(AF_INET);
         sk.Bind();
         sv.Listen(sk, 10);
-        FD_ZERO(sv.GetReadFs());
-        FD_SET(sk.GetFd(), sv.GetReadFs());
+        sk._max_fd = sk._fd;
         while(1){
-            signal(SIGINT, signal_handler);
+            FD_ZERO(&sk._readfs);
+            FD_SET(sk._fd, &sk._readfs);
 
+            std::cout << "max_fd: " << sk._max_fd << std::endl;
             //waiting for a new client
-            sv.Select(FD_SETSIZE, sv.GetReadFs(), 0, 0, 0);
+            sv.Select(sk, 0);
 
             //connexion client
-            for (int i = 0; i < FD_SETSIZE; i++){
-                if (FD_ISSET(i, sv.GetReadFs()))
+            if (FD_ISSET(sk._fd, &sk._readfs)){
                     sv.Accept(sk);
-            }
             //send
+            for (int i = 0; i < sk._max_fd; i++){
+                if (FD_ISSET(i, &sk._readfs)){
+                    sv.Recv(i, 0);
+                    memset(sv._buff, 0, LIMIT_MSG);
+                }
+            }
             // if (FD_ISSET(sv.GetFdMax()-1,sv.GetReadFs())){
                     // sv.Recv(sv.GetFdMax(), 0);
             //         memset(sv.GetBuff(), 0, LIMIT_MSG);
             //         std::cout << "3)" << std::endl;
-            // }
+            }
         }
     }
     catch (std::exception &e){
