@@ -6,9 +6,9 @@
 # include <map>
 # include <deque>
 # include <cstdio>
-# include "../src/model/Channel.hpp"
-# include "../src/model/User.hpp"
-# include "../src/model/Datas.hpp"
+# include "../includes/Channel.hpp"
+# include "../includes/User.hpp"
+# include "../includes/Datas.hpp"
 
 
 class	Command

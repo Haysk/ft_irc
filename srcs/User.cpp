@@ -1,5 +1,4 @@
-#include "User.hpp"
-#include "Channel.hpp"
+#include "../includes/User.hpp"
 
 User::User() {}
 

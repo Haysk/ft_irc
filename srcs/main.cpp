@@ -1,20 +1,20 @@
 # include "../includes/Command.hpp"
-# include "../src/model/User.hpp"
-# include "../src/model/Channel.hpp"
-# include "../src/model/Datas.hpp"
+# include "../includes/User.hpp"
+# include "../includes/Channel.hpp"
+# include "../includes/Datas.hpp"
 
 # define OPERATOR 1
 # define BASIC 0
 
-void	checker(User user, Datas servData, Channel channel, std::string cmd)
+void	checkerCmd(Datas &servDatas, std::string cmd)
 {
-	Command	test(std::string cmd);
+	Command	test(cmd);
 
 	std::cout << "CMD: " << cmd << std::endl;
 	try
 	{
 		// Parsing cmd : get User and channel and commands with options
-		test.checkCmd();
+		test.checkCmd(servDatas, servDatas.getUser("chikakah"));
 		std::cout << "EXECUTION: " << cmd << std::endl;
 	}
 	catch (std::exception& e)
@@ -24,49 +24,69 @@ void	checker(User user, Datas servData, Channel channel, std::string cmd)
 	std::cout << "***************\n" << std::endl;
 }
 
-int	main(void)
+int	checkerCmds(Datas &servDatas)
 {
+	servDatas.newUser("chikakah", "choko", "ipp", 100);
+	std::cout << "\tPARSING TEST\n\n";
 	/*------TEST WITH VALID OPERATOR CMDS------*/
 	std::cout << "\n------TEST WITH VALID OPERATOR CMDS------\n" << std::endl;
-	checker(OPERATOR, "join channel");
-	checker(OPERATOR, "part");
-	checker(OPERATOR, "part channel");
-	checker(OPERATOR, "part channel msg");
-	checker(OPERATOR, "msg nickname msg");
-	checker(OPERATOR, "query nickname");
-	checker(OPERATOR, "query nickname msg");
-	checker(OPERATOR, "quit");
-	checker(OPERATOR, "quit msg");
-	checker(OPERATOR, "kick nickname");
-	checker(OPERATOR, "mode");
-	checker(OPERATOR, "mode msg");
-	checker(OPERATOR, "invite nickname");
-	checker(OPERATOR, "topic");
-	checker(OPERATOR, "topic msg");
+	checkerCmd(servDatas, "join channel");
+	checkerCmd(servDatas, "part");
+	checkerCmd(servDatas, "part channel");
+	checkerCmd(servDatas, "part channel msg");
+	checkerCmd(servDatas, "msg nickname msg");
+	checkerCmd(servDatas, "query nickname");
+	checkerCmd(servDatas, "query nickname msg");
+	checkerCmd(servDatas, "quit");
+	checkerCmd(servDatas, "quit msg");
+	checkerCmd(servDatas, "kick nickname");
+	checkerCmd(servDatas, "mode");
+	checkerCmd(servDatas, "mode msg");
+	checkerCmd(servDatas, "invite nickname");
+	checkerCmd(servDatas, "topic");
+	checkerCmd(servDatas, "topic msg");
 
 	/*------TEST WITH BASIC TRYING TO EXEC OPERATOR CMDS------*/
 	std::cout << "\n------TEST WITH BASIC TRYING TO EXEC OPERATOR CMDS------\n" << std::endl;
-	checker(BASIC, "kick");
-	checker(BASIC, "mode");
-	checker(BASIC, "invite");
-	checker(BASIC, "topic");
+	checkerCmd(servDatas, "kick");
+	checkerCmd(servDatas, "mode");
+	checkerCmd(servDatas, "invite");
+	checkerCmd(servDatas, "topic");
 
 	/*------TEST WITH OPERATOR TRYING TO EXEC INVALID CMDS------*/
 	std::cout << "\n------TEST WITH OPERATOR TRYING TO EXEC INVALID CMDS------\n" << std::endl;
-	checker(OPERATOR, "join");
-	checker(OPERATOR, "join channel msg");
-	checker(OPERATOR, "part channel msg nickname");
-	checker(OPERATOR, "msg");
-	checker(OPERATOR, "msg ncikname");
-	checker(OPERATOR, "msg nickname msg channel");
-	checker(OPERATOR, "query");
-	checker(OPERATOR, "query nickname msg channel");
-	checker(OPERATOR, "quit msg channel");
-	checker(OPERATOR, "kick nickname msg");
-	checker(OPERATOR, "kick");
-	checker(OPERATOR, "mode msg channel");
-	checker(OPERATOR, "invite nickname msg");
-	checker(OPERATOR, "invite");
-	checker(OPERATOR, "topic msg channel");
+	checkerCmd(servDatas, "join");
+	checkerCmd(servDatas, "join channel msg");
+	checkerCmd(servDatas, "part channel msg nickname");
+	checkerCmd(servDatas, "msg");
+	checkerCmd(servDatas, "msg ncikname");
+	checkerCmd(servDatas, "msg nickname msg channel");
+	checkerCmd(servDatas, "query");
+	checkerCmd(servDatas, "query nickname msg channel");
+	checkerCmd(servDatas, "quit msg channel");
+	checkerCmd(servDatas, "kick nickname msg");
+	checkerCmd(servDatas, "kick");
+	checkerCmd(servDatas, "mode msg channel");
+	checkerCmd(servDatas, "invite nickname msg");
+	checkerCmd(servDatas, "invite");
+	checkerCmd(servDatas, "topic msg channel");
+	return (0);
+}
+
+void	checkerPreUser()
+{
+}
+
+void	checkerPreUsers(void)
+{
+}
+
+int	main(void)
+{
+	std::string	pwd = "hello";
+	Datas	*servDatas = new Datas(pwd);
+
+	checkerCmds(*servDatas);
+	checkerPreUsers();
 	return (0);
 }
