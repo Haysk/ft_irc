@@ -10,9 +10,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
-#include <string.h>
-#include <arpa/inet.h>
-
+#include <vector>
 
 class Socket {
 
@@ -29,8 +27,9 @@ class Socket {
         struct sockaddr_in _addr;
         const char *_ip;
         int _port;
-        int _fd;
         int _max_fd;
+        int _fd;
+        std::vector<int> _client;
         fd_set _readfs;
     
     public:

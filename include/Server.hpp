@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string.h>
 #include <arpa/inet.h>
-#include <vector>
+#include <sys/socket.h>
 
 class Socket;
 
@@ -32,10 +32,10 @@ class Server {
 
 
     public:
-    void    Listen(Socket sk, int backlog);
-    void    Select(Socket sk, struct timeval *timeout);
-    void    Accept(Socket sk);
-    void    Recv(int fd,int flag);
+    void    Listen(Socket *sk, int backlog);
+    void    Select(Socket *sk, struct timeval *timeout);
+    void    Accept(Socket *sk);
+    void    Recv(Socket *sk, int idx_client, int flag);
 
     //Exception
     class ListenFailed : public std::exception{

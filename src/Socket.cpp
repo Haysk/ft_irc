@@ -3,6 +3,7 @@
 Socket::Socket(const char *ip, int port):
 _ip(ip),
 _port(port),
+_max_fd(0),
 _fd(0){};
 
 Socket::Socket(const Socket &ref){
@@ -38,7 +39,6 @@ void Socket::SetAddr(int domain){
 
 void Socket::Bind(){
     struct sockaddr *cast_addr = reinterpret_cast<struct sockaddr *>(&this->_addr);
-
     if (bind(this->_fd, cast_addr, sizeof(this->_addr)) < 0)
         throw Socket::BindFailed();
 
