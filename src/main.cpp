@@ -29,18 +29,18 @@ int main(int ac, char **av){
         sv.Listen(&sk, 10);
         while(1){
             FD_ZERO(&sk._readfs);
+            // set master fd in fd_set
             FD_SET(sk._fd, &sk._readfs);
             sk._max_fd = sk._fd;
+            // set client fd in fd_set
             for(size_t i = 0; i < sk._client.size(); i++){
                 FD_SET(sk._client[i], &sk._readfs);
-
                 if (sk._client[i] > sk._max_fd)
                     sk._max_fd = sk._client[i];
             }
 
             //waiting for a new client
             sv.Select(&sk, 0);
-
             //connexion client
             if (FD_ISSET(sk._fd, &sk._readfs))
                 sv.Accept(&sk);
@@ -52,7 +52,6 @@ int main(int ac, char **av){
                     memset(sv._buff, 0, LIMIT_MSG);
                 }
             }
-            
         }
     }
     catch (std::exception &e){
