@@ -9,7 +9,7 @@
 
 void signal_handler (int n){
     std::cerr<<std::endl;
-    std::cerr << "interruption by signal " << n << std::endl;
+    std::cerr << "Interruption by signal " << n << std::endl;
     throw std::invalid_argument("Force quit server");
 }
 
@@ -58,6 +58,5 @@ int main(int ac, char **av){
     catch (std::exception &e){
         std::cerr << "Error: " << e.what() << std::endl;
     }
-    // close(sv.GetClientSocket());
     return (0);
 }

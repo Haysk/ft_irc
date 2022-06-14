@@ -27,7 +27,6 @@ class Server {
         Server &operator=(const Server &ref);
 
         //Attribut
-        int _id;
         char *_buff;
 
 
