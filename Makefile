@@ -4,7 +4,7 @@ CC	= clang++
 
 CFLAGS	= -Wall -Werror -Wextra -std=c++98
 
-LFLAGS	= -Wall -Werror Wextra -I. -lm
+LFLAGS	= -Wall -Werror -Wextra -I. -lm
 
 INC	= -Iincludes. 
 

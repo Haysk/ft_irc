@@ -1,17 +1,21 @@
 #ifndef USER_H
 #define USER_H
 
-#include "utils.hpp"
+// #include "utils.hpp"
 #include "datasException.hpp"
 #include "Datas.hpp"
-#include "Channel.hpp"
-#include "PreUser.hpp"
+// #include "Channel.hpp"
+// #include "PreUser.hpp"
+#include "utils.hpp"
+
 
 typedef map<string, bool> userChannels;
 typedef map<string, bool>::const_iterator userChannels_const_it;
 typedef map<string, bool>::iterator userChannels_it;
 
-class User : public Datas 
+class Datas;
+
+class User : public Datas
 {
 
 	private:

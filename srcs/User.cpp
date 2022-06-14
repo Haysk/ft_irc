@@ -46,7 +46,7 @@ const int &User::getPort() const
 	return _port;
 }
 
-const User::userChannels &User::getChannels() const
+const userChannels &User::getChannels() const
 {
 	return _channels;
 }
@@ -111,8 +111,8 @@ ostream& operator<<(ostream& os, const User& rhs)
 	os << "\n" << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName()
 	<< "\n\tIp Address : " << rhs.getIpAddress() << "\n\tPort : " << rhs.getPort();
 	os << "\n\tChannels :\n";
-	const User::userChannels &channels = rhs.getChannels();
-	for (User::userChannels_const_it it = channels.begin(); it != channels.end(); it++)
+	const userChannels &channels = rhs.getChannels();
+	for (userChannels_const_it it = channels.begin(); it != channels.end(); it++)
 		os << "\n\t\t" << it->first << "\n\t\trole : " << it->second << endl;
 	return os;
 }

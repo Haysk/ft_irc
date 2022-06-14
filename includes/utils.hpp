@@ -17,6 +17,7 @@
 #include <cerrno>
 #include <fcntl.h>
 #include <iostream>
+#include <deque>
 #include <vector>
 #include <map>
 #include <stdexcept>

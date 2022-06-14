@@ -34,7 +34,7 @@ int Channel::getMode() const
 	return _mode;
 }
 
-Channel::usersInChannel Channel::getUsers() const
+usersInChannel Channel::getUsers() const
 {
 	return _users;
 }
@@ -89,8 +89,8 @@ void Channel::deleteUser(const string &userName)
 
 ostream& operator<<(ostream& os, const Channel& rhs) {
 	os << "\n" << rhs.getChanName() << " :" << endl;
-	const Channel::usersInChannel &users = rhs.getUsers();
-	for (Channel::usersInChannel_const_it it = users.begin(); it != users.end(); it++)
+	const usersInChannel &users = rhs.getUsers();
+	for (usersInChannel_const_it it = users.begin(); it != users.end(); it++)
 		os << "\n\t\t" << it->first << "\n\t\trole : " << it->second << endl;
 	return os;
 }

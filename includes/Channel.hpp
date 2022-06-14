@@ -1,10 +1,13 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-#include "utils.hpp"
+// #include "utils.hpp"
 #include "datasException.hpp"
 #include "Datas.hpp"
-#include "User.hpp"
+// #include "User.hpp"
+#include "utils.hpp"
+
+// class Datas;
 
 typedef map<string, bool> usersInChannel;
 typedef map<string, bool>::const_iterator usersInChannel_const_it;

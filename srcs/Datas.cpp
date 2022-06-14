@@ -1,4 +1,7 @@
 #include "../includes/Datas.hpp"
+#include "../includes/User.hpp"
+#include "../includes/Channel.hpp"
+#include "../includes/PreUser.hpp"
 
 Datas::Datas(void) {}
 
@@ -26,12 +29,12 @@ Datas &Datas::operator=(const Datas &rhs)
 
 // GETTERS
 
-const Datas::usersDatas &Datas::getUsers() const
+const usersDatas &Datas::getUsers() const
 {
 	return _usersDatas;
 }
 
-const Datas::channelsDatas &Datas::getChannels() const
+const channelsDatas &Datas::getChannels() const
 {
 	return _channelsDatas;
 }
@@ -93,14 +96,16 @@ void Datas::newChannel(const string &chanName, const int mode, const string &use
 void Datas::newPreUser(int fd)
 {
 	try {
-		getPreUser(fd);
+		//This function need to be declare
+		// getPreUser(fd);
 	} catch (datasException &e) {
 		PreUser *preUser;
 		preUser = new PreUser(fd);
-		_usersDatas.insert(make_pair(fd, preUser));
+		// _usersDatas.insert(make_pair(fd, preUser));
 		return;
 	}
-	throw datasException("PreUser already exist", fd);
+	// Need to be declare
+	// throw datasException("PreUser already exist", fd);
 }
 
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)
