@@ -1,14 +1,6 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
-// # include <string>
-// # include <iostream>
-// # include <string>
-// # include <map>
-// # include <deque>
-// # include <cstdio>
-// # include "../includes/Channel.hpp"
-// # include "../includes/User.hpp"
-// # include "../includes/Datas.hpp"
+
 #include "utils.hpp"
 
 class Datas;

@@ -1,15 +1,12 @@
 #ifndef DATAS_H
 # define DATAS_H
 
-// #include "utils.hpp"
-// #include "datasException.hpp"
-// #include "PreUser.hpp"
-// #include "Channel.hpp"
-// #include "User.hpp"
 #include "utils.hpp"
+
 class User;
 class Channel;
 class PreUser;
+
 typedef map<string, User *> usersDatas;
 typedef map<string, Channel *> channelsDatas;
 typedef map<int, PreUser *> preUsers;
