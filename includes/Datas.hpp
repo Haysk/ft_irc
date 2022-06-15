@@ -5,17 +5,16 @@
 
 class User;
 class Channel;
-class PreUser;
 
+typedef map<int, User *> usersDatas2;
 typedef map<string, User *> usersDatas;
 typedef map<string, Channel *> channelsDatas;
-typedef map<int, PreUser *> preUsers;
+typedef usersDatas2::iterator usersDatas_it2;
+typedef usersDatas2::const_iterator usersDatas_const_it2;
 typedef usersDatas::iterator usersDatas_it;
 typedef usersDatas::const_iterator usersDatas_const_it;
 typedef channelsDatas::iterator channelsDatas_it;
 typedef channelsDatas::const_iterator channelsDatas_const_it;
-typedef preUsers::iterator preUsers_it;
-typedef preUsers::const_iterator preUsers_const_it;
 
 class	Datas
 {
@@ -32,6 +31,8 @@ class	Datas
 
 		// GETTERS
 
+		usersDatas2 &getUsers2() const;
+
 		const usersDatas &getUsers() const;
 
 		const channelsDatas &getChannels() const;
@@ -43,6 +44,8 @@ class	Datas
 		const std::string &getPwd() const;
 
 		// FUNCTIONS
+		
+		void newUser2(int fd);
 
 		void newUser(const string &userName, const string &nickName, const string &ipAddress, int port);
 
@@ -54,12 +57,10 @@ class	Datas
 
 		void deleteChannel(const string chanName);
 
-		void newPreUser(int fd);
-
 	private:
+		usersDatas2 _usersDatas2;	  // map (UserFD | userSettings)
 		usersDatas _usersDatas;		  // map (userName | userSettings)
 		channelsDatas _channelsDatas; // map (chanName | chanSettings)
-		preUsers _preUsers; // map (preUserFD | preUserSettings)
 		const std::string _pwd;
 
 };

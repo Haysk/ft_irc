@@ -1,7 +1,6 @@
 #include "../includes/Datas.hpp"
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
-#include "../includes/PreUser.hpp"
 
 Datas::Datas(void) {}
 
@@ -13,7 +12,7 @@ Datas::~Datas()
 		delete it->second;
 	for (channelsDatas_it it = _channelsDatas.begin(); it != _channelsDatas.end(); it++)
 		delete it->second;
-	for (preUsers_it it = _preUsers.begin(); it != _preUsers.end(); it++)
+	for (usersDatas_it2 it = _usersDatas2.begin(); it != _usersDatas2.end(); it++)
 		delete it->second;
 	_usersDatas.clear();
 	_channelsDatas.clear();
@@ -28,6 +27,11 @@ Datas &Datas::operator=(const Datas &rhs)
 }
 
 // GETTERS
+
+const usersDatas2 &Datas::getUsers2() const
+{
+	return _usersDatas2;
+}
 
 const usersDatas &Datas::getUsers() const
 {
@@ -67,6 +71,13 @@ const std::string &Datas::getPwd(void) const
 
 // FUNCTIONS
 
+void	Datas::newUser2(int fd) {
+	User	*user;
+
+	user = new User();
+	_usersDatas2.insert(make_pair(fd, user));
+}
+
 void Datas::newUser(const string &userName, const string &nickName, const string &ipAddress, int port)
 {
 	try {
@@ -91,21 +102,6 @@ void Datas::newChannel(const string &chanName, const int mode, const string &use
 		return;
 	}
 	throw datasException("Channel already exist", chanName);
-}
-
-void Datas::newPreUser(int fd)
-{
-	try {
-		//This function need to be declare
-		// getPreUser(fd);
-	} catch (datasException &e) {
-		PreUser *preUser;
-		preUser = new PreUser(fd);
-		// _usersDatas.insert(make_pair(fd, preUser));
-		return;
-	}
-	// Need to be declare
-	// throw datasException("PreUser already exist", fd);
 }
 
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)

@@ -1,6 +1,6 @@
 #include "../includes/User.hpp"
 
-User::User() {}
+User::User(): _step(1) {}
 
 User::User(const string &userName, const string &nickName, const string &ipAddress, int port) :
 _userName(userName),
@@ -25,6 +25,11 @@ User &User::operator=(const User &rhs)
 }
 
 // GETTERS
+
+const int &User::getStep() const
+{
+	return _step;
+}
 
 const string &User::getUserName() const
 {
@@ -62,8 +67,22 @@ Channel &User::getChannel(const string &chanName) const
 
 // SETTERS
 
-void User::setNickName(const string &nickName)
+void User::setUserName(const string &userName)
 {
+	_userName = userName;
+}
+
+void User::setNickName(usersDatas2 &users, const string &nickName)
+{
+	usersDatas_it2	it = users.begin();
+	usersDatas_it2	ite = users.end();
+
+	while (it != ite)
+	{
+		if (!it->second->getNickName().compare(nickName))
+			throw std::invalid_argument("The nickname passed is already assigned");
+		it++;
+	}
 	_nickName = nickName;
 }
 
@@ -79,13 +98,35 @@ void User::setPort(const int &port)
 
 // UTILS
 
+void	User::checkPwd(const std::string pwd, std::string arg) {
+	if (pwd.compare(arg)) {
+		throw std::invalid_argument("The password passed isn't valid");
+	}
+}
+
 void User::addChannel(const string &chanName, bool role) {
 	if (_channels.insert(make_pair(chanName, role)).second == false)
 		throw datasException("User aleady in " + chanName , _userName);
-
 }
 
 // FUNCTIONS
+
+void	User::fillUser(Datas &servDatas, std::string arg) {
+	switch (_step) {
+		case 1:
+			checkPwd(servDatas.getPwd(), arg);
+			break;
+		case 2:
+			setUserName(arg);
+			break;
+		case 3:
+			setNickName(servDatas.getUsers2(), arg);
+			break;
+		default:
+			throw std::out_of_range("This user is already complete");
+	}
+	_step++;
+}
 
 void User::createChannel(Datas &datas, const string &chanName, const int mode)
 {

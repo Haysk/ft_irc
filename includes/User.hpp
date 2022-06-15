@@ -13,6 +13,8 @@ class User : public Datas
 {
 
 	private:
+		int	_step;
+
 		string _userName;
 
 		string _nickName;
@@ -34,6 +36,8 @@ class User : public Datas
 
 		// GETTERS
 
+		const int &getStep() const;
+
 		const string &getUserName() const;
 
 		const string &getNickName() const;
@@ -48,7 +52,9 @@ class User : public Datas
 
 		// SETTERS
 
-		void setNickName(const string &nickName);
+		void setUserName(const string &nickName);
+
+		void setNickName(usersDatas2 &users, const string &nickName);
 
 		void setIpAddress(const string &ipAddress);
 
@@ -56,9 +62,13 @@ class User : public Datas
 
 		// UTILS
 
+		void checkPwd(const string pwd, string arg);
+
 		void addChannel(const string &chanName, bool role);
 
 		// FUNCTIONS
+
+		void fillUser(Datas &datas, string arg);
 
 		void createChannel(Datas &datas, const string &chanName, const int mode);
 
