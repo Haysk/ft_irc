@@ -1,0 +1,9 @@
+# IRC Client Download
+docker run -it --name irssi -e TERM -u $(id -u):$(id -g) \
+    --log-driver=none \
+    -v $HOME/.irssi:/home/user/.irssi:ro \
+    -v /etc/localtime:/etc/localtime:ro \
+    irssi
+
+# Check port:
+lsof -i -P -n | grep LISTEN

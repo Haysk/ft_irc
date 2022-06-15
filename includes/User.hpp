@@ -4,6 +4,7 @@
 #include "datasException.hpp"
 #include "Datas.hpp"
 #include "utils.hpp"
+#include "Command.hpp"
 
 typedef map<string, bool> userChannels;
 typedef map<string, bool>::const_iterator userChannels_const_it;
@@ -69,6 +70,8 @@ class User : public Datas
 		// FUNCTIONS
 
 		void fillUser(Datas &datas, string arg);
+
+		void execCmd(Datas &datas, string cmd);
 
 		void createChannel(Datas &datas, const string &chanName, const int mode);
 

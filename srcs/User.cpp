@@ -79,6 +79,7 @@ void User::setUserName(usersDatas2 &users, const string &userName)
 		it++;
 	}
 	_userName = userName;
+	std::cout << "Well " << _userName << ", now enter your nickname: " << std::endl;
 }
 
 void User::setNickName(usersDatas2 &users, const string &nickName)
@@ -111,6 +112,7 @@ void	User::checkPwd(const std::string pwd, std::string arg) {
 	if (pwd.compare(arg)) {
 		throw std::invalid_argument("The password passed isn't valid");
 	}
+	std::cout << "Great !! Now enter your username: " << std::endl;
 }
 
 void User::addChannel(const string &chanName, bool role) {
@@ -135,6 +137,14 @@ void	User::fillUser(Datas &servDatas, std::string arg) {
 			throw std::out_of_range("This user is already complete");
 	}
 	_step++;
+}
+
+void	User::execCmd(Datas &servDatas, std::string cmd)
+{
+	Command	command(cmd);
+
+	command.checkCmd(servDatas, *this);
+	std::cout << "EXECUTION: " << cmd << " by " << getUserName() << std::endl;
 }
 
 void User::createChannel(Datas &datas, const string &chanName, const int mode)

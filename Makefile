@@ -1,8 +1,10 @@
-NAME	= mytest
+NAME	= ircserv
 
 CC	= clang++
 
-CFLAGS	= -Wall -Werror -Wextra -std=c++98
+# Flag [-MMD -MP] create an depedance with a [.d] files to hpp files
+# Used to check if the hpp files changed
+CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP -g3
 
 LFLAGS	= -Wall -Werror -Wextra -I. -lm
 
@@ -23,7 +25,7 @@ $(NAME):	$(OBJS)
 	@echo "Linking complete!"
 
 $(OBJS):	$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
+	@$(CC) $(CPPFLAGS) $(INC) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
 all:	$(NAME)

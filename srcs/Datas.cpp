@@ -1,6 +1,8 @@
 #include "../includes/Datas.hpp"
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
+#include "../includes/Command.hpp"
+#include "../includes/tester.hpp"
 
 Datas::Datas(void) {}
 
@@ -76,6 +78,27 @@ void	Datas::newUser2(int fd) {
 
 	user = new User();
 	_usersDatas2.insert(make_pair(fd, user));
+}
+
+void	Datas::treatCmd(int fd, string cmd)
+{
+	usersDatas2		usersData = getUsers2();
+	usersDatas_const_it2	it = usersData.find(fd);
+
+	if (it == usersData.end())
+	{
+		std::cout << "Welcome to my server, please enter the password"
+			<< std::endl;
+		newUser2(fd);
+	}
+	else if (it->second->getStep() < 4)
+	{
+		it->second->fillUser(*this, cmd);
+	}
+	else
+	{
+		it->second->execCmd(*this, cmd);
+	}
 }
 
 void Datas::newUser(const string &userName, const string &nickName, const string &ipAddress, int port)
