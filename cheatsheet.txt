@@ -1,4 +1,4 @@
-# IRC Client
+# IRC Client Download
 docker run -it --name irssi -e TERM -u $(id -u):$(id -g) \
     --log-driver=none \
     -v $HOME/.irssi:/home/user/.irssi:ro \

@@ -1,10 +1,10 @@
 #include "Socket.hpp"
 #include "Server.hpp"
 #include <csignal>
-#define LIMIT_MSG 512
-
 #include <sys/types.h>
 #include <sys/socket.h>
+#define LIMIT_MSG 512
+#define LIMIT_PORT 65535
 
 
 void signal_handler (int n){
@@ -13,12 +13,36 @@ void signal_handler (int n){
     throw std::invalid_argument("Force quit server");
 }
 
-int main(int ac, char **av){
-    if (ac != 3){
-        std::cout << "Wrong input" << std::endl;
-        std::cout << "note: ./ircserv <port> <password>" << std::endl;
-        return (0);
+bool is_num(char *s){
+    while(*s){
+        if(std::isdigit(*s) == 0)
+            return (false);
+        s++;
     }
+    return (true);
+}
+
+int str_error(int ret, const char *str){
+    std::cout << "Error: " << str;
+   return (ret); 
+}
+
+bool check_input(int ac, char **av){
+    int n = atoi(av[1]);
+
+    if (ac != 3)
+        return(str_error(0, "Wrong number of arguments\n"));
+    else if (is_num(av[1]) == false)
+        return (str_error(0, "2nd arg is not a number\n"));
+    else if (n < 0 || n > LIMIT_PORT)
+        return (str_error(0, "the highest TCP port number is 65 535\n"));
+    return (true);
+}
+
+int main(int ac, char **av){
+
+    if (check_input(ac, av) == false)
+        return (0);
     Socket sk("127.0.0.1", atoi(av[1]));
     Server sv;
     try {
