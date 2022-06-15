@@ -52,7 +52,7 @@ class User : public Datas
 
 		// SETTERS
 
-		void setUserName(const string &nickName);
+		void setUserName(usersDatas2 &users, const string &nickName);
 
 		void setNickName(usersDatas2 &users, const string &nickName);
 

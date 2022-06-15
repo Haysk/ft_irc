@@ -67,8 +67,17 @@ Channel &User::getChannel(const string &chanName) const
 
 // SETTERS
 
-void User::setUserName(const string &userName)
+void User::setUserName(usersDatas2 &users, const string &userName)
 {
+	usersDatas_it2	it = users.begin();
+	usersDatas_it2	ite = users.end();
+
+	while (it != ite)
+	{
+		if (!it->second->getUserName().compare(userName))
+			throw std::invalid_argument("The nickname passed is already assigned");
+		it++;
+	}
 	_userName = userName;
 }
 
@@ -80,7 +89,7 @@ void User::setNickName(usersDatas2 &users, const string &nickName)
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickName))
-			throw std::invalid_argument("The nickname passed is already assigned");
+			throw std::invalid_argument("The username passed is already assigned");
 		it++;
 	}
 	_nickName = nickName;
@@ -117,7 +126,7 @@ void	User::fillUser(Datas &servDatas, std::string arg) {
 			checkPwd(servDatas.getPwd(), arg);
 			break;
 		case 2:
-			setUserName(arg);
+			setUserName(servDatas.getUsers2(), arg);
 			break;
 		case 3:
 			setNickName(servDatas.getUsers2(), arg);
