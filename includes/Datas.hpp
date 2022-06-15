@@ -31,7 +31,7 @@ class	Datas
 
 		// GETTERS
 
-		usersDatas2 &getUsers2() const;
+		usersDatas2 &getUsers2();
 
 		const usersDatas &getUsers() const;
 

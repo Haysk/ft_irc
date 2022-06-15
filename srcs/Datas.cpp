@@ -28,7 +28,7 @@ Datas &Datas::operator=(const Datas &rhs)
 
 // GETTERS
 
-const usersDatas2 &Datas::getUsers2() const
+usersDatas2 &Datas::getUsers2()
 {
 	return _usersDatas2;
 }
