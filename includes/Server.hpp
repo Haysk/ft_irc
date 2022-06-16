@@ -30,7 +30,6 @@ class Server {
         //Attribut
         char *_buff;
 
-
     public:
     void    Listen(Socket *sk, int backlog);
     void    Select(Socket *sk, struct timeval *timeout);

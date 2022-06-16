@@ -55,23 +55,25 @@ void Server::Accept(Socket *sk){
     else {
         std::cout<< BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
+        // char buff[100] = "Hello it s Eric\n";
+        // //send msg to client
+        // send(fd, buff, 16, 0);
     }
 }
 
 void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     int ret;
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
-        std::cout << "client fd "<<sk->_client[i]  <<" send: " << this->_buff;
-	std::string	cmd = std::string(this->_buff);
-	cmd = cmd.substr(0, cmd.find("\n"));
-	try
-	{
-		servDatas.treatCmd(sk->_client[i], cmd);
-	}
-	catch (std::exception &e)
-	{
-		std::cout << "ERROR: " << e.what() << std::endl;
-	}
+	    std::string	cmd = std::string(this->_buff);
+	    cmd = cmd.substr(0, cmd.find("\n"));
+	    try
+	    {
+	    	servDatas.treatCmd(sk->_client[i], cmd);
+	    }
+	    catch (std::exception &e)
+	    {
+	    	std::cout << "ERROR: " << e.what() << std::endl;
+	    }
     }
     else if (ret == 0){
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;

@@ -1,41 +1,49 @@
-NAME	= ircserv
-
-CC	= clang++
+NAME = ircserv
+CC = clang++
+HEAD = -Iincludes
 
 # Flag [-MMD -MP] create an depedance with a [.d] files to hpp files
 # Used to check if the hpp files changed
 CPPFLAGS = -Wall -Wextra -std=c++98 -MMD -MP -g3
 
-LFLAGS	= -Wall -Werror -Wextra -I. -lm
+# No need to edit the path of th file
+# This will be automaticaly
+FILES = main.cpp \
+		Socket.cpp \
+		Server.cpp \
+		Channel.cpp \
+		Command.cpp \
+		Datas.cpp \
+		User.cpp \
+		parsing_tester.cpp \
+		registration_tester.cpp \
 
-INC	= -Iincludes. 
+SRC_PATH = $(shell find srcs -type d)
+vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))
 
-SRCDIR	= srcs
-INCDIR	= includes
-OBJDIR	= objs
+OBJ_PATH = objs
+OBJ = $(addprefix $(OBJ_PATH)/, $(FILES:%.cpp=%.o))
 
-SRCS  := $(wildcard $(SRCDIR)/*.cpp)
-INCLUDES := $(wildcard $(INCDIR)/*.hpp)
-OBJS	= $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-RM	= rm -rf
+all :   $(NAME) 
 
-$(NAME):	$(OBJS)
-	@$(CC) $(OBJS) $(LFLAGS) -o $@
-	@echo "Linking complete!"
+$(NAME) : $(OBJ_PATH) $(OBJ)
+	$(CC) $(CPPFLAGS) $(HEAD) $(OBJ) -o ${NAME}
 
-$(OBJS):	$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@$(CC) $(CPPFLAGS) $(INC) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+$(OBJ_PATH):
+	mkdir -p $(OBJ_PATH)
 
-all:	$(NAME)
+$(OBJ_PATH)/%.o : %.cpp
+	@$(CC) $(CPPFLAGS) $(HEAD) $< -o $@ -c
+
 
 clean:
-	$(RM) $(OBJS)
+	rm -rf $(OBJ)
+	rm -rf $(OBJ_PATH)
+	
+-include $(OBJ:.o=.d)
 
-fclean:		clean
-	$(RM) $(NAME)
+fclean: clean
+	rm -rf $(NAME)
 
-re:	fclean all
-
-.PHONY:		all clean fclean re
+re: fclean all

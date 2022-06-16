@@ -6,13 +6,16 @@
 class User;
 class Channel;
 
-typedef map<int, User *> usersDatas2;
 typedef map<string, User *> usersDatas;
+typedef map<int, User *> usersDatas2;
 typedef map<string, Channel *> channelsDatas;
+
 typedef usersDatas2::iterator usersDatas_it2;
 typedef usersDatas2::const_iterator usersDatas_const_it2;
+
 typedef usersDatas::iterator usersDatas_it;
 typedef usersDatas::const_iterator usersDatas_const_it;
+
 typedef channelsDatas::iterator channelsDatas_it;
 typedef channelsDatas::const_iterator channelsDatas_const_it;
 

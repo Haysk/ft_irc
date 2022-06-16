@@ -50,9 +50,8 @@ User &Datas::getUser(const string &userName) const
 	usersDatas_const_it it;
 
 	it = _usersDatas.find(userName);
-	if (it != _usersDatas.end()) {
+	if (it != _usersDatas.end()) 
 		return *it->second;
-	}
 	throw datasException("User doesn't exist", userName);
 }
 
@@ -85,20 +84,15 @@ void	Datas::treatCmd(int fd, string cmd)
 	usersDatas2		usersData = getUsers2();
 	usersDatas_const_it2	it = usersData.find(fd);
 
-	if (it == usersData.end())
-	{
-		std::cout << "Welcome to my server, please enter the password"
-			<< std::endl;
+	if (it == usersData.end()){
+		std::cout << "Welcome to my server, please enter the password" 
+		<< std::endl;
 		newUser2(fd);
 	}
 	else if (it->second->getStep() < 4)
-	{
 		it->second->fillUser(*this, cmd);
-	}
 	else
-	{
 		it->second->execCmd(*this, cmd);
-	}
 }
 
 void Datas::newUser(const string &userName, const string &nickName, const string &ipAddress, int port)
