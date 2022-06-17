@@ -69,7 +69,8 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    }
 	    catch (std::exception &e)
 	    {
-	    	std::cout << "ERROR: " << e.what() << std::endl;
+	    	send(sk->_client[i], "ERROR: ", 7 , 0);
+		sendMsgToClient(sk->_client[i], std::string(e.what()));
 	    }
     }
     else if (ret == 0){

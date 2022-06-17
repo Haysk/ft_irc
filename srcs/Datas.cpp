@@ -71,7 +71,7 @@ const std::string &Datas::getPwd(void) const
 void	Datas::newUser(int fd) {
 	User	*user;
 
-	user = new User();
+	user = new User(fd);
 	_usersDatas.insert(make_pair(fd, user));
 }
 
@@ -81,8 +81,7 @@ void	Datas::treatCmd(int fd, string cmd)
 	usersDatas_const_it	it = usersData.find(fd);
 
 	if (it == usersData.end()){
-		std::cout << "Welcome to my server, please enter the password" 
-		<< std::endl;
+		sendMsgToClient(fd, "Welcome to my server, please enter the password");
 		newUser(fd);
 	}
 	else if (it->second->getStep() < 4)

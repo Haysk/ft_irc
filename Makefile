@@ -15,8 +15,9 @@ FILES = main.cpp \
 		Command.cpp \
 		Datas.cpp \
 		User.cpp \
+		utils.cpp \
 		parsing_tester.cpp \
-		registration_tester.cpp \
+#		registration_tester.cpp \
 
 SRC_PATH = $(shell find srcs -type d)
 vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))

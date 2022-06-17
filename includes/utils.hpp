@@ -28,4 +28,6 @@
 
 using namespace std;
 
+void	sendMsgToClient(int fd, const std::string msg);
+
 #endif //FT_IRC_UTILS_HPP

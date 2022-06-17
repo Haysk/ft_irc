@@ -1,6 +1,6 @@
 #include "../includes/User.hpp"
 
-User::User(): _step(1) {}
+User::User(int fd): _fd(fd), _step(1) {}
 
 User::~User()
 {
@@ -16,6 +16,11 @@ User &User::operator=(const User &rhs)
 }
 
 // GETTERS
+
+const int &User::getFd() const
+{
+	return _fd;
+}
 
 const int &User::getStep() const
 {
@@ -60,7 +65,7 @@ void User::setUserName(const usersDatas &users, const string &userName)
 		it++;
 	}
 	_userName = userName;
-	std::cout << "Well " << _userName << ", now enter your nickname: " << std::endl;
+	sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
 }
 
 void User::setNickName(const usersDatas &users, const string &nickName)
@@ -83,7 +88,7 @@ void	User::checkPwd(const std::string pwd, std::string arg) {
 	if (pwd.compare(arg)) {
 		throw std::invalid_argument("The password passed isn't valid");
 	}
-	std::cout << "Great !! Now enter your username: " << std::endl;
+	sendMsgToClient(_fd, "Great !! Now enter your username");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
@@ -115,7 +120,8 @@ void	User::execCmd(Datas &servDatas, std::string cmd)
 	Command	command(cmd);
 
 	command.checkCmd(servDatas, *this);
-	std::cout << "EXECUTION: " << cmd << " by " << getUserName() << std::endl;
+	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
+	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }
 
 void	User::createChannel(Datas &datas, const string &chanName, const int mode)

@@ -14,6 +14,8 @@ class User : public Datas
 {
 
 	private:
+		int	_fd;
+
 		int	_step;
 
 		string _userName;
@@ -23,13 +25,15 @@ class User : public Datas
 		userChannels _channels; // map (chanName | role)
 
 	public:
-		User();
+		User(int);
 
 		virtual ~User();
 
 		User &operator=(const User &rhs);
 
 		// GETTERS
+
+		const int &getFd() const;
 
 		const int &getStep() const;
 
