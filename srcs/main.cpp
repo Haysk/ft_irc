@@ -15,7 +15,6 @@ int main(int ac, char **av){
     if (check_input(ac, av) == false)
         return (0);
     std::string pwd = std::string(av[2]);
-    std::cout << "The password is: " << pwd << std::endl;
     Datas *servDatas = new Datas(pwd);
     Socket sk("127.0.0.1", atoi(av[1]));
     Server sv;
@@ -40,7 +39,7 @@ int main(int ac, char **av){
             sv.Select(&sk, 0);
             //connexion client
             if (FD_ISSET(sk._fd, &sk._readfs))
-                sv.Accept(&sk);
+                sv.Accept(*servDatas, &sk);
 
             //check clients activity
             for (size_t i = 0; i < sk._client.size(); i++){

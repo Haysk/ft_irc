@@ -44,7 +44,7 @@ class	Datas
 		
 		void newUser(int fd);
 
-		void treatCmd(int fd, string cmd);
+		void treatCmds(int fd, string cmds);
 
 		void newChannel(const string &chanName, const int mode, const string &userName);
 

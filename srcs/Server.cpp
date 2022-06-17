@@ -46,7 +46,7 @@ void Server::Select(Socket *sk, struct timeval *timeout){
         throw Server::SelectFailed();
 }
 
-void Server::Accept(Socket *sk){
+void Server::Accept(Datas &servDatas, Socket *sk){
     socklen_t len = 0;
     int fd = accept(sk->_fd, 
     reinterpret_cast<struct sockaddr *>(&sk->_addr), &len);
@@ -55,6 +55,8 @@ void Server::Accept(Socket *sk){
     else {
         std::cout<< BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
+	sendMsgToClient(fd, "Welcome to my server Ircserv !\nEnter CAP LS to continue:");
+	servDatas.newUser(fd);
     }
 }
 
@@ -62,10 +64,9 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     int ret;
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
 	    std::string	cmd = std::string(this->_buff);
-	    cmd = cmd.substr(0, cmd.find("\n"));
 	    try
 	    {
-	    	servDatas.treatCmd(sk->_client[i], cmd);
+	    	servDatas.treatCmds(sk->_client[i], cmd);
 	    }
 	    catch (std::exception &e)
 	    {
@@ -80,7 +81,6 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     }
     else 
         std::cout << "fd " << sk->_client[i] << " recv return: " << ret << std::endl;
-    
 }
 
 const char *Server::ListenFailed::what()const throw(){

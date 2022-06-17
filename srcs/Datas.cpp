@@ -75,19 +75,32 @@ void	Datas::newUser(int fd) {
 	_usersDatas.insert(make_pair(fd, user));
 }
 
-void	Datas::treatCmd(int fd, string cmd)
+void	Datas::treatCmds(int fd, string cmds)
 {
 	usersDatas		usersData = getUsers();
 	usersDatas_const_it	it = usersData.find(fd);
+	size_t		posNL = cmds.find_first_of("\n");
+	size_t		posTmp;
+	std::string	cmd = cmds.substr(0, posNL);
+	std::string	msg;
+	int		ret = 0;
 
-	if (it == usersData.end()){
-		sendMsgToClient(fd, "Welcome to my server, please enter the password");
-		newUser(fd);
+//	std::cout << "CMD: \n>>" + cmd;
+	while (cmd.length() && posNL != std::string::npos) {
+		ret += posNL;
+		if (it == usersData.end()) {
+			sendMsgToClient(fd, "Welcome to my server IRCserv !");
+			newUser(fd);
+		}
+		else if (it->second->getStep() < 5)
+			msg = it->second->fillUser(*this, cmd);
+		else
+			it->second->execCmd(*this, cmd);
+		posTmp = posNL;
+		posNL = cmds.find_first_of("\n", posNL + 1);
+		cmd = cmds.substr(posTmp + 1, posNL - posTmp);
 	}
-	else if (it->second->getStep() < 4)
-		it->second->fillUser(*this, cmd);
-	else
-		it->second->execCmd(*this, cmd);
+	sendMsgToClient(fd, msg);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)

@@ -45,21 +45,26 @@ class User : public Datas
 
 		Channel &getChannel(const string &chanName) const;
 
+		// REGISTRATION
+
+		std::string initUserName(const usersDatas &users, string &userName);
+
+		std::string initNickName(const usersDatas &users, string &nickName);
+
+		std::string checkCAPLS(string arg);
+
+		std::string checkPwd(const string pwd, string arg);
+
+		std::string fillUser(Datas &datas, string arg);
+
+
 		// SETTERS
 
-		void setUserName(const usersDatas &users, const string &nickName);
-
-		void setNickName(const usersDatas &users, const string &nickName);
-
 		// UTILS
-
-		void checkPwd(const string pwd, string arg);
 
 		void addChannel(const string &chanName, bool role);
 
 		// FUNCTIONS
-
-		void fillUser(Datas &datas, string arg);
 
 		void execCmd(Datas &datas, string cmd);
 

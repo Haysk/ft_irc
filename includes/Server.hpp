@@ -33,7 +33,7 @@ class Server {
     public:
     void    Listen(Socket *sk, int backlog);
     void    Select(Socket *sk, struct timeval *timeout);
-    void    Accept(Socket *sk);
+    void    Accept(Datas &datas, Socket *sk);
     void    Recv(Datas &datas, Socket *sk, int idx_client, int flag);
 
     //Exception

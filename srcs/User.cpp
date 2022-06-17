@@ -51,44 +51,73 @@ Channel &User::getChannel(const string &chanName) const
 	throw datasException("User not in " + chanName + "Channel", _userName);
 }
 
-// SETTERS
+// INITIALIZER
 
-void User::setUserName(const usersDatas &users, const string &userName)
+std::string	User::initUserName(const usersDatas &users, string &userName)
 {
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
+	size_t	posSP;
 
+	if (userName.find("USER ") != 0)
+		throw std::invalid_argument("We are waiting for: USER <username>");
+	posSP = userName.find_first_of(" ", 5);
+	userName = userName.substr(5, posSP - 5);
+	if (!userName.length())
+		throw std::invalid_argument("No username found");
 	while (it != ite)
 	{
 		if (!it->second->getUserName().compare(userName))
-			throw std::invalid_argument("The nickname passed is already assigned");
-		it++;
-	}
-	_userName = userName;
-	sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
-}
-
-void User::setNickName(const usersDatas &users, const string &nickName)
-{
-	usersDatas_const_it	it = users.begin();
-	usersDatas_const_it	ite = users.end();
-
-	while (it != ite)
-	{
-		if (!it->second->getNickName().compare(nickName))
 			throw std::invalid_argument("The username passed is already assigned");
 		it++;
 	}
-	_nickName = nickName;
+	_userName = userName;
+	return ("Great ! You are now registered");
 }
+
+std::string	User::initNickName(const usersDatas &users, string &nickName)
+{
+	usersDatas_const_it	it = users.begin();
+	usersDatas_const_it	ite = users.end();
+	size_t	posSP;
+
+	if (nickName.find("NICK ") != 0)
+		throw std::invalid_argument("We are waiting for: NICK <nickname>");
+	posSP = nickName.find_first_of(" ", 5);
+	nickName = nickName.substr(5, posSP - 5);
+	if (!nickName.length())
+		throw std::invalid_argument("No nickname found");
+	while (it != ite)
+	{
+		if (!it->second->getNickName().compare(nickName))
+			throw std::invalid_argument("The nickname passed is already assigned");
+		it++;
+	}
+	_nickName = nickName;
+	return ("Well " + _nickName + ", now enter your username:");
+}
+
+// SETTERS
 
 // UTILS
 
-void	User::checkPwd(const std::string pwd, std::string arg) {
-	if (pwd.compare(arg)) {
+std::string	User::checkCAPLS(std::string arg) {
+	if (arg.compare("CAP LS"))
+		throw std::invalid_argument("You've to send us: CAP LS");
+	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
+}
+
+std::string	User::checkPwd(const std::string pwd, std::string arg) {
+	size_t	pos = arg.find("PASS ");
+
+	if (pos != 0)
+		throw std::invalid_argument("We are waiting for: PASS <password>");
+	arg = arg.substr(5);
+	if (!arg.length())
+		throw std::invalid_argument("No password found");
+	if (pwd.compare(arg))
 		throw std::invalid_argument("The password passed isn't valid");
-	}
-	sendMsgToClient(_fd, "Great !! Now enter your username");
+	return ("Great !! Now enter your nickname:");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
@@ -98,21 +127,26 @@ void	User::addChannel(const string &chanName, bool role) {
 
 // FUNCTIONS
 
-void	User::fillUser(Datas &servDatas, std::string arg) {
+std::string	User::fillUser(Datas &servDatas, std::string arg) {
+	std::string	msg;
 	switch (_step) {
 		case 1:
-			checkPwd(servDatas.getPwd(), arg);
+			msg = checkCAPLS(arg);
 			break;
 		case 2:
-			setUserName(servDatas.getUsers(), arg);
+			msg = checkPwd(servDatas.getPwd(), arg);
 			break;
 		case 3:
-			setNickName(servDatas.getUsers(), arg);
+			msg = initNickName(servDatas.getUsers(), arg);
+			break;
+		case 4:
+			msg = initUserName(servDatas.getUsers(), arg);
 			break;
 		default:
 			throw std::out_of_range("This user is already complete");
 	}
 	_step++;
+	return (msg);
 }
 
 void	User::execCmd(Datas &servDatas, std::string cmd)
