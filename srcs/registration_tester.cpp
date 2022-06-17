@@ -13,14 +13,14 @@ t_recv	getRecv(void)
 
 void	treatCmd(Datas &servDatas, t_recv rec)
 {
-	usersDatas2		usersData = servDatas.getUsers2();
-	usersDatas_const_it2	it = usersData.find(rec.fd);
+	usersDatas		usersData = servDatas.getUsers();
+	usersDatas_const_it	it = usersData.find(rec.fd);
 
 	if (it == usersData.end())
 	{
 		std::cout << "Welcome to my server, please enter the password"
 			<< std::endl;
-		servDatas.newUser2(rec.fd);
+		servDatas.newUser(rec.fd);
 	}
 	else
 	{

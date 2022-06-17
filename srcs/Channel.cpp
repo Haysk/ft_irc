@@ -42,6 +42,7 @@ usersInChannel Channel::getUsers() const
 User &Channel::getUser(const string &userName) const
 {
 	usersInChannel_const_it it;
+
 	it = _users.find(userName);
 	if (it != _users.end())
 		return Datas::getUser(it->first);

@@ -14,11 +14,8 @@ Datas::~Datas()
 		delete it->second;
 	for (channelsDatas_it it = _channelsDatas.begin(); it != _channelsDatas.end(); it++)
 		delete it->second;
-	for (usersDatas_it2 it = _usersDatas2.begin(); it != _usersDatas2.end(); it++)
-		delete it->second;
 	_usersDatas.clear();
 	_channelsDatas.clear();
-//	_preUsers.clear();
 }
 
 Datas &Datas::operator=(const Datas &rhs)
@@ -29,11 +26,6 @@ Datas &Datas::operator=(const Datas &rhs)
 }
 
 // GETTERS
-
-usersDatas2 &Datas::getUsers2()
-{
-	return _usersDatas2;
-}
 
 const usersDatas &Datas::getUsers() const
 {
@@ -47,11 +39,15 @@ const channelsDatas &Datas::getChannels() const
 
 User &Datas::getUser(const string &userName) const
 {
-	usersDatas_const_it it;
+	usersDatas_const_it	it = _usersDatas.begin();
+	usersDatas_const_it	ite = _usersDatas.end();
 
-	it = _usersDatas.find(userName);
-	if (it != _usersDatas.end()) 
-		return *it->second;
+	while (it != ite)
+	{
+		if (!it->second->getUserName().compare(userName))
+			return (*it->second);
+		it++;
+	}
 	throw datasException("User doesn't exist", userName);
 }
 
@@ -72,40 +68,27 @@ const std::string &Datas::getPwd(void) const
 
 // FUNCTIONS
 
-void	Datas::newUser2(int fd) {
+void	Datas::newUser(int fd) {
 	User	*user;
 
 	user = new User();
-	_usersDatas2.insert(make_pair(fd, user));
+	_usersDatas.insert(make_pair(fd, user));
 }
 
 void	Datas::treatCmd(int fd, string cmd)
 {
-	usersDatas2		usersData = getUsers2();
-	usersDatas_const_it2	it = usersData.find(fd);
+	usersDatas		usersData = getUsers();
+	usersDatas_const_it	it = usersData.find(fd);
 
 	if (it == usersData.end()){
 		std::cout << "Welcome to my server, please enter the password" 
 		<< std::endl;
-		newUser2(fd);
+		newUser(fd);
 	}
 	else if (it->second->getStep() < 4)
 		it->second->fillUser(*this, cmd);
 	else
 		it->second->execCmd(*this, cmd);
-}
-
-void Datas::newUser(const string &userName, const string &nickName, const string &ipAddress, int port)
-{
-	try {
-		getUser(userName);
-	} catch (datasException &e) {
-		User *user;
-		user = new User(userName, nickName, ipAddress, port);
-		_usersDatas.insert(make_pair(userName, user));
-		return;
-	}
-	throw datasException("User already exist", userName);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)

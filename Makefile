@@ -28,18 +28,22 @@ OBJ = $(addprefix $(OBJ_PATH)/, $(FILES:%.cpp=%.o))
 all :   $(NAME) 
 
 $(NAME) : $(OBJ_PATH) $(OBJ)
-	$(CC) $(CPPFLAGS) $(HEAD) $(OBJ) -o ${NAME}
+	@$(CC) $(CPPFLAGS) $(HEAD) $(OBJ) -o ${NAME}
+	@echo "ircserv executable ready !"
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
 
 $(OBJ_PATH)/%.o : %.cpp
 	@$(CC) $(CPPFLAGS) $(HEAD) $< -o $@ -c
+	@echo "Compiled "$<" successfully!"
 
 
 clean:
-	rm -rf $(OBJ)
-	rm -rf $(OBJ_PATH)
+	@rm -rf $(OBJ)
+	@echo "objects files removed"
+	@rm -rf $(OBJ_PATH)
+	@echo "objects directory removed"
 	
 -include $(OBJ:.o=.d)
 

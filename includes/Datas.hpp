@@ -6,12 +6,8 @@
 class User;
 class Channel;
 
-typedef map<string, User *> usersDatas;
-typedef map<int, User *> usersDatas2;
+typedef map<int, User *> usersDatas;
 typedef map<string, Channel *> channelsDatas;
-
-typedef usersDatas2::iterator usersDatas_it2;
-typedef usersDatas2::const_iterator usersDatas_const_it2;
 
 typedef usersDatas::iterator usersDatas_it;
 typedef usersDatas::const_iterator usersDatas_const_it;
@@ -34,8 +30,6 @@ class	Datas
 
 		// GETTERS
 
-		usersDatas2 &getUsers2();
-
 		const usersDatas &getUsers() const;
 
 		const channelsDatas &getChannels() const;
@@ -48,11 +42,9 @@ class	Datas
 
 		// FUNCTIONS
 		
-		void newUser2(int fd);
+		void newUser(int fd);
 
 		void treatCmd(int fd, string cmd);
-
-		void newUser(const string &userName, const string &nickName, const string &ipAddress, int port);
 
 		void newChannel(const string &chanName, const int mode, const string &userName);
 
@@ -63,8 +55,7 @@ class	Datas
 		void deleteChannel(const string chanName);
 
 	private:
-		usersDatas2 _usersDatas2;	  // map (UserFD | userSettings)
-		usersDatas _usersDatas;		  // map (userName | userSettings)
+		usersDatas _usersDatas;		  // map (userFD | userSettings)
 		channelsDatas _channelsDatas; // map (chanName | chanSettings)
 		const std::string _pwd;
 

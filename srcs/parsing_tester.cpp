@@ -23,7 +23,6 @@ void	checkerCmd(Datas &servDatas, std::string cmd)
 
 int	checkerCmds(Datas &servDatas)
 {
-	servDatas.newUser("chikakah", "choko", "ipp", 100);
 	std::cout << "\n\tPARSING TEST\n\n";
 	/*------TEST WITH VALID OPERATOR CMDS------*/
 	std::cout << "\n------TEST WITH VALID OPERATOR CMDS------\n" << std::endl;

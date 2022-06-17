@@ -20,16 +20,10 @@ class User : public Datas
 
 		string _nickName;
 
-		string _ipAddress;
-
-		int _port;
-
 		userChannels _channels; // map (chanName | role)
 
 	public:
 		User();
-
-		User(const string &userName, const string &nickName, const string &ipAddress, int port);
 
 		virtual ~User();
 
@@ -43,23 +37,15 @@ class User : public Datas
 
 		const string &getNickName() const;
 
-		const string &getIpAddress() const;
-
-		const int &getPort() const;
-
 		const userChannels &getChannels() const;
 
 		Channel &getChannel(const string &chanName) const;
 
 		// SETTERS
 
-		void setUserName(usersDatas2 &users, const string &nickName);
+		void setUserName(const usersDatas &users, const string &nickName);
 
-		void setNickName(usersDatas2 &users, const string &nickName);
-
-		void setIpAddress(const string &ipAddress);
-
-		void setPort(const int &port);
+		void setNickName(const usersDatas &users, const string &nickName);
 
 		// UTILS
 
