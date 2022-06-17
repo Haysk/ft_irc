@@ -55,9 +55,6 @@ void Server::Accept(Socket *sk){
     else {
         std::cout<< BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
-        // char buff[100] = "Hello it s Eric\n";
-        // //send msg to client
-        // send(fd, buff, 16, 0);
     }
 }
 

@@ -23,6 +23,10 @@ class	Command
 		void	mode(Datas&, User&);
 		void	invite(Datas&, User&);
 		void	topic(Datas&, User&);
+		/*
+			// have to be build
+			void	notice(Datas&, User&);
+		*/
 
 	public:
 		Command(std::string);
