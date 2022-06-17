@@ -65,6 +65,8 @@ std::string	User::initUserName(const usersDatas &users, string &userName)
 	userName = userName.substr(5, posSP - 5);
 	if (!userName.length())
 		throw std::invalid_argument("No username found");
+	if (userName.length() > 9)
+		throw std::invalid_argument("The username passed is too long, please reduce to 9 caracteres");
 	while (it != ite)
 	{
 		if (!it->second->getUserName().compare(userName))
@@ -72,7 +74,7 @@ std::string	User::initUserName(const usersDatas &users, string &userName)
 		it++;
 	}
 	_userName = userName;
-	return ("Great ! You are now registered");
+	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
 
 std::string	User::initNickName(const usersDatas &users, string &nickName)
@@ -87,6 +89,8 @@ std::string	User::initNickName(const usersDatas &users, string &nickName)
 	nickName = nickName.substr(5, posSP - 5);
 	if (!nickName.length())
 		throw std::invalid_argument("No nickname found");
+	if (nickName.length() > 9)
+		throw std::invalid_argument("The nickname passed is too long, please reduce to 9 caracteres");
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickName))
@@ -154,7 +158,7 @@ void	User::execCmd(Datas &servDatas, std::string cmd)
 	Command	command(cmd);
 
 	command.checkCmd(servDatas, *this);
-	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
+	std::cout << "EXECUTION: " + cmd + " by " + _userName;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }
 

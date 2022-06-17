@@ -14,6 +14,7 @@ class	Command
 	private:
 		mapper	_cmdMap;
 		std::deque<std::string>	_cmd;
+		void	show(Datas&, User&);
 		void	join(Datas&, User&);
 		void	part(Datas&, User&);
 		void	msg(Datas&, User&);

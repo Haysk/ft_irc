@@ -1,10 +1,12 @@
-#include "../includes/Command.hpp"
+# include "../includes/Command.hpp"
+# include "../includes/User.hpp"
 
 Command::Command(std::string line)
 {
 	size_t	nOpt = countOccurrences(" ", line) + 1;
 
 //	std::cout << "Command default constructor called" << std::endl;
+	_cmdMap["show"] = &Command::show;
 	_cmdMap["join"] = &Command::join;
 	_cmdMap["part"] = &Command::part;
 	_cmdMap["msg"] = &Command::msg;
@@ -55,6 +57,12 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 		}
 	}
 	_cmd.push_back(line.substr(tmp + 1));
+}
+
+void	Command::show(Datas &servDatas, User &user)
+{
+	(void)servDatas;
+	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>\n/part [channel] [msg]\n/msg <nickname> <msg>\n/query <nickname> [msg]\n/quit [msg]\n/kick <nickname>\n/mode [msg]\n/invite <nickname>\n/topic [msg]");
 }
 
 void	Command::join(Datas &servDatas, User &user)
