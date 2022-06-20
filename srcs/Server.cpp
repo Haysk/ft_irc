@@ -53,7 +53,7 @@ void Server::Accept(Datas &servDatas, Socket *sk){
     if (fd < 0)
         std::cout << "fd " << fd << "failed" << std::endl;
     else {
-        std::cout<< BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
+        std::cout << BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
 	sendMsgToClient(fd, "Welcome to my server Ircserv !\nEnter CAP LS to continue:");
 	servDatas.newUser(fd);
@@ -64,6 +64,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     int ret;
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
 	    std::string	cmd = std::string(this->_buff);
+	    std::cout << "client send: " << cmd;
 	    try
 	    {
 	    	servDatas.treatCmds(sk->_client[i], cmd);

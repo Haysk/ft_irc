@@ -85,16 +85,21 @@ void	Datas::treatCmds(int fd, string cmds)
 	std::string	msg;
 
 	while (cmd.length() && posNL != std::string::npos) {
+		std::cout << "cmd : " << cmd << std::endl;
 		if (it == usersData.end()) {
 			sendMsgToClient(fd, "Welcome to my server IRCserv !");
 			newUser(fd);
 		}
-		else if (it->second->getStep() < 5)
+		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(*this, cmd);
 		else if (!cmd.find_first_of("/"))
 		{
 			cmd = cmd.substr(1);
 			it->second->execCmd(*this, cmd);
+		}
+		else
+		{
+			std::cout << "SENDING: " + cmd;
 		}
 		posTmp = posNL;
 		posNL = cmds.find_first_of("\n", posNL + 1);

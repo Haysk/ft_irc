@@ -106,6 +106,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickName)
 // UTILS
 
 std::string	User::checkCAPLS(std::string arg) {
+	std::cout << "arg: |" + arg + "|" << std::endl;
 	if (arg.compare("CAP LS"))
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");

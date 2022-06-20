@@ -16,7 +16,7 @@ FILES = main.cpp \
 		Datas.cpp \
 		User.cpp \
 		utils.cpp \
-		parsing_tester.cpp \
+#		parsing_tester.cpp \
 #		registration_tester.cpp \
 
 SRC_PATH = $(shell find srcs -type d)
