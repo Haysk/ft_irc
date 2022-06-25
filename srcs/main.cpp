@@ -85,7 +85,7 @@ bool check_input(int ac, char **av){
     if (ac != 3)
         return(str_error(0, "Wrong number of arguments\n"));
     else if (is_num(av[1]) == false)
-        return (str_error(0, "2nd arg is not a number\n"));
+        return (str_error(0, "first arg is not a number\n"));
     else if (n < 0 || n > LIMIT_PORT)
         return (str_error(0, "the highest TCP port number is 65 535\n"));
     return (true);

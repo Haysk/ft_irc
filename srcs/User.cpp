@@ -1,6 +1,7 @@
 #include "../includes/User.hpp"
+#include "../includes/Channel.hpp"
 
-User::User(int fd): _fd(fd), _step(1) {}
+User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1) {}
 
 User::~User()
 {
@@ -53,30 +54,39 @@ Channel &User::getChannel(const string &chanName) const
 
 // SETTERS
 
-void User::setUserName(const usersDatas &users, const string &userName)
+void User::setUserName(const string &userName)
 {
-	usersDatas_const_it	it = users.begin();
-	usersDatas_const_it	ite = users.end();
+	// usersDatas_const_it	it = users.begin();
+	// usersDatas_const_it	ite = users.end();
 
-	while (it != ite)
-	{
-		if (!it->second->getUserName().compare(userName))
-			throw std::invalid_argument("The nickname passed is already assigned");
-		it++;
+	// while (it != ite)
+	// {
+	// 	if (!it->second->getUserName().compare(userName))
+	// 		throw std::invalid_argument("The nickname passed is already assigned");
+	// 	it++;
+	// }
+	// _userName = userName;
+	// sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
+	try {
+		_datasPtr->getUser(userName);
+		throw std::invalid_argument("The username passed is already assigned");
+	} catch (datasException &e) {
+		_userName = userName;
+		sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
 	}
-	_userName = userName;
-	sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
+
+
 }
 
-void User::setNickName(const usersDatas &users, const string &nickName)
+void User::setNickName(const string &nickName)
 {
-	usersDatas_const_it	it = users.begin();
-	usersDatas_const_it	ite = users.end();
+	usersDatas_const_it	it = _datasPtr->getUsers().begin();
+	usersDatas_const_it	ite = _datasPtr->getUsers().end();
 
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickName))
-			throw std::invalid_argument("The username passed is already assigned");
+			throw std::invalid_argument("The nickname passed is already assigned");
 		it++;
 	}
 	_nickName = nickName;
@@ -84,8 +94,8 @@ void User::setNickName(const usersDatas &users, const string &nickName)
 
 // UTILS
 
-void	User::checkPwd(const std::string pwd, std::string arg) {
-	if (pwd.compare(arg)) {
+void	User::checkPwd(const string arg) {
+	if (_datasPtr->getPwd().compare(arg)) {
 		throw std::invalid_argument("The password passed isn't valid");
 	}
 	sendMsgToClient(_fd, "Great !! Now enter your username");
@@ -93,21 +103,21 @@ void	User::checkPwd(const std::string pwd, std::string arg) {
 
 void	User::addChannel(const string &chanName, bool role) {
 	if (_channels.insert(make_pair(chanName, role)).second == false)
-		throw datasException("User aleady in " + chanName , _userName);
+		throw datasException("User already in " + chanName , _userName);
 }
 
 // FUNCTIONS
 
-void	User::fillUser(Datas &servDatas, std::string arg) {
+void	User::fillUser(const string arg) {
 	switch (_step) {
 		case 1:
-			checkPwd(servDatas.getPwd(), arg);
+			checkPwd(arg);
 			break;
 		case 2:
-			setUserName(servDatas.getUsers(), arg);
+			setUserName(arg);
 			break;
 		case 3:
-			setNickName(servDatas.getUsers(), arg);
+			setNickName(arg);
 			break;
 		default:
 			throw std::out_of_range("This user is already complete");
@@ -115,40 +125,77 @@ void	User::fillUser(Datas &servDatas, std::string arg) {
 	_step++;
 }
 
-void	User::execCmd(Datas &servDatas, std::string cmd)
+void	User::execCmd(std::string cmd)
 {
 	Command	command(cmd);
 
-	command.checkCmd(servDatas, *this);
+	command.checkCmd(*_datasPtr, *this);
 	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }
 
-void	User::createChannel(Datas &datas, const string &chanName, const int mode)
+void	User::createChannel(const string &chanName, const int mode)
 {
-	datas.newChannel(chanName, mode, _userName);
+	_datasPtr->newChannel(chanName, mode, _userName);
 	_channels.insert(make_pair(chanName, true));
 }
 
-void	User::joinChannel(Datas &datas, const string &chanName)
+void	User::joinChannel(const string &chanName)
 {
-	datas.addUserInChannel(_userName, chanName, false);
+	_datasPtr->addUserInChannel(_userName, chanName, false);
 }
 
-void	User::quitChannel(Datas &datas, const string &chanName)
+void	User::quitChannel(const string &chanName)
 {
-	if (_channels.erase(chanName) > 0)
-		datas.removeUserFromChannel(_userName, chanName);
-	else
+	_datasPtr->removeUserFromChannel(_userName, chanName);
+}
+
+void	User::deleteChannel(const string &chanName)
+{
+	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
+}
+
+// OPERATOR FUNCTION
+
+void	User::kick(const string &userName, const string &chanName)
+{
+	if (!_datasPtr->getChannel(chanName).userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	_datasPtr->removeUserFromChannel(userName, chanName);
+}
+
+void	User::mode(const string &chanName, const int chanMode, const bool add) {
+	Channel &chan = _datasPtr->getChannel(chanName);
+	if (!chan.userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	chan.setMod(chanMode, add);
+}
+
+void	User::invite(const string &userName, const string &chanName) {
+	Channel &chan = _datasPtr->getChannel(chanName);
+	if (!chan.userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	if (!chan.chanModeIs(MODE_I))
+		throw (datasException("Channel need to be in +i mode", chanName));
+	_datasPtr->getUser(userName);
+	chan.setInvit(userName);
+	//envoyer un message au client;
+	
+
+}
+
+void	User::topic(const string &chanName, const string &newChanName)
+{
+	_datasPtr->newChannelTopic(_userName, chanName, newChanName);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
 {
-	os << "\n" << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName();
+	os << "\n" << rhs.getUserName() << ":\n\tNick Name : \t" << rhs.getNickName();
 	os << "\n\tChannels :\n";
 	const userChannels &channels = rhs.getChannels();
 	for (userChannels_const_it it = channels.begin(); it != channels.end(); it++)
-		os << "\n\t\t" << it->first << "\n\t\trole : " << it->second << endl;
+		os << "\t\t\t" << it->first << "\n\t\t\trole : " << it->second << endl << endl;
 	return (os);
 }

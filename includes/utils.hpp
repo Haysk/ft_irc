@@ -17,14 +17,20 @@
 #include <cerrno>
 #include <fcntl.h>
 #include <iostream>
+#include <sstream>
 #include <deque>
 #include <vector>
 #include <map>
 #include <stdexcept>
 #include <exception>
+#include <stdint.h>
 
 #define IP "127.0.0.1"
 #define PORT 8081
+#define MODE_I 1
+#define MODE_T 2
+#define BITWISE_I 0
+#define BITWISE_T 1
 
 using namespace std;
 

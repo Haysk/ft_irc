@@ -6,8 +6,8 @@
 class User;
 class Channel;
 
-typedef map<int, User *> usersDatas;
-typedef map<string, Channel *> channelsDatas;
+typedef map<int, User *> usersDatas;	// map (fd | class User)
+typedef map<string, Channel *> channelsDatas; // map (chanName | class Channel)
 
 typedef usersDatas::iterator usersDatas_it;
 typedef usersDatas::const_iterator usersDatas_const_it;
@@ -17,6 +17,12 @@ typedef channelsDatas::const_iterator channelsDatas_const_it;
 
 class	Datas
 {
+	private:
+		usersDatas _usersDatas;		  // map (userFD | userSettings)
+
+		channelsDatas _channelsDatas; // map (chanName | chanSettings)
+
+		const std::string _pwd;
 
 	public:
 
@@ -35,6 +41,8 @@ class	Datas
 		const channelsDatas &getChannels() const;
 
 		User &getUser(const string &userName) const;
+		
+		User &getUser(int fd) const;
 
 		Channel &getChannel(const string &chanName) const;
 
@@ -54,10 +62,7 @@ class	Datas
 
 		void deleteChannel(const string chanName);
 
-	private:
-		usersDatas _usersDatas;		  // map (userFD | userSettings)
-		channelsDatas _channelsDatas; // map (chanName | chanSettings)
-		const std::string _pwd;
+		void newChannelTopic(const string userName, const string chanName, const string newChanName);
 
 };
 
