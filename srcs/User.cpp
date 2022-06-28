@@ -1,7 +1,7 @@
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
 
-User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1) {}
+User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _op(0) {}
 
 User::~User()
 {
@@ -50,6 +50,11 @@ Channel &User::getChannel(const string &chanName) const
 	if (it != _channels.end())
 		return Datas::getChannel(it->first);
 	throw datasException("User not in " + chanName + "Channel", _userName);
+}
+
+const bool &User::getOp() const
+{
+	return _op;
 }
 
 // SETTERS
@@ -156,25 +161,95 @@ void	User::deleteChannel(const string &chanName)
 		throw datasException("User not in this Channel", _userName);
 }
 
-// OPERATOR FUNCTION
+map<string, vector<string> > User::names(const vector<string> &channels)
+{
+	map<string, vector<string> > list;
+
+	//LIST CHANNELS IN PARAMS
+	if (!channels.empty())
+	{
+		for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
+		{
+			vector<string> usersNames;
+			map<string, bool> users;
+			try
+			{
+				users = _datasPtr->getChannel(*it.base()).getUsers();
+				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
+				{
+					if (it->second)
+						usersNames.insert(usersNames.begin(), "@" + it->first);
+					else
+						usersNames.insert(usersNames.begin(), it->first);
+				}
+				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
+			}
+			catch (datasException &e) {}
+		}
+	}
+	else //LIST ALL CHANNELS 
+	{
+		for (channelsDatas::const_iterator it = _datasPtr->getChannels().begin(),
+			ite = _datasPtr->getChannels().end(); it != ite; it++)
+		{
+			vector<string> usersNames;
+			map<string, bool> users;
+			try
+			{
+				users = it->second->getUsers();
+				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
+				{
+					if (it->second)
+						usersNames.insert(usersNames.begin(), "@" + it->first);
+					else
+						usersNames.insert(usersNames.begin(), it->first);
+				}
+				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
+			}
+			catch (datasException &e) {}
+		}
+	}
+
+	//ADD USER WITHOUT CHANNELS IN LIST
+	vector<string> usersNames;
+	for (usersDatas::const_iterator it = _datasPtr->getUsers().begin(),
+		ite = _datasPtr->getUsers().end(); it != ite; it++)
+	{
+		if (it->second->getChannels().empty())
+			usersNames.insert(usersNames.begin(), it->second->getUserName());
+	}
+	if (!usersNames.empty())
+		list.insert(make_pair<string, vector<string> >("*", usersNames));
+
+	//PRINT LIST
+	for (map<string, vector<string> >::const_iterator it = list.begin(), ite = list.end(); it != ite; it++)
+	{
+		cout << it->first << endl;
+		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++)
+			cout << "\t" << *vIt.base() << endl;
+	}
+	return(list);
+}
+
+// CHAN OPERATOR FUNCTION
 
 void	User::kick(const string &userName, const string &chanName)
 {
-	if (!_datasPtr->getChannel(chanName).userIsOperator(_userName))
+	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
 	_datasPtr->removeUserFromChannel(userName, chanName);
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	Channel &chan = _datasPtr->getChannel(chanName);
-	if (!chan.userIsOperator(_userName))
+	if (!chan.userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
 	chan.setMod(chanMode, add);
 }
 
 void	User::invite(const string &userName, const string &chanName) {
 	Channel &chan = _datasPtr->getChannel(chanName);
-	if (!chan.userIsOperator(_userName))
+	if (!chan.userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
 	if (!chan.chanModeIs(MODE_I))
 		throw (datasException("Channel need to be in +i mode", chanName));

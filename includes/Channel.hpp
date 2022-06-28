@@ -42,7 +42,7 @@ class Channel : public Datas
 
 		User &getUser(const string &userName) const;
 
-		bool userIsOperator(const string &userName) const;
+		bool userIsChanOp(const string &userName) const;
 
 		// SETTERS
 

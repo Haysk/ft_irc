@@ -16,13 +16,15 @@ class User : public Datas
 	private:
 		Datas *_datasPtr;
 
-		int	_fd;
+		int		_fd;
 
-		int	_step;
+		int		_step;
 
-		string _userName;
+		bool	_op;
 
-		string _nickName;
+		string	_userName;
+
+		string	_nickName;
 
 		userChannels _channels; // map (chanName | role)
 
@@ -46,6 +48,8 @@ class User : public Datas
 		const userChannels &getChannels() const;
 
 		Channel &getChannel(const string &chanName) const;
+
+		const bool &getOp() const;
 
 		// SETTERS
 
@@ -77,7 +81,9 @@ class User : public Datas
 
 		//    void sendPrivateMessage();
 
-		// OPERATOR FUNCTION
+		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
+
+		// CHAN OPERATOR FUNCTION
 
 		void kick(const string &userName, const string &chanName);
 

@@ -187,6 +187,23 @@ void datasTest(Datas &servDatas) {
 		tata.joinChannel("inviteChannel");
 		cout << toto;
 		cout << tata;
+		cout << "--------------------CMD NAME--------------------" << endl;
+		string tmp[] = {"inviteChanne", "totoChannel"};
+		vector<string> chanList(tmp, tmp + sizeof(tmp) / sizeof(tmp[0]));
+		toto.name(chanList);
+		cout << endl;
+		tata.quitChannel("totoChannel");
+		toto.name(chanList);
+		cout << endl;
+		toto.name();
+		cout << endl;
+		tata.quitChannel("inviteChannel");
+		toto.name();
+		toto.quitChannel("inviteChannel");
+		toto.quitChannel("totoChannel");
+		cout << endl;
+		toto.name();
+
 
 	} catch (datasException &e) {
 			cout << "fail " << e.getOption() << " : " << e.what() << endl;
