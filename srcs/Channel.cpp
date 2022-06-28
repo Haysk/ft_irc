@@ -1,4 +1,5 @@
 #include "../includes/Channel.hpp"
+#include "../includes/User.hpp"
 
 Channel::Channel() {}
 
@@ -34,6 +35,20 @@ int Channel::getMode() const
 	return _mode;
 }
 
+bool Channel::chanModeIs(const int mode) const
+{
+	switch (mode) {
+	case MODE_I :
+		return ((_mode & MODE_I) >> BITWISE_I);
+	case MODE_T :
+		return ((_mode & MODE_T) >> BITWISE_T);
+	case (MODE_I | MODE_T) :
+		return ((_mode & MODE_I) >> BITWISE_I) & ((_mode & MODE_T) >> BITWISE_T);
+	default :
+		throw datasException("Mode doesn't exist", mode);
+	}
+}
+
 usersInChannel Channel::getUsers() const
 {
 	return _users;
@@ -53,22 +68,40 @@ bool Channel::userIsOperator(const string &userName) const {
 	usersInChannel_const_it it;
 	it = _users.find(userName);
 	if (it != _users.end())
-	{
 		return it->second;
-	}
-	throw datasException("User not in this Channel");
+	throw datasException("User not in this Channel", userName);
 }
 
 // SETTERS
 
-void Channel::setChanName(const string &newName)
+void Channel::setChanName(const Datas &datas, const string &newName)
 {
+	usersInChannel_const_it it = _users.begin();
+	usersInChannel_const_it ite = _users.end();
+	for (;it != ite; it++)
+	{
+		User &user = datas.getUser(it->first);
+		bool tmp = user.getChannels().find(_chanName)->second;
+		user.deleteChannel(_chanName);
+		user.addChannel(newName, tmp);
+	}	
 	_chanName = newName;
 }
 
-void Channel::setMod(int newMode)
+void Channel::setMod(const int newMode, const bool add)
 {
-	_mode = newMode;
+	if (add)
+		_mode = _mode | newMode;
+	else
+		_mode = _mode & ~newMode;
+}
+
+void Channel::setInvit(const string &userName)
+{
+	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
+		if (!it.base()->compare(userName))
+			throw (datasException("User already invited in " + _chanName, userName));
+	_invit.push_back(userName);
 }
 
 // FUNCTIONS
@@ -86,6 +119,17 @@ void Channel::deleteUser(const string &userName)
 {
 	if (_users.erase(userName) <= 0)
 		throw datasException("User not in This Channel");
+}
+
+void Channel::useInvit(const string &userName)
+{
+	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
+		if (!it.base()->compare(userName))
+		{
+			_invit.erase(it);
+			return;
+		}
+	throw (datasException("User " + userName + " is not invited in this channel", _chanName));
 }
 
 ostream& operator<<(ostream& os, const Channel& rhs) {

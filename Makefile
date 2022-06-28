@@ -52,3 +52,17 @@ fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
+
+# Test cmd
+
+test:
+	make -C unitTest
+
+tclean:
+	make -C unitTest clean
+
+tfclean:
+	make -C unitTest fclean
+
+tre:
+	make -C unitTest re

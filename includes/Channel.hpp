@@ -6,17 +6,19 @@
 #include "utils.hpp"
 
 typedef map<string, bool> usersInChannel;
+typedef map<string, bool>::iterator usersInChannel_it;
 typedef map<string, bool>::const_iterator usersInChannel_const_it;
 
 class Channel : public Datas
 {
 	private:
-
 		string _chanName;
 
 		int _mode;
 
 		usersInChannel _users; // map (userName | role)
+
+		vector<string> _invit;
 
 	public:
 
@@ -34,6 +36,8 @@ class Channel : public Datas
 
 		int getMode() const;
 
+		bool chanModeIs(const int mode) const;
+
 		usersInChannel getUsers() const;
 
 		User &getUser(const string &userName) const;
@@ -42,15 +46,19 @@ class Channel : public Datas
 
 		// SETTERS
 
-		void setChanName(const string &newName);
+		void setChanName(const Datas &datas, const string &newName);
 
-		void setMod(int newMode);
+		void setMod(const int newMode, const bool add);
+
+		void setInvit(const string &userName);
 
 		// FUNCTIONS
 
 		void addUser(const string &userName, bool role);
 
 		void deleteUser(const string &userName);
+
+		void useInvit(const string &userName);
 };
 
 ostream& operator<<(ostream& os, const Channel& rhs);

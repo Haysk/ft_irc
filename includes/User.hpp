@@ -14,6 +14,8 @@ class User : public Datas
 {
 
 	private:
+		Datas *_datasPtr;
+
 		int	_fd;
 
 		int	_step;
@@ -25,7 +27,7 @@ class User : public Datas
 		userChannels _channels; // map (chanName | role)
 
 	public:
-		User(int);
+		User(Datas *datasPtr, int fd);
 
 		virtual ~User();
 
@@ -47,16 +49,15 @@ class User : public Datas
 
 		// REGISTRATION
 
-		std::string initUserName(const usersDatas &users, string &userName);
+		std::string initUserName(string &userCmd);
 
-		std::string initNickName(const usersDatas &users, string &nickName);
+		std::string initNickName(const usersDatas &users, string &nickCmd);
 
-		std::string checkCAPLS(string arg);
+		std::string checkCAPLS(string &arg);
 
-		std::string checkPwd(const string pwd, string arg);
+		std::string checkPwd(const string pwd, string &arg);
 
-		std::string fillUser(Datas &datas, string arg);
-
+		const string fillUser(string &arg);
 
 		// SETTERS
 
@@ -66,17 +67,29 @@ class User : public Datas
 
 		// FUNCTIONS
 
-		void execCmd(Datas &datas, string cmd);
+		void execCmd(const string &cmd);
 
-		void createChannel(Datas &datas, const string &chanName, const int mode);
+		void createChannel(const string &chanName, const int mode);
 
-		void joinChannel(Datas &datas, const string &chanName);
+		void joinChannel(const string &chanName);
 
-		void quitChannel(Datas &datas, const string &chanName);
+		void quitChannel(const string &chanName);
+
+		void deleteChannel(const string &chanName);
 
 		//    void sendChanMessage();
 
 		//    void sendPrivateMessage();
+
+		// OPERATOR FUNCTION
+
+		void kick(const string &userName, const string &chanName);
+
+		void mode(const string &chanName, const int chanMode, const bool add);
+
+		void topic(const string &chanName, const string &newChanName);
+
+		void invite(const string &userName, const string &chanName);
 };
 
 ostream& operator<<(ostream& os, const User& rhs);

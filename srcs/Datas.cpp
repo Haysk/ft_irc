@@ -51,6 +51,21 @@ User &Datas::getUser(const string &userName) const
 	throw datasException("User doesn't exist", userName);
 }
 
+User &Datas::getUser(int fd) const
+{
+	usersDatas_const_it	it = _usersDatas.begin();
+	usersDatas_const_it	ite = _usersDatas.end();
+
+	while (it != ite)
+	{
+		if (it->first == fd)
+			return (*it->second);
+		it++;
+	}
+	throw datasException("User fd doesn't exist", fd);
+	
+}
+
 Channel &Datas::getChannel(const string &chanName) const
 {
 	channelsDatas_const_it it;
@@ -69,10 +84,16 @@ const std::string &Datas::getPwd(void) const
 // FUNCTIONS
 
 void	Datas::newUser(int fd) {
-	User	*user;
+	try {
+		getUser(fd);
+	} catch (datasException &e) {
+		User	*user;
 
-	user = new User(fd);
-	_usersDatas.insert(make_pair(fd, user));
+		user = new User(this, fd);
+		_usersDatas.insert(make_pair(fd, user));
+		return;
+	}
+		throw datasException("Fd already connected", fd);
 }
 
 void	Datas::treatCmds(int fd, string cmds)
@@ -91,11 +112,11 @@ void	Datas::treatCmds(int fd, string cmds)
 			newUser(fd);
 		}
 		if (it->second->getStep() < 5)
-			msg = it->second->fillUser(*this, cmd);
+			msg = it->second->fillUser(cmd);
 		else if (!cmd.find_first_of("/"))
 		{
 			cmd = cmd.substr(1);
-			it->second->execCmd(*this, cmd);
+			it->second->execCmd(cmd);
 		}
 		else
 		{
@@ -123,21 +144,48 @@ void Datas::newChannel(const string &chanName, const int mode, const string &use
 
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)
 {
+	Channel &chan = getChannel(chanName);
+	if (chan.chanModeIs(MODE_I))
+		chan.useInvit(userName);
 	getChannel(chanName).addUser(userName, role);
 	getUser(userName).addChannel(chanName, role);
 }
 
 void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
 	Channel &chan =  getChannel(chanName);
+	User &user = getUser(userName);
 	chan.deleteUser(userName);
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);
 	}
+	user.deleteChannel(chanName);
 }
 
 void Datas::deleteChannel(const string chanName)
 {
 	if (_channelsDatas.erase(chanName) <= 0)
 		throw datasException("Channel doesn't exist", chanName);
+}
+
+void Datas::newChannelTopic(const string userName, const string chanName, const string newChanName)
+{
+	try
+	{
+		getChannel(newChanName);
+	} catch (datasException &e) {
+		Channel &chan = getChannel(chanName);
+		if (!chan.userIsOperator(userName))
+			throw datasException("Not operator in " + chanName, userName);
+		if (!chan.chanModeIs(MODE_T))
+			throw datasException("Channel not in +t mode", chanName);
+		chan.setChanName(*this, newChanName);
+		Channel *tmp = new Channel(chan);
+		delete _channelsDatas.find(chanName)->second;
+		_channelsDatas.erase(chanName);
+		_channelsDatas.insert(make_pair<string, Channel *>(newChanName, tmp));
+		return;
+	}
+	throw datasException("Channel name already used", chanName + " -> " + newChanName);
+
 }

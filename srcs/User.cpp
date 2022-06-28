@@ -1,6 +1,7 @@
 #include "../includes/User.hpp"
+#include "../includes/Channel.hpp"
 
-User::User(int fd): _fd(fd), _step(1) {}
+User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1) {}
 
 User::~User()
 {
@@ -53,51 +54,49 @@ Channel &User::getChannel(const string &chanName) const
 
 // INITIALIZER
 
-std::string	User::initUserName(const usersDatas &users, string &userName)
+std::string	User::initUserName(string &userCmd)
 {
-	usersDatas_const_it	it = users.begin();
-	usersDatas_const_it	ite = users.end();
 	size_t	posSP;
 
-	if (userName.find("USER ") != 0)
+	if (userCmd.find("USER ") != 0)
 		throw std::invalid_argument("We are waiting for: USER <username>");
-	posSP = userName.find_first_of(" ", 5);
-	userName = userName.substr(5, posSP - 5);
-	if (!userName.length())
+	posSP = userCmd.find_first_of(" ", 5);
+	userCmd = userCmd.substr(5, posSP - 5);
+	if (!userCmd.length())
 		throw std::invalid_argument("No username found");
-	if (userName.length() > 9)
+	if (userCmd.length() > 9)
 		throw std::invalid_argument("The username passed is too long, please reduce to 9 caracteres");
-	while (it != ite)
-	{
-		if (!it->second->getUserName().compare(userName))
-			throw std::invalid_argument("The username passed is already assigned");
-		it++;
+	try {
+		_datasPtr->getUser(userCmd);
+		throw std::invalid_argument("The username passed is already assigned");
+	} catch (datasException &e) {
+		_userName = userCmd;
+		sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
 	}
-	_userName = userName;
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
 
-std::string	User::initNickName(const usersDatas &users, string &nickName)
+std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 {
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
 	size_t	posSP;
 
-	if (nickName.find("NICK ") != 0)
+	if (nickCmd.find("NICK ") != 0)
 		throw std::invalid_argument("We are waiting for: NICK <nickname>");
-	posSP = nickName.find_first_of(" ", 5);
-	nickName = nickName.substr(5, posSP - 5);
-	if (!nickName.length())
+	posSP = nickCmd.find_first_of(" ", 5);
+	nickCmd = nickCmd.substr(5, posSP - 5);
+	if (!nickCmd.length())
 		throw std::invalid_argument("No nickname found");
-	if (nickName.length() > 9)
+	if (nickCmd.length() > 9)
 		throw std::invalid_argument("The nickname passed is too long, please reduce to 9 caracteres");
 	while (it != ite)
 	{
-		if (!it->second->getNickName().compare(nickName))
+		if (!it->second->getNickName().compare(nickCmd))
 			throw std::invalid_argument("The nickname passed is already assigned");
 		it++;
 	}
-	_nickName = nickName;
+	_nickName = nickCmd;
 	return ("Well " + _nickName + ", now enter your username:");
 }
 
@@ -105,14 +104,13 @@ std::string	User::initNickName(const usersDatas &users, string &nickName)
 
 // UTILS
 
-std::string	User::checkCAPLS(std::string arg) {
-	std::cout << "arg: " << arg << "|" << std::endl;
+std::string	User::checkCAPLS(std::string &arg) {
 	if (arg.compare(0, strlenP(arg), "CAP LS"))
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
 }
 
-std::string	User::checkPwd(const std::string pwd, std::string arg) {
+std::string	User::checkPwd(const std::string pwd, std::string &arg) {
 	size_t	pos = arg.find("PASS ");
 
 	if (pos != 0)
@@ -127,25 +125,25 @@ std::string	User::checkPwd(const std::string pwd, std::string arg) {
 
 void	User::addChannel(const string &chanName, bool role) {
 	if (_channels.insert(make_pair(chanName, role)).second == false)
-		throw datasException("User aleady in " + chanName , _userName);
+		throw datasException("User already in " + chanName , _userName);
 }
 
 // FUNCTIONS
 
-std::string	User::fillUser(Datas &servDatas, std::string arg) {
-	std::string	msg;
+const string	User::fillUser(string &arg) {
+	string	msg;
 	switch (_step) {
 		case 1:
 			msg = checkCAPLS(arg);
 			break;
 		case 2:
-			msg = checkPwd(servDatas.getPwd(), arg);
+			msg = checkPwd(_datasPtr->getPwd(), arg);
 			break;
 		case 3:
-			msg = initNickName(servDatas.getUsers(), arg);
+			msg = initNickName(_datasPtr->getUsers(), arg);
 			break;
 		case 4:
-			msg = initUserName(servDatas.getUsers(), arg);
+			msg = initUserName(arg);
 			break;
 		default:
 			throw std::out_of_range("This user is already complete");
@@ -154,40 +152,76 @@ std::string	User::fillUser(Datas &servDatas, std::string arg) {
 	return (msg);
 }
 
-void	User::execCmd(Datas &servDatas, std::string cmd)
+void	User::execCmd(const string &cmd)
 {
 	Command	command(cmd);
-
-	command.checkCmd(servDatas, *this);
-	std::cout << "EXECUTION: " + cmd + " by " + _userName;
+	command.checkCmd(*_datasPtr, *this);
+	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }
 
-void	User::createChannel(Datas &datas, const string &chanName, const int mode)
+void	User::createChannel(const string &chanName, const int mode)
 {
-	datas.newChannel(chanName, mode, _userName);
+	_datasPtr->newChannel(chanName, mode, _userName);
 	_channels.insert(make_pair(chanName, true));
 }
 
-void	User::joinChannel(Datas &datas, const string &chanName)
+void	User::joinChannel(const string &chanName)
 {
-	datas.addUserInChannel(_userName, chanName, false);
+	_datasPtr->addUserInChannel(_userName, chanName, false);
 }
 
-void	User::quitChannel(Datas &datas, const string &chanName)
+void	User::quitChannel(const string &chanName)
 {
-	if (_channels.erase(chanName) > 0)
-		datas.removeUserFromChannel(_userName, chanName);
-	else
+	_datasPtr->removeUserFromChannel(_userName, chanName);
+}
+
+void	User::deleteChannel(const string &chanName)
+{
+	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
+}
+
+// OPERATOR FUNCTION
+
+void	User::kick(const string &userName, const string &chanName)
+{
+	if (!_datasPtr->getChannel(chanName).userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	_datasPtr->removeUserFromChannel(userName, chanName);
+}
+
+void	User::mode(const string &chanName, const int chanMode, const bool add) {
+	Channel &chan = _datasPtr->getChannel(chanName);
+	if (!chan.userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	chan.setMod(chanMode, add);
+}
+
+void	User::invite(const string &userName, const string &chanName) {
+	Channel &chan = _datasPtr->getChannel(chanName);
+	if (!chan.userIsOperator(_userName))
+		throw datasException("Not operator in " + chanName, _userName);
+	if (!chan.chanModeIs(MODE_I))
+		throw (datasException("Channel need to be in +i mode", chanName));
+	_datasPtr->getUser(userName);
+	chan.setInvit(userName);
+	//envoyer un message au client;
+	
+
+}
+
+void	User::topic(const string &chanName, const string &newChanName)
+{
+	_datasPtr->newChannelTopic(_userName, chanName, newChanName);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
 {
-	os << "\n" << rhs.getUserName() << ":\n\tNick Name : " << rhs.getNickName();
+	os << "\n" << rhs.getUserName() << ":\n\tNick Name : \t" << rhs.getNickName();
 	os << "\n\tChannels :\n";
 	const userChannels &channels = rhs.getChannels();
 	for (userChannels_const_it it = channels.begin(); it != channels.end(); it++)
-		os << "\n\t\t" << it->first << "\n\t\trole : " << it->second << endl;
+		os << "\t\t\t" << it->first << "\n\t\t\trole : " << it->second << endl << endl;
 	return (os);
 }

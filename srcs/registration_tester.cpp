@@ -24,7 +24,7 @@ void	treatCmd(Datas &servDatas, t_recv rec)
 	}
 	else
 	{
-		it->second->fillUser(servDatas, rec.cmd);
+		it->second->fillUser(rec.cmd);
 	}
 }
 
