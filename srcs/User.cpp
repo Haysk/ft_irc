@@ -106,8 +106,8 @@ std::string	User::initNickName(const usersDatas &users, string &nickName)
 // UTILS
 
 std::string	User::checkCAPLS(std::string arg) {
-	std::cout << "arg: |" + arg + "|" << std::endl;
-	if (arg.compare("CAP LS"))
+	std::cout << "arg: " << arg << "|" << std::endl;
+	if (arg.compare(0, strlenP(arg), "CAP LS"))
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
 }
@@ -120,7 +120,7 @@ std::string	User::checkPwd(const std::string pwd, std::string arg) {
 	arg = arg.substr(5);
 	if (!arg.length())
 		throw std::invalid_argument("No password found");
-	if (pwd.compare(arg))
+	if (pwd.compare(0, strlenP(arg), arg))
 		throw std::invalid_argument("The password passed isn't valid");
 	return ("Great !! Now enter your nickname:");
 }

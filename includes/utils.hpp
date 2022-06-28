@@ -30,4 +30,6 @@ using namespace std;
 
 void	sendMsgToClient(int fd, const std::string msg);
 
+size_t	strlenP(std::string str);
+
 #endif //FT_IRC_UTILS_HPP
