@@ -163,8 +163,6 @@ const string	User::fillUser(string &arg) {
 
 void	User::execCmd(const string &cmd)
 {
-	Command	command(cmd);
-	command.checkCmd(*_datasPtr, *this);
 	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }

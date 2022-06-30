@@ -5,6 +5,7 @@
 
 class User;
 class Channel;
+class Command;
 
 typedef map<int, User *> usersDatas;	// map (fd | class User)
 typedef map<string, Channel *> channelsDatas; // map (chanName | class Channel)
@@ -23,6 +24,8 @@ class	Datas
 		channelsDatas _channelsDatas; // map (chanName | chanSettings)
 
 		const std::string _pwd;
+
+		Command	*_cmd;
 
 	public:
 

@@ -1,10 +1,8 @@
 # include "../includes/Command.hpp"
 # include "../includes/User.hpp"
 
-Command::Command(std::string line)
+Command::Command(void) : _cmd()
 {
-	size_t	nOpt = countOccurrences(" ", line) + 1;
-
 //	std::cout << "Command default constructor called" << std::endl;
 	_cmdMap["show"] = &Command::show;
 	_cmdMap["join"] = &Command::join;
@@ -16,7 +14,6 @@ Command::Command(std::string line)
 	_cmdMap["mode"] = &Command::mode;
 	_cmdMap["invite"] = &Command::invite;
 	_cmdMap["topic"] = &Command::topic;
-	buildCmd(nOpt, line);
 }
 
 Command::~Command(void)

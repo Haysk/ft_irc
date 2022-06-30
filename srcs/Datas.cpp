@@ -4,9 +4,9 @@
 #include "../includes/Command.hpp"
 #include "../includes/tester.hpp"
 
-Datas::Datas(void) {}
+Datas::Datas(void): _cmd(new Command()) {}
 
-Datas::Datas(std::string& pwd): _pwd(pwd) {}
+Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(new Command()) {}
 
 Datas::~Datas()
 {
@@ -16,6 +16,7 @@ Datas::~Datas()
 		delete it->second;
 	_usersDatas.clear();
 	_channelsDatas.clear();
+	delete _cmd;
 }
 
 Datas &Datas::operator=(const Datas &rhs)

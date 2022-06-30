@@ -30,7 +30,7 @@ class	Command
 		*/
 
 	public:
-		Command(std::string);
+		Command(void);
 		~Command(void);
 		void	buildCmd(size_t, std::string);
 		void	checkCmd(Datas&, User&);
