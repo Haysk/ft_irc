@@ -175,7 +175,7 @@ void Datas::newChannelTopic(const string userName, const string chanName, const 
 		getChannel(newChanName);
 	} catch (datasException &e) {
 		Channel &chan = getChannel(chanName);
-		if (!chan.userIsOperator(userName))
+		if (!chan.userIsChanOp(userName))
 			throw datasException("Not operator in " + chanName, userName);
 		if (!chan.chanModeIs(MODE_T))
 			throw datasException("Channel not in +t mode", chanName);

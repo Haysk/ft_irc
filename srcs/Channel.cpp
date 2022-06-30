@@ -64,7 +64,7 @@ User &Channel::getUser(const string &userName) const
 	throw datasException("User not in this Channel");
 }
 
-bool Channel::userIsOperator(const string &userName) const {
+bool Channel::userIsChanOp(const string &userName) const {
 	usersInChannel_const_it it;
 	it = _users.find(userName);
 	if (it != _users.end())
