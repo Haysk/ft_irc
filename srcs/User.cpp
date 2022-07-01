@@ -63,21 +63,20 @@ const bool &User::getOp() const
 
 std::string	User::initUserName(string &userCmd)
 {
-	size_t	posSP;
+	std::string	username;
 
 	if (userCmd.find("USER ") != 0)
 		throw std::invalid_argument("We are waiting for: USER <username>");
-	posSP = userCmd.find_first_of(" ", 5);
-	userCmd = userCmd.substr(5, posSP - 5);
-	if (!userCmd.length())
+	username = getNextArg(userCmd, 4);
+	if (!username.length())
 		throw std::invalid_argument("No username found");
-	if (userCmd.length() > 9)
+	if (username.length() > 9)
 		throw std::invalid_argument("The username passed is too long, please reduce to 9 caracteres");
 	try {
-		_datasPtr->getUser(userCmd);
+		_datasPtr->getUser(username);
 		throw std::invalid_argument("The username passed is already assigned");
 	} catch (datasException &e) {
-		_userName = userCmd;
+		_userName = username;
 	}
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
@@ -86,23 +85,22 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 {
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
-	size_t	posSP;
+	std::string	nickname;
 
 	if (nickCmd.find("NICK ") != 0)
 		throw std::invalid_argument("We are waiting for: NICK <nickname>");
-	posSP = nickCmd.find_first_of(" ", 5);
-	nickCmd = nickCmd.substr(5, posSP - 5);
-	if (!nickCmd.length())
+	nickname = getNextArg(nickCmd, 4);
+	if (!nickname.length())
 		throw std::invalid_argument("No nickname found");
-	if (nickCmd.length() > 9)
+	if (nickname.length() > 9)
 		throw std::invalid_argument("The nickname passed is too long, please reduce to 9 caracteres");
 	while (it != ite)
 	{
-		if (!it->second->getNickName().compare(nickCmd))
+		if (!it->second->getNickName().compare(nickname))
 			throw std::invalid_argument("The nickname passed is already assigned");
 		it++;
 	}
-	_nickName = nickCmd;
+	_nickName = nickname;
 	return ("Well " + _nickName + ", now enter your username:");
 }
 
@@ -111,22 +109,20 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 // UTILS
 
 std::string	User::checkCAPLS(std::string &arg) {
-	if (arg.compare(0, strlenP(arg), "CAP LS"))
+	if (arg.find("CAP ") != 0 || getNextArg(arg, 3).find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
 }
 
 std::string	User::checkPwd(const std::string pwd, std::string &arg) {
-	size_t	pos = arg.find("PASS ");
+	std::string	pwdSent;
 
-	if (pos != 0)
+	if (arg.find("PASS ")!= 0)
 		throw std::invalid_argument("We are waiting for: PASS <password>");
-	arg = arg.substr(5);
+	pwdSent = getNextArg(arg, 4);
 	if (!arg.length())
 		throw std::invalid_argument("No password found");
-	for (size_t i = 0; i < strlenP(arg) && i < pwd.length(); i++)
-		std::cout << "i = " << i << " --> " << arg[i] - pwd[i] << std::endl;
-	if (arg.compare(0, strlenP(arg), pwd))
+	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
 		throw std::invalid_argument("The password passed isn't valid");
 	return ("Great !! Now enter your nickname:");
 }

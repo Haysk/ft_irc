@@ -110,11 +110,11 @@ void	Datas::treatCmds(int fd, string cmds)
 	std::string	cmd = cmds.substr(0, posNL);
 	std::string	msg;
 
+	if (it == usersData.end()) {
+		sendMsgToClient(fd, "Welcome to my server IRCserv !");
+		newUser(fd);
+	}
 	while (cmd.length() && posNL != std::string::npos) {
-		if (it == usersData.end()) {
-			sendMsgToClient(fd, "Welcome to my server IRCserv !");
-			newUser(fd);
-		}
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(cmd);
 		else if (!cmd.find_first_of("/"))

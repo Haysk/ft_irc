@@ -39,8 +39,12 @@ void	sendMsgToClient(int fd, const std::string msg);
 
 size_t	strlenP(std::string str);
 
-const vector<string> explode(const string& s, const char& c);
+const	vector<string> explode(const string& s, const char& c);
 
 size_t	countOccurrences(std::string charset, const std::string str);
+
+size_t	getNextArgPos(const std::string &str, size_t start);
+
+std::string	getNextArg(const std::string& str, size_t start);
 
 #endif //FT_IRC_UTILS_HPP
