@@ -43,28 +43,32 @@ size_t	countOccurrences(std::string charset, const std::string str)
 	size_t	count = 0;
 	size_t	pos = 0;
 
-	while ((pos = str.find_first_of(charset, pos + 1)) != std::string::npos)
+	while (pos != std::string::npos)
+	{
+		pos = getNextArgPos(str, pos, charset);
 		count++;
+	}
 	return (count);
 }
 
-size_t	getNextArgPos(const std::string &str, size_t start)
+size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
 {
 	size_t	pos;
 
-	pos = str.find_first_of(" ", start);
-	pos = str.find_first_not_of(" ", pos);
+	pos = str.find_first_of(charset, start);
+	pos = str.find_first_not_of(charset, pos);
 	return (pos);
 }
 
-std::string	getNextArg(const std::string& str, size_t start)
+std::string	getNextArg(const std::string& str, size_t start,
+			std::string charset)
 {
 	std::string	next;
 	size_t		pos;
 	size_t		len;
 
-	pos = getNextArgPos(str, start);
-	len = str.find_first_of(" ", pos);
+	pos = getNextArgPos(str, start, charset);
+	len = str.find_first_of(charset, pos);
 	if (len != std::string::npos)
 		next = str.substr(pos, len - pos + 1);
 	else

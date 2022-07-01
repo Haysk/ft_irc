@@ -67,7 +67,7 @@ std::string	User::initUserName(string &userCmd)
 
 	if (userCmd.find("USER ") != 0)
 		throw std::invalid_argument("We are waiting for: USER <username>");
-	username = getNextArg(userCmd, 4);
+	username = getNextArg(userCmd, 0, " ");
 	if (!username.length())
 		throw std::invalid_argument("No username found");
 	if (username.length() > 9)
@@ -89,7 +89,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 	if (nickCmd.find("NICK ") != 0)
 		throw std::invalid_argument("We are waiting for: NICK <nickname>");
-	nickname = getNextArg(nickCmd, 4);
+	nickname = getNextArg(nickCmd, 0, " ");
 	if (!nickname.length())
 		throw std::invalid_argument("No nickname found");
 	if (nickname.length() > 9)
@@ -109,7 +109,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 // UTILS
 
 std::string	User::checkCAPLS(std::string &arg) {
-	if (arg.find("CAP ") != 0 || getNextArg(arg, 3).find("LS") != 0)
+	if (arg.find("CAP ") != 0 || getNextArg(arg, 0, " ").find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
 }
@@ -119,7 +119,7 @@ std::string	User::checkPwd(const std::string pwd, std::string &arg) {
 
 	if (arg.find("PASS ")!= 0)
 		throw std::invalid_argument("We are waiting for: PASS <password>");
-	pwdSent = getNextArg(arg, 4);
+	pwdSent = getNextArg(arg, 0, " ");
 	if (!arg.length())
 		throw std::invalid_argument("No password found");
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
