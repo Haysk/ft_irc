@@ -25,7 +25,7 @@ class	Datas
 
 		const std::string _pwd;
 
-		Command	*_cmd;
+		Command	_cmd;
 
 	public:
 
@@ -50,6 +50,8 @@ class	Datas
 		Channel &getChannel(const string &chanName) const;
 
 		const std::string &getPwd() const;
+
+		Command&	getCmd(void);
 
 		// FUNCTIONS
 		

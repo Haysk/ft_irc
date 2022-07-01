@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include <exception>
 #include <stdint.h>
+#include "Command.hpp"
 
 #define IP "127.0.0.1"
 #define PORT 8081
@@ -37,5 +38,9 @@ using namespace std;
 void	sendMsgToClient(int fd, const std::string msg);
 
 size_t	strlenP(std::string str);
+
+const vector<string> explode(const string& s, const char& c);
+
+size_t	countOccurrences(std::string charset, const std::string str);
 
 #endif //FT_IRC_UTILS_HPP

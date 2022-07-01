@@ -78,7 +78,6 @@ std::string	User::initUserName(string &userCmd)
 		throw std::invalid_argument("The username passed is already assigned");
 	} catch (datasException &e) {
 		_userName = userCmd;
-		sendMsgToClient(_fd, "Well " + _userName + ", now enter your nickname: ");
 	}
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
@@ -163,6 +162,10 @@ const string	User::fillUser(string &arg) {
 
 void	User::execCmd(const string &cmd)
 {
+	_datasPtr->getCmd().buildCmd(countOccurrences(" ", cmd), cmd);
+	_datasPtr->getCmd().displayCmd();
+	_datasPtr->getCmd().checkCmd(*this);
+	_datasPtr->getCmd().clearCmd();
 	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }

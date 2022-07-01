@@ -4,9 +4,9 @@
 #include "../includes/Command.hpp"
 #include "../includes/tester.hpp"
 
-Datas::Datas(void): _cmd(new Command()) {}
+Datas::Datas(void): _cmd(Command()) {}
 
-Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(new Command()) {}
+Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(Command()) {}
 
 Datas::~Datas()
 {
@@ -16,7 +16,6 @@ Datas::~Datas()
 		delete it->second;
 	_usersDatas.clear();
 	_channelsDatas.clear();
-	delete _cmd;
 }
 
 Datas &Datas::operator=(const Datas &rhs)
@@ -82,6 +81,11 @@ const std::string &Datas::getPwd(void) const
 	return (_pwd);
 }
 
+Command	&Datas::getCmd(void)
+{
+	return (_cmd);
+}
+
 // FUNCTIONS
 
 void	Datas::newUser(int fd) {
@@ -107,7 +111,6 @@ void	Datas::treatCmds(int fd, string cmds)
 	std::string	msg;
 
 	while (cmd.length() && posNL != std::string::npos) {
-		std::cout << "cmd : " << cmd << std::endl;
 		if (it == usersData.end()) {
 			sendMsgToClient(fd, "Welcome to my server IRCserv !");
 			newUser(fd);
