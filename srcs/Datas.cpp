@@ -139,7 +139,7 @@ void Datas::newChannel(const string &chanName, const int mode, const string &use
 		getChannel(chanName);
 	} catch (datasException &e) {
 		Channel *chan;
-		chan = new Channel(chanName, mode, userName);
+		chan = new Channel(this, chanName, mode, userName);
 		_channelsDatas.insert(make_pair(chanName, chan));
 		return;
 	}

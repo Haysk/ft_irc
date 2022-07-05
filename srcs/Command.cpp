@@ -66,7 +66,7 @@ void	Command::join(User &user)
 {
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /join <canal>");
-	user.joinChannel(_cmd[1]);
+	user.join(_cmd[1]);
 }
 
 void	Command::part(User &user)

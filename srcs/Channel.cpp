@@ -3,7 +3,8 @@
 
 Channel::Channel() {}
 
-Channel::Channel(const string &chanName, int mode, const string &userName) :
+Channel::Channel(Datas *datasPtr, const string &chanName, int mode, const string &userName) :
+_datasPtr(datasPtr),
 _chanName(chanName),
 _mode(mode)
 {
@@ -60,16 +61,22 @@ User &Channel::getUser(const string &userName) const
 
 	it = _users.find(userName);
 	if (it != _users.end())
-		return Datas::getUser(it->first);
+		return _datasPtr->getUser(it->first);
 	throw datasException("User not in this Channel");
 }
 
-bool Channel::userIsChanOp(const string &userName) const {
+bool Channel::userIsChanOp(const string &userName) const
+{
 	usersInChannel_const_it it;
 	it = _users.find(userName);
 	if (it != _users.end())
 		return it->second;
 	throw datasException("User not in this Channel", userName);
+}
+
+bool Channel::userIsActive(const string &userName) const
+{
+	return (_datasPtr->getUser(userName).getActiveChannel() == _chanName);
 }
 
 // SETTERS
