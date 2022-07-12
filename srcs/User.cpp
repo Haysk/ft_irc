@@ -63,20 +63,35 @@ const bool &User::getOp() const
 
 std::string	User::initUserName(string &userCmd)
 {
-	std::string	username;
+	std::string	name;
 
 	if (userCmd.find("USER ") != 0)
-		throw std::invalid_argument("We are waiting for: USER <username>");
-	username = getNextArg(userCmd, 0, " ");
-	if (!username.length())
-		throw std::invalid_argument("No username found");
-	if (username.length() > 9)
-		throw std::invalid_argument("The username passed is too long, please reduce to 9 caracteres");
-	try {
-		_datasPtr->getUser(username);
-		throw std::invalid_argument("The username passed is already assigned");
-	} catch (datasException &e) {
-		_userName = username;
+		throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
+	name = getNextArg(userCmd, 0, " ");
+	if (!name.length())
+		throw std::invalid_argument("No name found");
+	if (name.length() > 9)
+		throw std::invalid_argument("The name passed is too long, please reduce to 9 caracteres");
+	try
+	{
+		_hostName = getNextArg(userCmd, userCmd.find(name), " ");
+		_serverName = getNextArg(userCmd, userCmd.find(_hostName), " ");
+		_realName = getRealName(userCmd, userCmd.find(_serverName));
+	}
+	catch (std::exception &e)
+	{
+		send(_fd, "ERROR: ", 7, 0);
+		sendMsgToClient(_fd, e.what());
+		throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
+	}
+	try
+	{
+		_datasPtr->getUser(name);
+		throw std::invalid_argument("The name passed is already assigned");
+	}
+	catch (datasException &e)
+	{
+		_userName = name;
 	}
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
@@ -111,7 +126,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 std::string	User::checkCAPLS(std::string &arg) {
 	if (arg.find("CAP ") != 0 || getNextArg(arg, 0, " ").find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
-	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username>");
+	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>");
 }
 
 std::string	User::checkPwd(const std::string pwd, std::string &arg) {
@@ -138,7 +153,6 @@ const string	User::fillUser(string &arg) {
 	string	msg;
 	string	cmd = getArg(arg, 0, " ");
 
-	std::cout << "CMD: |" << cmd << "|" << std::endl;
 	if (!cmd.compare("PASS") && _step == 3)
 		_step--;
 	switch (_step) {
@@ -163,10 +177,10 @@ const string	User::fillUser(string &arg) {
 
 void	User::execCmd(const string &cmd)
 {
+	_datasPtr->clearCmd();
 	_datasPtr->getCmd().buildCmd(countOccurrences(" ", cmd), cmd);
 	_datasPtr->getCmd().displayCmd();
 	_datasPtr->getCmd().checkCmd(*this);
-	_datasPtr->getCmd().clearCmd();
 	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
 	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }

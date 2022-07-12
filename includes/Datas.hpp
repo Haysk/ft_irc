@@ -69,6 +69,8 @@ class	Datas
 
 		void newChannelTopic(const string userName, const string chanName, const string newChanName);
 
+		void clearCmd(void);
+
 };
 
 #endif // DATAS_HPP

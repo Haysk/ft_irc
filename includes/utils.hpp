@@ -51,4 +51,8 @@ std::string	getNextArg(const std::string& str, size_t start,
 std::string	getArg(const std::string& str, size_t start,
 			std::string charset);
 
+std::string	getRealName(const std::string& str, size_t start);
+
+void	isAlpha(const std::string& str);
+
 #endif //FT_IRC_UTILS_HPP

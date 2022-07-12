@@ -26,6 +26,12 @@ class User : public Datas
 
 		string	_nickName;
 
+		string	_hostName;
+
+		string	_serverName;
+
+		string	_realName;
+
 		userChannels _channels; // map (chanName | role)
 
 	public:

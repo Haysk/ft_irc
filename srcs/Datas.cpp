@@ -191,5 +191,9 @@ void Datas::newChannelTopic(const string userName, const string chanName, const 
 		return;
 	}
 	throw datasException("Channel name already used", chanName + " -> " + newChanName);
+}
 
+void Datas::clearCmd(void)
+{
+	_cmd.clearCmd();
 }
