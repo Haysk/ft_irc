@@ -48,4 +48,7 @@ size_t	getNextArgPos(const std::string &str, size_t start, std::string charset);
 std::string	getNextArg(const std::string& str, size_t start,
 			std::string charset);
 
+std::string	getArg(const std::string& str, size_t start,
+			std::string charset);
+
 #endif //FT_IRC_UTILS_HPP

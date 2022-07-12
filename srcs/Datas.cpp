@@ -105,7 +105,7 @@ void	Datas::treatCmds(int fd, string cmds)
 {
 	usersDatas		usersData = getUsers();
 	usersDatas_const_it	it = usersData.find(fd);
-	size_t		posNL = cmds.find_first_of("\n");
+	size_t		posNL = cmds.find_first_of("\n\r");
 	size_t		posTmp;
 	std::string	cmd = cmds.substr(0, posNL);
 	std::string	msg;
@@ -127,7 +127,7 @@ void	Datas::treatCmds(int fd, string cmds)
 			std::cout << "SENDING: " + cmd;
 		}
 		posTmp = posNL;
-		posNL = cmds.find_first_of("\n", posNL + 1);
+		posNL = cmds.find_first_of("\n\r", posNL + 1);
 		cmd = cmds.substr(posTmp + 1, posNL - posTmp);
 	}
 	sendMsgToClient(fd, msg);

@@ -123,8 +123,8 @@ std::string	User::checkPwd(const std::string pwd, std::string &arg) {
 	if (!arg.length())
 		throw std::invalid_argument("No password found");
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
-		throw std::invalid_argument("The password passed isn't valid");
-	return ("Great !! Now enter your nickname:");
+		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
+	return ("Hi new operator !! Now enter your nickname or try another password:");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
@@ -136,6 +136,11 @@ void	User::addChannel(const string &chanName, bool role) {
 
 const string	User::fillUser(string &arg) {
 	string	msg;
+	string	cmd = getArg(arg, 0, " ");
+
+	std::cout << "CMD: |" << cmd << "|" << std::endl;
+	if (!cmd.compare("PASS") && _step == 3)
+		_step--;
 	switch (_step) {
 		case 1:
 			msg = checkCAPLS(arg);

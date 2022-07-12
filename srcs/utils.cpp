@@ -75,3 +75,17 @@ std::string	getNextArg(const std::string& str, size_t start,
 		next = str.substr(pos);
 	return (next);
 }
+
+std::string	getArg(const std::string& str, size_t start,
+			std::string charset)
+{
+	std::string	arg;
+	size_t		pos = str.find_first_not_of(charset, start);
+	size_t		len = str.find_first_of(charset, pos);
+
+	if (len != std::string::npos)
+		arg = str.substr(pos, len - pos);
+	else
+		arg = str.substr(pos);
+	return (arg);
+}
