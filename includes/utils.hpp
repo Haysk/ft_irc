@@ -55,4 +55,14 @@ std::string	getRealName(const std::string& str, size_t start);
 
 void	isAlpha(const std::string& str);
 
+	// REGISTRATION_CHECKER
+
+void	checkCmdName(const std::string cmdLine, const std::string expected);
+
+void	checkRangeArg(const std::string cmdLine, size_t min, size_t max);
+
+void	checkNbrArg(const std::string cmdLine, size_t expected);
+
+void	checkLenArg(const std::string arg, size_t max);
+
 #endif //FT_IRC_UTILS_HPP

@@ -43,6 +43,7 @@ size_t	countOccurrences(std::string charset, const std::string str)
 	size_t	count = 0;
 	size_t	pos = 0;
 
+	pos = str.find_first_not_of(charset);
 	while (pos != std::string::npos)
 	{
 		pos = getNextArgPos(str, pos, charset);
@@ -108,18 +109,4 @@ std::string	getRealName(const std::string& str, size_t start)
 	arg = str.substr(pos + 1);
 	isAlpha(arg);
 	return (arg);
-}
-
-void	isAlpha(const std::string& str)
-{
-	int	i = 0;
-
-	while (str[i])
-	{
-		if (!((str[i] >= 65 && str[i] <= 90)
-				|| (str[i] >= 97 && str[i] <= 122)
-				|| (str[i] == 32)))
-			throw std::invalid_argument("Not a alphabetic argument");
-		i++;
-	}
 }

@@ -65,25 +65,13 @@ std::string	User::initUserName(string &userCmd)
 {
 	std::string	name;
 
-	if (userCmd.find("USER ") != 0)
-		throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
+	checkCmdName(userCmd, "USER");
 	name = getNextArg(userCmd, 0, " ");
-	if (!name.length())
-		throw std::invalid_argument("No name found");
-	if (name.length() > 9)
-		throw std::invalid_argument("The name passed is too long, please reduce to 9 caracteres");
-	try
-	{
-		_hostName = getNextArg(userCmd, userCmd.find(name), " ");
-		_serverName = getNextArg(userCmd, userCmd.find(_hostName), " ");
-		_realName = getRealName(userCmd, userCmd.find(_serverName));
-	}
-	catch (std::exception &e)
-	{
-		send(_fd, "ERROR: ", 7, 0);
-		sendMsgToClient(_fd, e.what());
-		throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
-	}
+	checkLenArg(name, 9);
+	_hostName = getNextArg(userCmd, userCmd.find(name), " ");
+	_serverName = getNextArg(userCmd, userCmd.find(_hostName), " ");
+	_realName = getRealName(userCmd, userCmd.find(_serverName));
+	throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
 	try
 	{
 		_datasPtr->getUser(name);
@@ -102,13 +90,10 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 	usersDatas_const_it	ite = users.end();
 	std::string	nickname;
 
-	if (nickCmd.find("NICK ") != 0)
-		throw std::invalid_argument("We are waiting for: NICK <nickname>");
+	checkCmdName(nickCmd, "NICK");
+	checkRangeArg(nickCmd, 2, 3);
 	nickname = getNextArg(nickCmd, 0, " ");
-	if (!nickname.length())
-		throw std::invalid_argument("No nickname found");
-	if (nickname.length() > 9)
-		throw std::invalid_argument("The nickname passed is too long, please reduce to 9 caracteres");
+	checkLenArg(nickname, 9);
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
@@ -123,20 +108,20 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 // UTILS
 
-std::string	User::checkCAPLS(std::string &arg) {
+std::string	User::checkCAPLS(std::string &arg)
+{
 	if (arg.find("CAP ") != 0 || getNextArg(arg, 0, " ").find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
-	return ("In order to use Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>");
+	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>");
 }
 
-std::string	User::checkPwd(const std::string pwd, std::string &arg) {
+std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
+{
 	std::string	pwdSent;
 
-	if (arg.find("PASS ")!= 0)
-		throw std::invalid_argument("We are waiting for: PASS <password>");
-	pwdSent = getNextArg(arg, 0, " ");
-	if (!arg.length())
-		throw std::invalid_argument("No password found");
+	checkCmdName(pwdLine, "PASS");
+	checkNbrArg(pwdLine, 2);
+	pwdSent = getNextArg(pwdLine, 0, " ");
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
 		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
 	return ("Hi new operator !! Now enter your nickname or try another password:");
