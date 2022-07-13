@@ -43,17 +43,16 @@ const	vector<string> explode(const string& s, const char& c);
 
 size_t	countOccurrences(std::string charset, const std::string str);
 
-size_t	getNextArgPos(const std::string &str, size_t start, std::string charset);
-
-std::string	getNextArg(const std::string& str, size_t start,
+std::string	getArgAt(const std::string& str, size_t index,
 			std::string charset);
 
-std::string	getArg(const std::string& str, size_t start,
-			std::string charset);
-
-std::string	getRealName(const std::string& str, size_t start);
+std::string	getRealName(const std::string& str);
 
 void	isAlpha(const std::string& str);
+
+
+size_t	getNextArgPos(const std::string &str, size_t start,
+			std::string charset);
 
 	// REGISTRATION_CHECKER
 
@@ -64,5 +63,9 @@ void	checkRangeArg(const std::string cmdLine, size_t min, size_t max);
 void	checkNbrArg(const std::string cmdLine, size_t expected);
 
 void	checkLenArg(const std::string arg, size_t max);
+
+int	checkDoublons(const std::string str);
+
+void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
 
 #endif //FT_IRC_UTILS_HPP

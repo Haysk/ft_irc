@@ -61,6 +61,8 @@ class User : public Datas
 
 		const bool &getOp() const;
 
+		bool &getOp(const string &chanName);
+
 		// REGISTRATION
 
 		std::string initUserName(string &userCmd);

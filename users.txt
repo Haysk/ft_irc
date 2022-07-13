@@ -1,0 +1,10 @@
+CAP LS
+PASS ppp
+NICK nn
+USER uu uu uu :uu
+
+CAP LS
+PASS ppp
+NICK oo
+USER oo uu uu :uu
+

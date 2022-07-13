@@ -115,6 +115,8 @@ void	Datas::treatCmds(int fd, string cmds)
 		newUser(fd);
 	}
 	while (cmd.length() && posNL != std::string::npos) {
+		std::cout << "step: " << it->second->getStep() << std::endl;
+		std::cout << "CMD: " << cmd << std::endl;
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(cmd);
 		else if (!cmd.find_first_of("/"))
@@ -128,7 +130,7 @@ void	Datas::treatCmds(int fd, string cmds)
 		}
 		posTmp = posNL;
 		posNL = cmds.find_first_of("\n\r", posNL + 1);
-		cmd = cmds.substr(posTmp + 1, posNL - posTmp);
+		cmd = cmds.substr(posTmp + 1, posNL - (posTmp + 1));
 	}
 	sendMsgToClient(fd, msg);
 }

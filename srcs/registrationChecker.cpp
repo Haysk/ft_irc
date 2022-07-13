@@ -4,6 +4,7 @@ void	isAlpha(const std::string& str)
 {
 	int	i = 0;
 
+	std::cout << "str : " << str << std::endl;
 	while (str[i])
 	{
 		if (!((str[i] >= 65 && str[i] <= 90)
@@ -41,4 +42,24 @@ void	checkLenArg(const std::string arg, size_t max)
 {
 	if (arg.length() > max)
 		throw std::invalid_argument("Size of arg too long");
+}
+
+void	checkUserCmdNbrArg(const std::string& cmdLine,
+		const std::string charset)
+{
+	size_t	count = 0;
+	size_t	pos = 0;
+
+	pos = cmdLine.find_first_not_of(charset);
+	while (pos != std::string::npos && count < 4)
+	{
+		pos = getNextArgPos(cmdLine, pos, charset);
+		count++;
+	}
+	if (count < 4 || pos == std::string::npos)
+		throw std::invalid_argument("Argument.s missing");
+	if (cmdLine[pos] != ':')
+		throw std::invalid_argument("Missing ':' for realname");
+	if (pos + 1 == cmdLine.length())
+		throw std::invalid_argument("Argument.s missing");
 }

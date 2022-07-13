@@ -16,9 +16,6 @@ class	Command
 		void	show(User&);
 		void	join(User&);
 		void	part(User&);
-		void	msg(User&);
-		void	query(User&);
-		void	quit(User&);
 		void	kick(User&);
 		void	mode(User&);
 		void	invite(User&);
@@ -37,5 +34,9 @@ class	Command
 		void	clearCmd(void);
 };
 
-std::ostream& operator<<(std::ostream&, const Command&);
+void	checkModeParam(const std::string& param);
+
+int	convertModeParam(const std::string& param);
+
+bool	isAddMode(const std::string& param);
 #endif

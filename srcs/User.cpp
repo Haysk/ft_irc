@@ -58,11 +58,16 @@ Channel &User::getChannel(const string &chanName) const
 	throw datasException("User not in " + chanName + "Channel", _userName);
 }
 
-// INITIALIZER
-
 const bool &User::getOp() const
 {
 	return _op;
+}
+
+bool &User::getOp(const string &chanName)
+{
+	std::cout << "chanName: |" << chanName << "|" << std::endl;
+	getChannel(chanName);
+	return (_channels[chanName]);
 }
 
 // SETTERS
@@ -72,12 +77,13 @@ std::string	User::initUserName(string &userCmd)
 	std::string	name;
 
 	checkCmdName(userCmd, "USER");
-	name = getNextArg(userCmd, 0, " ");
+	checkUserCmdNbrArg(userCmd, " ");
+	name = getArgAt(userCmd, 1, " ");
 	checkLenArg(name, 9);
-	_hostName = getNextArg(userCmd, userCmd.find(name), " ");
-	_serverName = getNextArg(userCmd, userCmd.find(_hostName), " ");
-	_realName = getRealName(userCmd, userCmd.find(_serverName));
-	throw std::invalid_argument("We are waiting for: USER <name> <host> <server> <:realname>");
+	_hostName = getArgAt(userCmd, 2, " ");
+	_serverName = getArgAt(userCmd, 3, " ");
+	_realName = getRealName(userCmd);
+	std::cout << "name: " << _realName << std::endl;
 	try
 	{
 		_datasPtr->getUser(name);
@@ -98,7 +104,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 	checkCmdName(nickCmd, "NICK");
 	checkRangeArg(nickCmd, 2, 3);
-	nickname = getNextArg(nickCmd, 0, " ");
+	nickname = getArgAt(nickCmd, 1, " ");
 	checkLenArg(nickname, 9);
 	while (it != ite)
 	{
@@ -116,7 +122,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 std::string	User::checkCAPLS(std::string &arg)
 {
-	if (arg.find("CAP ") != 0 || getNextArg(arg, 0, " ").find("LS") != 0)
+	if (arg.find("CAP ") != 0 || getArgAt(arg, 1, " ").find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>");
 }
@@ -127,7 +133,7 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 
 	checkCmdName(pwdLine, "PASS");
 	checkNbrArg(pwdLine, 2);
-	pwdSent = getNextArg(pwdLine, 0, " ");
+	pwdSent = getArgAt(pwdLine, 1, " ");
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
 		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
 	return ("Hi new operator !! Now enter your nickname or try another password:");
@@ -142,7 +148,7 @@ void	User::addChannel(const string &chanName, bool role) {
 
 const string	User::fillUser(string &arg) {
 	string	msg;
-	string	cmd = getArg(arg, 0, " ");
+	string	cmd = getArgAt(arg, 0, " ");
 
 	if (!cmd.compare("PASS") && _step == 3)
 		_step--;

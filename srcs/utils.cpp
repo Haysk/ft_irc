@@ -52,32 +52,26 @@ size_t	countOccurrences(std::string charset, const std::string str)
 	return (count);
 }
 
-size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
-{
-	size_t	pos;
-
-	pos = str.find_first_of(charset, start);
-	pos = str.find_first_not_of(charset, pos);
-	return (pos);
-}
-
-std::string	getNextArg(const std::string& str, size_t start,
+std::string	getArgAt(const std::string& str, size_t index,
 			std::string charset)
 {
-	std::string	next;
-	size_t		pos;
-	size_t		len;
+	size_t	pos = str.find_first_not_of(charset);
+	size_t	len;
+	std::string	arg;
 
-	pos = getNextArgPos(str, start, charset);
-	if (pos == std::string::npos)
-		throw std::invalid_argument("An argument is missing");
+	while (index)
+	{
+		pos = str.find_first_of(charset, pos);
+		pos = str.find_first_not_of(charset, pos);
+		index--;
+	}
 	len = str.find_first_of(charset, pos);
 	if (len != std::string::npos)
-		next = str.substr(pos, len - pos);
+		arg = str.substr(pos, len - pos);
 	else
-		next = str.substr(pos);
-	isAlpha(next);
-	return (next);
+		arg = str.substr(pos);
+	isAlpha(arg);
+	return (arg);
 }
 
 std::string	getArg(const std::string& str, size_t start,
@@ -97,16 +91,44 @@ std::string	getArg(const std::string& str, size_t start,
 	return (arg);
 }
 
-std::string	getRealName(const std::string& str, size_t start)
+std::string	getRealName(const std::string& str)
 {
 	std::string	arg;
-	size_t		pos = getNextArgPos(str, start, " ");
+	size_t		pos = getNextArgPos(str, 0, " ");
 
+	pos = getNextArgPos(str, pos, " ");
+	pos = getNextArgPos(str, pos, " ");
+	pos = getNextArgPos(str, pos, " ");
 	if (pos == std::string::npos)
-		throw std::invalid_argument("An argument is missing");
+		throw std::invalid_argument("RealName is missing");
+	std::cout << "pos: " << pos << std::endl;
 	if (pos != str.find_first_of(":"))
 		throw std::invalid_argument("Missing ':' for realname");
 	arg = str.substr(pos + 1);
 	isAlpha(arg);
 	return (arg);
+}
+
+int	checkDoublons(const std::string str)
+{
+	int	strLen = str.length();
+
+	for (int i = 0; i < strLen - 1; i++)
+	{
+		for (int j = i + 1; j < strLen; j++)
+		{
+			if (str[i] == str[j])
+				return (0);
+		}
+	}
+	return (1);
+}
+
+size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
+{
+	size_t	pos;
+
+	pos = str.find_first_of(charset, start);
+	pos = str.find_first_not_of(charset, pos);
+	return (pos);
 }
