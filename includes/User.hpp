@@ -32,6 +32,8 @@ class User : public Datas
 
 		string	_realName;
 
+		string	_activeChannel;
+
 		userChannels _channels; // map (chanName | role)
 
 	public:
@@ -50,6 +52,8 @@ class User : public Datas
 		const string &getUserName() const;
 
 		const string &getNickName() const;
+
+		const string &getActiveChannel() const;
 
 		const userChannels &getChannels() const;
 
@@ -79,13 +83,13 @@ class User : public Datas
 
 		void createChannel(const string &chanName, const int mode);
 
-		void joinChannel(const string &chanName);
+		void join(const string &chanName);
 
-		void quitChannel(const string &chanName);
+		void part(const string &chanName);
 
 		void deleteChannel(const string &chanName);
 
-		//    void sendChanMessage();
+		void sendChanMessage(const string &message, const string &destination);
 
 		//    void sendPrivateMessage();
 

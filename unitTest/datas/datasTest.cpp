@@ -32,35 +32,36 @@ void datasTest(Datas &servDatas) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
 		cout << "--------------------CREATE CHANNEL--------------------" << endl;
-		toto.createChannel("totoChannel", 0);
+		toto.join("totoChannel");
 		cout << toto;
-		toto.createChannel("totoChannel2", 0);
+		toto.join("totoChannel2");
 		cout << toto;
 		try {
-			toto.createChannel("totoChannel", 0);
+			toto.join("totoChannel");
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
+		cout << servDatas.getChannel("totoChannel").getUser("toto").getNickName() << endl;
 		cout << "--------------------JOIN CHANNEL--------------------" << endl;
-		tata.joinChannel("totoChannel");
+		tata.join("totoChannel");
 		cout << tata;
 		cout << servDatas.getChannel("totoChannel") << endl;
 		try {
-			tata.joinChannel("totoChannel");
+			tata.join("totoChannel");
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
 		try {
-			toto.joinChannel("totoChannel");
+			toto.join("totoChannel");
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
 		cout << "--------------------QUIT CHANNEL--------------------" << endl;
-		tata.quitChannel("totoChannel");
+		tata.part("totoChannel");
 		cout << servDatas.getChannel("totoChannel") << endl;
 		cout << tata;
 		cout << toto;
-		toto.quitChannel("totoChannel");
+		toto.part("totoChannel");
 		cout << toto;
 		try {
 			cout << servDatas.getChannel("totoChannel") << endl;
@@ -70,7 +71,7 @@ void datasTest(Datas &servDatas) {
 		cout << tata;
 		cout << toto;
 		cout << "--------------------KICK CHANNEL--------------------" << endl;
-		tata.joinChannel("totoChannel2");
+		tata.join("totoChannel2");
 		cout << tata;
 		cout << toto;
 		cout << servDatas.getChannel("totoChannel2") << endl;
@@ -112,13 +113,13 @@ void datasTest(Datas &servDatas) {
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
-		tata.joinChannel("totoChannel2");
+		tata.join("totoChannel2");
 		try {
 			tata.mode("totoChannel2", MODE_I, 1);
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
-		tata.quitChannel("totoChannel2");
+		tata.part("totoChannel2");
 		cout << "mode : " << servDatas.getChannel("totoChannel2").getMode() << endl;
 		toto.mode("totoChannel2", MODE_I, 1);
 		cout << "mode + i : " << servDatas.getChannel("totoChannel2").getMode() << endl;
@@ -164,7 +165,7 @@ void datasTest(Datas &servDatas) {
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
-		tata.joinChannel("totoChannel2");
+		tata.join("totoChannel2");
 		try {
 			tata.topic("totoChannel2", "totoChannel");
 		} catch (datasException &e) {
@@ -175,36 +176,45 @@ void datasTest(Datas &servDatas) {
 		cout << toto;
 		cout << tata;
 		try {
-			tata.joinChannel("totoChannel");
+			tata.join("totoChannel");
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
 		cout << "--------------------CHANNEL INVITE--------------------" << endl;
-		toto.createChannel("inviteChannel", MODE_I);
+		toto.join("inviteChannel");
+		toto.mode("inviteChannel", MODE_I, 1);
 		cout << toto;
 		try {
-			tata.joinChannel("inviteChannel");
+			tata.join("inviteChannel");
 		} catch (datasException &e) {
 			cout << e.getOption() << " : " << e.what() << endl;
 		}
 		toto.invite("tata", "inviteChannel");
-		tata.joinChannel("inviteChannel");
+		tata.join("inviteChannel");
 		cout << toto;
 		cout << tata;
-//		cout << "--------------------CMD NAME--------------------" << endl;
-//		string tmp[] = {"inviteChanne", "totoChannel"};
-//		vector<string> chanList(tmp, tmp + sizeof(tmp) / sizeof(tmp[0]));
-//		toto.names(chanList);
-//		cout << endl;
-//		tata.quitChannel("totoChannel");
-//		toto.names(chanList);
-//		cout << endl;
-//		toto.names();
-//		cout << endl;
-//		tata.quitChannel("inviteChannel");
-//		toto.names();
-//		toto.quitChannel("inviteChannel");
-//		toto.quitChannel("totoChannel");
+		cout << "--------------------CMD NAME--------------------" << endl;
+		string tmp[] = {"inviteChanne", "totoChannel"};
+		vector<string> chanList(tmp, tmp + sizeof(tmp) / sizeof(tmp[0]));
+		toto.names(chanList);
+		cout << endl;
+		tata.part("totoChannel");
+		toto.names();
+		cout << "-----------------" << endl;
+		tata.join("totoChannel");
+		toto.names();
+		cout << endl;
+		tata.join("inviteChannel");
+		toto.names();
+		cout << endl;
+		toto.join("totoChannel");
+		toto.names();
+		cout << endl;
+		toto.join("inviteChannel");
+		toto.names();
+		cout << endl;
+//		toto.part("inviteChannel");
+//		toto.part("totoChannel");
 //		cout << endl;
 //		toto.names();
 //

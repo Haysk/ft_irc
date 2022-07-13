@@ -12,6 +12,8 @@ typedef map<string, bool>::const_iterator usersInChannel_const_it;
 class Channel : public Datas
 {
 	private:
+		Datas *_datasPtr;
+
 		string _chanName;
 
 		int _mode;
@@ -24,7 +26,7 @@ class Channel : public Datas
 
 		Channel();
 
-		Channel(const string &chanName, int mode, const string &userName);
+		Channel(Datas *datasPtr, const string &chanName, int mode, const string &userName);
 
 		virtual ~Channel();
 
@@ -43,6 +45,8 @@ class Channel : public Datas
 		User &getUser(const string &userName) const;
 
 		bool userIsChanOp(const string &userName) const;
+
+		bool userIsActive(const string &userName) const;
 
 		// SETTERS
 

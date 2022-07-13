@@ -12,6 +12,7 @@ User &User::operator=(const User &rhs)
 {
 	_userName = rhs.getUserName();
 	_nickName = rhs.getNickName();
+	_activeChannel = rhs.getActiveChannel();
 	_channels = rhs.getChannels();
 	return *this;
 }
@@ -36,6 +37,11 @@ const string &User::getUserName() const
 const string &User::getNickName() const
 {
 	return _nickName;
+}
+
+const string &User::getActiveChannel() const
+{
+	return _activeChannel;
 }
 
 const userChannels &User::getChannels() const
@@ -176,12 +182,24 @@ void	User::createChannel(const string &chanName, const int mode)
 	_channels.insert(make_pair(chanName, true));
 }
 
-void	User::joinChannel(const string &chanName)
+void	User::join(const string &chanName)
 {
-	_datasPtr->addUserInChannel(_userName, chanName, false);
+	try {
+		createChannel(chanName, 0);
+		_activeChannel = chanName;
+	} catch (datasException &e) {
+		try {
+			_datasPtr->getChannel(chanName).getUser(_userName);
+			if (_activeChannel != chanName)
+				_activeChannel = chanName;
+		} catch (datasException &e) {
+			_datasPtr->addUserInChannel(_userName, chanName, false);
+			_activeChannel = chanName;
+		}
+	}
 }
 
-void	User::quitChannel(const string &chanName)
+void	User::part(const string &chanName)
 {
 	_datasPtr->removeUserFromChannel(_userName, chanName);
 }
@@ -190,6 +208,9 @@ void	User::deleteChannel(const string &chanName)
 {
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
+	if (chanName == _activeChannel)
+		_activeChannel = "";
+
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -205,13 +226,16 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 			map<string, bool> users;
 			try
 			{
-				users = _datasPtr->getChannel(*it.base()).getUsers();
+				Channel &chan = _datasPtr->getChannel(*it.base());
+				users = chan.getUsers();
 				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
 				{
-					if (it->second)
-						usersNames.insert(usersNames.begin(), "@" + it->first);
-					else
-						usersNames.insert(usersNames.begin(), it->first);
+					if (chan.userIsActive(it->first)) {
+						if (it->second)
+							usersNames.insert(usersNames.begin(), "@" + it->first);
+						else
+							usersNames.insert(usersNames.begin(), it->first);
+					}
 				}
 				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
 			}
@@ -225,15 +249,18 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		{
 			vector<string> usersNames;
 			map<string, bool> users;
+			Channel *chan = it->second;
 			try
 			{
 				users = it->second->getUsers();
 				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
 				{
-					if (it->second)
-						usersNames.insert(usersNames.begin(), "@" + it->first);
-					else
-						usersNames.insert(usersNames.begin(), it->first);
+					if (chan->userIsActive(it->first)) {
+						if (it->second)
+							usersNames.insert(usersNames.begin(), "@" + it->first);
+						else
+							usersNames.insert(usersNames.begin(), it->first);
+					}
 				}
 				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
 			}
@@ -279,11 +306,16 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 }
 
 void	User::invite(const string &userName, const string &chanName) {
+	try {
+		_datasPtr->getChannel(chanName);
+	} catch (datasException &e) {
+		_datasPtr->getUser(userName);
+		//envoyer un message au client;
+		return;
+	}
 	Channel &chan = _datasPtr->getChannel(chanName);
-	if (!chan.userIsChanOp(_userName))
-		throw datasException("Not operator in " + chanName, _userName);
-	if (!chan.chanModeIs(MODE_I))
-		throw (datasException("Channel need to be in +i mode", chanName));
+	if (chan.chanModeIs(MODE_I) && !chan.userIsChanOp(_userName))
+		throw datasException("Channel " + chanName + " is in invite mode, you must be an operator", _userName);
 	_datasPtr->getUser(userName);
 	chan.setInvit(userName);
 	//envoyer un message au client;
