@@ -87,9 +87,6 @@ void	Command::kick(User &user)
 {
 	if (_cmd.size() != 3)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /kick <channel> <nickname>");
-	if (!user.getOp(_cmd[1]))
-		throw std::domain_error("You're not allowed to use this command");
-	std::cout << "KICK" << std::endl;
 	user.kick(_cmd[2], _cmd[1]);
 }
 
@@ -108,8 +105,6 @@ void	Command::invite(User &user)
 {
 	if (_cmd.size() != 3)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /invite <nickname> <channel>");
-	if (!user.getOp(_cmd[2]))
-		throw std::domain_error("You're not allowed to use this command");
 	user.invite(_cmd[1], _cmd[2]);
 }
 
@@ -117,8 +112,6 @@ void	Command::topic(User &user)
 {
 	if (_cmd.size() > 3 || _cmd.size() < 2)
 		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /topic <channel> [name]");
-	if (!user.getOp(_cmd[1]))
-		throw std::domain_error("You're not allowed to use this command");
 	user.topic(_cmd[1], _cmd[2]);
 }
 

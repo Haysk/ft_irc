@@ -70,6 +70,7 @@ Channel &Datas::getChannel(const string &chanName) const
 {
 	channelsDatas_const_it it;
 
+	std::cout << "chanName: |" << chanName << "|"<< std::endl;
 	it = _channelsDatas.find(chanName);
 	if (it != _channelsDatas.end())
 		return *it->second;

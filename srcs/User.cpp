@@ -203,6 +203,7 @@ void	User::join(const string &chanName)
 			_activeChannel = chanName;
 		}
 	}
+	std::cout << _datasPtr->getChannel(chanName) << std::endl;
 }
 
 void	User::part(const string &chanName)
@@ -299,6 +300,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 
 void	User::kick(const string &userName, const string &chanName)
 {
+	std::cout << "chanName: |" << chanName << "|" << std::endl;
 	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
 	_datasPtr->removeUserFromChannel(userName, chanName);

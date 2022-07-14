@@ -16,6 +16,7 @@ class	Command
 		void	show(User&);
 		void	join(User&);
 		void	part(User&);
+		void	names(User&);
 		void	kick(User&);
 		void	mode(User&);
 		void	invite(User&);
