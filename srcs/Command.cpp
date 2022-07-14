@@ -93,10 +93,7 @@ void	Command::kick(User &user)
 void	Command::mode(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Invalid number of argument.s");
-	if (!user.getOp(_cmd[1]))
-		throw std::domain_error("You're not allowed to use this command");
-	//throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /mode <channel> <{+|-}{i|t}>");
+		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /mode <channel> <{+|-}{i|t}>");
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
 }
