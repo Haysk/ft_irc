@@ -7,6 +7,7 @@ Command::Command(void) : _cmd()
 	_cmdMap["show"] = &Command::show;
 	_cmdMap["join"] = &Command::join;
 	_cmdMap["part"] = &Command::part;
+	_cmdMap["names"] = &Command::names;
 	_cmdMap["kick"] = &Command::kick;
 	_cmdMap["mode"] = &Command::mode;
 	_cmdMap["invite"] = &Command::invite;
@@ -58,14 +59,19 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 
 void	Command::show(User &user)
 {
-	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>\n/part [channel] [msg]\n/msg <nickname> <msg>\n/query <nickname> [msg]\n/quit [msg]\n/kick <nickname>\n/mode [msg]\n/invite <nickname>\n/topic [msg]");
+	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <name>");
 }
 
 void	Command::join(User &user)
 {
+	size_t	vecSize;
+
 	if (_cmd.size() != 2)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /join <channel>");
-	user.join(_cmd[1]);
+		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /join <channel>{,[channel]}");
+	vector<string>	chans = explode(_cmd[1], ',');
+	vecSize = chans.size();
+	for (unsigned int i = 0; i < vecSize; i++)
+		user.join(chans[i]);
 }
 
 void	Command::part(User &user)
@@ -77,10 +83,15 @@ void	Command::part(User &user)
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
-	{
 		user.part(chans[i]);
-		std::cout << "USER leaving: " << chans[i] << std::endl;
-	}
+}
+
+void	Command::names(User &user)
+{
+	if (_cmd.size() > 2)
+		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /names [<canal>{,<canal>}]");
+	vector<string>	chans = explode(_cmd[1], ',');
+	user.names(chans);
 }
 
 void	Command::kick(User &user)
@@ -107,8 +118,8 @@ void	Command::invite(User &user)
 
 void	Command::topic(User &user)
 {
-	if (_cmd.size() > 3 || _cmd.size() < 2)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /topic <channel> [name]");
+	if (_cmd.size() != 3)
+		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /topic <channel> <name>");
 	user.topic(_cmd[1], _cmd[2]);
 }
 
@@ -131,7 +142,8 @@ void	checkModeParam(const std::string& param)
 {
 	if (param[0] != '+' && param[0] != '-')
 		throw std::invalid_argument("Missing + or - in front of mode parameter");
-	if (param.find_first_not_of("it", 1) != std::string::npos && !checkDoublons(param))
+	if (param.find_first_not_of("it", 1) != std::string::npos
+			&& !checkDoublons(param))
 		throw std::invalid_argument("Invalid mode parameter");
 }
 

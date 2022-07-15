@@ -65,7 +65,6 @@ const bool &User::getOp() const
 
 bool &User::getOp(const string &chanName)
 {
-	std::cout << "chanName: |" << chanName << "|" << std::endl;
 	getChannel(chanName);
 	return (_channels[chanName]);
 }
@@ -176,10 +175,7 @@ void	User::execCmd(const string &cmd)
 {
 	_datasPtr->clearCmd();
 	_datasPtr->getCmd().buildCmd(countOccurrences(" ", cmd), cmd);
-	_datasPtr->getCmd().displayCmd();
 	_datasPtr->getCmd().checkCmd(*this);
-	std::cout << "EXECUTION: " + cmd + " by " + _userName << std::endl;
-	sendMsgToClient(_fd, "EXECUTION: " + cmd + " by " + _userName);
 }
 
 void	User::createChannel(const string &chanName, const int mode)
@@ -203,7 +199,6 @@ void	User::join(const string &chanName)
 			_activeChannel = chanName;
 		}
 	}
-	std::cout << _datasPtr->getChannel(chanName) << std::endl;
 }
 
 void	User::part(const string &chanName)
@@ -300,7 +295,6 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 
 void	User::kick(const string &userName, const string &chanName)
 {
-	std::cout << "chanName: |" << chanName << "|" << std::endl;
 	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
 	_datasPtr->removeUserFromChannel(userName, chanName);

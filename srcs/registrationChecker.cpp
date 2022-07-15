@@ -4,7 +4,6 @@ void	isAlpha(const std::string& str)
 {
 	int	i = 0;
 
-	std::cout << "str : " << str << std::endl;
 	while (str[i])
 	{
 		if (!((str[i] >= 65 && str[i] <= 90)

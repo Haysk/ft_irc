@@ -101,7 +101,6 @@ std::string	getRealName(const std::string& str)
 	pos = getNextArgPos(str, pos, " ");
 	if (pos == std::string::npos)
 		throw std::invalid_argument("RealName is missing");
-	std::cout << "pos: " << pos << std::endl;
 	if (pos != str.find_first_of(":"))
 		throw std::invalid_argument("Missing ':' for realname");
 	arg = str.substr(pos + 1);

@@ -64,7 +64,6 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     int ret;
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
 	    std::string	cmd = std::string(this->_buff);
-	    std::cout << "client send: " << cmd;
 	    try
 	    {
 	    	servDatas.treatCmds(sk->_client[i], cmd);

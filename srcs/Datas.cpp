@@ -70,7 +70,6 @@ Channel &Datas::getChannel(const string &chanName) const
 {
 	channelsDatas_const_it it;
 
-	std::cout << "chanName: |" << chanName << "|"<< std::endl;
 	it = _channelsDatas.find(chanName);
 	if (it != _channelsDatas.end())
 		return *it->second;
@@ -116,8 +115,6 @@ void	Datas::treatCmds(int fd, string cmds)
 		newUser(fd);
 	}
 	while (cmd.length() && posNL != std::string::npos) {
-		std::cout << "step: " << it->second->getStep() << std::endl;
-		std::cout << "CMD: " << cmd << std::endl;
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(cmd);
 		else if (!cmd.find_first_of("/"))
@@ -127,7 +124,7 @@ void	Datas::treatCmds(int fd, string cmds)
 		}
 		else
 		{
-			std::cout << "SENDING: " + cmd;
+			std::cout << "SENDING: " + cmd << std::endl;
 		}
 		posTmp = posNL;
 		posNL = cmds.find_first_of("\n\r", posNL + 1);
