@@ -131,3 +131,5 @@ size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
 	pos = str.find_first_not_of(charset, pos);
 	return (pos);
 }
+
+void	displayChannel(const std::string )

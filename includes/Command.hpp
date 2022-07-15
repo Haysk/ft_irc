@@ -21,10 +21,6 @@ class	Command
 		void	mode(User&);
 		void	invite(User&);
 		void	topic(User&);
-		/*
-			// have to be build
-			void	notice(Datas&, User&);
-		*/
 
 	public:
 		Command(void);

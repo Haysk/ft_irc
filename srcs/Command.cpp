@@ -67,7 +67,7 @@ void	Command::join(User &user)
 	size_t	vecSize;
 
 	if (_cmd.size() != 2)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /join <channel>{,[channel]}");
+		throw std::invalid_argument("Error syntax\nHow to use: /join <channel>{,[channel]}");
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
@@ -79,7 +79,7 @@ void	Command::part(User &user)
 	size_t	vecSize;
 
 	if (_cmd.size() != 2)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /part <channel>{,[channel]}");
+		throw std::invalid_argument("Error syntax\nHow to use: /part <channel>{,[channel]}");
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
@@ -89,7 +89,7 @@ void	Command::part(User &user)
 void	Command::names(User &user)
 {
 	if (_cmd.size() > 2)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /names [<canal>{,<canal>}]");
+		throw std::invalid_argument("Error syntax\nHow to use: /names [<canal>{,<canal>}]");
 	vector<string>	chans = explode(_cmd[1], ',');
 	user.names(chans);
 }
@@ -97,14 +97,14 @@ void	Command::names(User &user)
 void	Command::kick(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /kick <channel> <nickname>");
+		throw std::invalid_argument("Error syntax\nHow to use: /kick <channel> <nickname>");
 	user.kick(_cmd[2], _cmd[1]);
 }
 
 void	Command::mode(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /mode <channel> <{+|-}{i|t}>");
+		throw std::invalid_argument("Error syntax\nHow to use: /mode <channel> <{+|-}{i|t}>");
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
 }
@@ -112,14 +112,14 @@ void	Command::mode(User &user)
 void	Command::invite(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /invite <nickname> <channel>");
+		throw std::invalid_argument("Error syntax\nHow to use: /invite <nickname> <channel>");
 	user.invite(_cmd[1], _cmd[2]);
 }
 
 void	Command::topic(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Command parts in <> are mandatory and in [] are optional\nHow to use: /topic <channel> <name>");
+		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <name>");
 	user.topic(_cmd[1], _cmd[2]);
 }
 
@@ -140,11 +140,10 @@ void	Command::clearCmd(void)
 
 void	checkModeParam(const std::string& param)
 {
-	if (param[0] != '+' && param[0] != '-')
-		throw std::invalid_argument("Missing + or - in front of mode parameter");
-	if (param.find_first_not_of("it", 1) != std::string::npos
-			&& !checkDoublons(param))
-		throw std::invalid_argument("Invalid mode parameter");
+	if ((param[0] != '+' && param[0] != '-')
+			|| (param.find_first_not_of("it", 1) != std::string::npos
+			&& !checkDoublons(param)))
+		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <newName>");
 }
 
 int	convertModeParam(const std::string& param)

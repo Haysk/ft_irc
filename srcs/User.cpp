@@ -82,7 +82,6 @@ std::string	User::initUserName(string &userCmd)
 	_hostName = getArgAt(userCmd, 2, " ");
 	_serverName = getArgAt(userCmd, 3, " ");
 	_realName = getRealName(userCmd);
-	std::cout << "name: " << _realName << std::endl;
 	try
 	{
 		_datasPtr->getUser(name);
@@ -189,14 +188,18 @@ void	User::join(const string &chanName)
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
+		displayChannel(chanName);
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
-			if (_activeChannel != chanName)
+			if (_activeChannel != chanName) {
 				_activeChannel = chanName;
+				displayChannel(chanName);
+			}
 		} catch (datasException &e) {
 			_datasPtr->addUserInChannel(_userName, chanName, false);
 			_activeChannel = chanName;
+			displayChannel(chanName);
 		}
 	}
 }
