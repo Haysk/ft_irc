@@ -12,6 +12,34 @@ void	sendMsgToClient(int fd, const std::string msg)
 	send(fd, buf, len, 0);
 }
 
+void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg)
+{
+	int	lenS = sender.length();
+	int	lenM = msg.length();
+	int	i = 0;
+	char	buf[lenS + lenM + 4];
+ 
+	buf[i++] = '<';
+	std::cout << "InChan2" << std::endl;
+	while (i < lenS + 1)
+	{
+		buf[i] = sender[i - 1];
+		i++;
+	}
+	buf[i++] = '>';
+	buf[i++] = ' ';
+	std::cout << "InChan2" << std::endl;
+	while (i < lenS + lenM + 3)
+	{
+		buf[i] = msg[i - lenS - 3];
+		i++;
+	}
+	buf[i] = '\n';
+	std::cout << "InChan3" << std::endl;
+	send(fd, buf, lenS + lenM + 4, 0);
+	std::cout << "InChan4" << std::endl;
+}
+
 size_t	strlenP(std::string str)
 {
 	size_t	l = 0;
@@ -131,5 +159,3 @@ size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
 	pos = str.find_first_not_of(charset, pos);
 	return (pos);
 }
-
-void	displayChannel(const std::string )

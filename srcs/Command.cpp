@@ -59,7 +59,7 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 
 void	Command::show(User &user)
 {
-	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <name>");
+	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>");
 }
 
 void	Command::join(User &user)
@@ -119,7 +119,7 @@ void	Command::invite(User &user)
 void	Command::topic(User &user)
 {
 	if (_cmd.size() != 3)
-		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <name>");
+		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <newsubject>");
 	user.topic(_cmd[1], _cmd[2]);
 }
 

@@ -139,6 +139,28 @@ void Channel::useInvit(const string &userName)
 	throw (datasException("User " + userName + " is not invited in this channel", _chanName));
 }
 
+void	Channel::displayInterface(const int& fd)
+{
+	std::string	msg;
+	usersInChannel_const_it it = _users.begin();
+	usersInChannel_const_it ite = _users.end();
+
+	msg = "\n--> You have joined the channel #";
+	msg += _chanName;
+	msg += "\n*** The topic is <<To build>>";
+	msg += "\n*** The members are : ";
+	while (it != ite)
+	{
+		if (it->second)
+			msg += "@";
+		msg += it->first;
+		if (++it != _users.end())
+			msg += " ; ";
+	}
+	msg += "\n---------------------------------------------";
+	sendMsgToClient(fd, msg);
+}
+
 ostream& operator<<(ostream& os, const Channel& rhs) {
 	os << "\n" << rhs.getChanName() << " :" << endl;
 	const usersInChannel &users = rhs.getUsers();

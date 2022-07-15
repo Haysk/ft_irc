@@ -37,6 +37,8 @@ using namespace std;
 
 void	sendMsgToClient(int fd, const std::string msg);
 
+void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg);
+
 size_t	strlenP(std::string str);
 
 const	vector<string> explode(const string& s, const char& c);

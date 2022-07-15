@@ -101,34 +101,34 @@ void	Datas::newUser(int fd) {
 		throw datasException("Fd already connected", fd);
 }
 
-void	Datas::treatCmds(int fd, string cmds)
+void	Datas::treatCmds(int fd, string lines)
 {
 	usersDatas		usersData = getUsers();
 	usersDatas_const_it	it = usersData.find(fd);
-	size_t		posNL = cmds.find_first_of("\n\r");
+	size_t		posNL = lines.find_first_of("\n\r");
 	size_t		posTmp;
-	std::string	cmd = cmds.substr(0, posNL);
+	std::string	line = lines.substr(0, posNL);
 	std::string	msg;
 
 	if (it == usersData.end()) {
 		sendMsgToClient(fd, "Welcome to my server IRCserv !");
 		newUser(fd);
 	}
-	while (cmd.length() && posNL != std::string::npos) {
+	while (line.length() && posNL != std::string::npos) {
 		if (it->second->getStep() < 5)
-			msg = it->second->fillUser(cmd);
-		else if (!cmd.find_first_of("/"))
+			msg = it->second->fillUser(line);
+		else if (!line.find_first_of("/"))
 		{
-			cmd = cmd.substr(1);
-			it->second->execCmd(cmd);
+			line = line.substr(1);
+			it->second->execCmd(line);
 		}
 		else
 		{
-			std::cout << "SENDING: " + cmd << std::endl;
+			it->second->sendMsgToChannel(line);
 		}
 		posTmp = posNL;
-		posNL = cmds.find_first_of("\n\r", posNL + 1);
-		cmd = cmds.substr(posTmp + 1, posNL - (posTmp + 1));
+		posNL = lines.find_first_of("\n\r", posNL + 1);
+		line = lines.substr(posTmp + 1, posNL - (posTmp + 1));
 	}
 	sendMsgToClient(fd, msg);
 }

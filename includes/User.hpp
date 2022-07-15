@@ -37,6 +37,8 @@ class User : public Datas
 		userChannels _channels; // map (chanName | role)
 
 	public:
+		User();
+
 		User(Datas *datasPtr, int fd);
 
 		virtual ~User();
@@ -84,6 +86,8 @@ class User : public Datas
 		void execCmd(const string &cmd);
 
 		void createChannel(const string &chanName, const int mode);
+
+		void sendMsgToChannel(const std::string msg);
 
 		void join(const string &chanName);
 

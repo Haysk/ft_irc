@@ -63,6 +63,8 @@ class Channel : public Datas
 		void deleteUser(const string &userName);
 
 		void useInvit(const string &userName);
+
+		void displayInterface(const int& fd);
 };
 
 ostream& operator<<(ostream& os, const Channel& rhs);

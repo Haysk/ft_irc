@@ -1,6 +1,8 @@
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
 
+User::User() {};
+
 User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _op(0) {}
 
 User::~User()
@@ -114,8 +116,6 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 	return ("Well " + _nickName + ", now enter your username:");
 }
 
-// SETTERS
-
 // UTILS
 
 std::string	User::checkCAPLS(std::string &arg)
@@ -183,23 +183,54 @@ void	User::createChannel(const string &chanName, const int mode)
 	_channels.insert(make_pair(chanName, true));
 }
 
+void	User::sendMsgToChannel(const std::string msg)
+{
+	Channel	chan;
+	User	user;
+	usersInChannel	users;
+	usersInChannel_it	it;
+	usersInChannel_it	ite;
+
+	if (!_activeChannel.length())
+		throw std::invalid_argument("Invalid input");
+	chan = _datasPtr->getChannel(_activeChannel);
+	users = chan.getUsers();
+	it = users.begin();
+	ite = users.end();
+	while (it != ite)
+	{
+		std::cout << "username: |" << _userName << "| -- it->first : |"
+			<< it->first << "|" << std::endl;
+		if (chan.userIsActive(it->first))
+		{
+			user = _datasPtr->getUser(it->first);
+			std::cout << "user: " << user.getUserName() << std::endl;
+			std::cout << "fd: " << user.getFd() << std::endl;
+			sendMsgToClientInChan(_nickName, user.getFd(), msg);
+		}
+		std::cout << "ToChan1" << std::endl;
+		it++;
+		std::cout << "ToChan2" << std::endl;
+	}
+}
+
 void	User::join(const string &chanName)
 {
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
-		displayChannel(chanName);
+		_datasPtr->getChannel(chanName).displayInterface(_fd);
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
 			if (_activeChannel != chanName) {
 				_activeChannel = chanName;
-				displayChannel(chanName);
+				_datasPtr->getChannel(chanName).displayInterface(_fd);
 			}
 		} catch (datasException &e) {
 			_datasPtr->addUserInChannel(_userName, chanName, false);
 			_activeChannel = chanName;
-			displayChannel(chanName);
+			_datasPtr->getChannel(chanName).displayInterface(_fd);
 		}
 	}
 }
@@ -287,9 +318,12 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 	//PRINT LIST
 	for (map<string, vector<string> >::const_iterator it = list.begin(), ite = list.end(); it != ite; it++)
 	{
-		cout << it->first << endl;
-		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++)
-			cout << "\t" << *vIt.base() << endl;
+		sendMsgToClient(_fd, it->first);
+		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
+			string msg;
+			msg = "\t" + *vIt.base();
+			sendMsgToClient(_fd, msg);
+		}
 	}
 	return(list);
 }
