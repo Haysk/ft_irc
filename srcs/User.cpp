@@ -241,6 +241,7 @@ void	User::part(const string &chanName)
 
 void	User::quit(const std::string& msg)
 {
+	(void)msg;
 	_co = false;
 //	if (msg.length())
 //		sendToAll(msg);
