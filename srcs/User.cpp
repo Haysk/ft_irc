@@ -255,7 +255,7 @@ void	User::deleteChannel(const string &chanName)
 
 void User::sendPrivateMessage(const string &destName, const string &message) {
 	User &dest = getUser(destName);
-	sendMsgToClient(dest.getFd(), "\033[1;31mPRIVATE \033[0m" + message);
+	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
