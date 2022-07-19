@@ -234,6 +234,13 @@ void	User::part(const string &chanName)
 	_datasPtr->removeUserFromChannel(_userName, chanName);
 }
 
+//void	User::quit(std::string msg)
+//{
+//	_datasPtr->disconnectUser(*this);
+//	if (msg.length())
+//		sendToAll(msg);
+//}
+
 void	User::deleteChannel(const string &chanName)
 {
 	if (_channels.erase(chanName) <= 0)

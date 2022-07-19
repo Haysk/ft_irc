@@ -27,6 +27,11 @@ Datas &Datas::operator=(const Datas &rhs)
 
 // GETTERS
 
+usersDatas &Datas::getUsers()
+{
+	return _usersDatas;
+}
+
 const usersDatas &Datas::getUsers() const
 {
 	return _usersDatas;
@@ -87,6 +92,19 @@ Command	&Datas::getCmd(void)
 }
 
 // FUNCTIONS
+
+void	Datas::disconnectUser(User& user)
+{
+	channelsDatas_it	it = _channelsDatas.begin();
+	channelsDatas_it	ite = _channelsDatas.end();
+	usersInChannel	itUsers;
+
+	while (it != ite)
+	{
+		it->second->deleteUser(user.getUserName());
+		it++;
+	}
+}
 
 void	Datas::newUser(int fd) {
 	try {

@@ -39,6 +39,8 @@ class	Datas
 
 		// GETTERS
 
+		usersDatas &getUsers();
+
 		const usersDatas &getUsers() const;
 
 		const channelsDatas &getChannels() const;
@@ -54,6 +56,8 @@ class	Datas
 		Command&	getCmd(void);
 
 		// FUNCTIONS
+
+		void disconnectUser(User&);
 		
 		void newUser(int fd);
 

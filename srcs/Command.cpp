@@ -8,10 +8,13 @@ Command::Command(void) : _cmd()
 	_cmdMap["join"] = &Command::join;
 	_cmdMap["part"] = &Command::part;
 	_cmdMap["names"] = &Command::names;
+//	_cmdMap["privmsg"] = &Command::privmsg;
+//	_cmdMap["quit"] = &Command::quit;
 	_cmdMap["kick"] = &Command::kick;
 	_cmdMap["mode"] = &Command::mode;
 	_cmdMap["invite"] = &Command::invite;
 	_cmdMap["topic"] = &Command::topic;
+//	_cmdMap["squit"] = &Command::squit;
 }
 
 Command::~Command(void)
@@ -122,6 +125,16 @@ void	Command::topic(User &user)
 		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <newsubject>");
 	user.topic(_cmd[1], _cmd[2]);
 }
+
+//void	Command::quit(User &user)
+//{
+//	if (_cmd.size() > 2)
+//		throw std::invalid_argument("Error syntax\nHow to use: /quit [comment]");
+//	if (_cmd.size() > 1)
+//		user.quit(_cmd[1]);
+//	else
+//		user.quit("");
+//}
 
 void	Command::displayCmd(void)
 {
