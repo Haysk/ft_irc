@@ -73,6 +73,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    	send(sk->_client[i], "ERROR: ", 7 , 0);
 		sendMsgToClient(sk->_client[i], std::string(e.what()));
 	    }
+	    servDatas.sendPrompt(sk->_client[i]);
     }
     else if (ret == 0){
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;

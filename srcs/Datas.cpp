@@ -128,6 +128,30 @@ void	Datas::treatCmds(int fd, string lines)
 	sendMsgToClient(fd, msg);
 }
 
+void	Datas::sendPrompt(int fd)
+{
+	User	user = *_usersDatas.find(fd)->second; 
+	int	i = 0;
+	int	usernameLen;
+	char	buf[12];
+	std::string	username;
+
+	if (user.getStep() > 4)
+	{
+		username = user.getUserName();
+		usernameLen = username.length();
+		buf[i++] = '<';
+		while (i - 1 < usernameLen)
+		{
+			buf[i] = username[i - 1];
+			i++;
+		}
+		buf[i++] = '>';
+		buf[i] = ' ';
+		send(fd, buf, i + 1, 0);
+	}
+}
+
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)
 {
 	try {

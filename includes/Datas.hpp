@@ -59,6 +59,8 @@ class	Datas
 
 		void treatCmds(int fd, string cmds);
 
+		void sendPrompt(int fd);
+
 		void newChannel(const string &chanName, const int mode, const string &userName);
 
 		void addUserInChannel(const string &userName, const string &chanName, bool role);
