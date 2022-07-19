@@ -97,13 +97,19 @@ void	Datas::disconnectUser(User& user)
 {
 	channelsDatas_it	it = _channelsDatas.begin();
 	channelsDatas_it	ite = _channelsDatas.end();
-	usersInChannel	itUsers;
 
 	while (it != ite)
 	{
-		it->second->deleteUser(user.getUserName());
+		try
+		{
+			it->second->deleteUser(user.getUserName());
+		}
+		catch (datasException& e)
+		{
+		}
 		it++;
 	}
+	_usersDatas.erase(user.getFd());
 }
 
 void	Datas::newUser(int fd) {

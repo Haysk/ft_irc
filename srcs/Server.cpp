@@ -76,18 +76,18 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 		cmd += e.what();
 		sendMsgToClient(sk->_client[i], cmd);
 	    }
+	    if (!servDatas.getUser(sk->_client[i]).getCo())
+	    {
+        	std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
+		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
+        	close(sk->_client[i]);
+        	sk->_client.erase(sk->_client.begin() + i);
+	    }
 	    servDatas.sendPrompt(sk->_client[i]);
     }
-    else if (ret == 0){
+    else if (ret == 0) {
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
-	User	user = servDatas.getUser(sk->_client[i]);
-	std::string	chanName = user.getActiveChannel();
-	std::cout << "chanNAME: " << chanName << std::endl;
-	Channel	chan = servDatas.getChannel(chanName);
-	std::string	username = user.getUserName();
-	std::cout << "USERNAME: " << username << std::endl;
-	chan.getUsers().erase(username);
-	servDatas.getUsers().erase(sk->_client[i]);
+	servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
         close(sk->_client[i]);
         sk->_client.erase(sk->_client.begin() + i);
     }

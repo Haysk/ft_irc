@@ -3,7 +3,7 @@
 
 User::User() {};
 
-User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _op(0) {}
+User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _co(true), _op(0) {}
 
 User::~User()
 {
@@ -69,6 +69,11 @@ bool &User::getOp(const string &chanName)
 {
 	getChannel(chanName);
 	return (_channels[chanName]);
+}
+
+bool	User::getCo(void)
+{
+	return (_co);
 }
 
 // SETTERS
@@ -234,12 +239,12 @@ void	User::part(const string &chanName)
 	_datasPtr->removeUserFromChannel(_userName, chanName);
 }
 
-//void	User::quit(std::string msg)
-//{
-//	_datasPtr->disconnectUser(*this);
+void	User::quit(const std::string& msg)
+{
+	_co = false;
 //	if (msg.length())
 //		sendToAll(msg);
-//}
+}
 
 void	User::deleteChannel(const string &chanName)
 {
