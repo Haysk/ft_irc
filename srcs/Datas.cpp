@@ -118,14 +118,9 @@ void	Datas::treatCmds(int fd, string lines)
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(line);
 		else if (!line.find_first_of("/"))
-		{
-			line = line.substr(1);
-			it->second->execCmd(line);
-		}
+			it->second->execCmd(line.substr(1));
 		else
-		{
 			it->second->sendMsgToChannel(line);
-		}
 		posTmp = posNL;
 		posNL = lines.find_first_of("\n\r", posNL + 1);
 		line = lines.substr(posTmp + 1, posNL - (posTmp + 1));

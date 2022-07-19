@@ -74,9 +74,14 @@ bool Channel::userIsChanOp(const string &userName) const
 	throw datasException("User not in this Channel", userName);
 }
 
-bool Channel::userIsActive(const string &userName) const
+bool Channel::userIsActive(const string &userName)
 {
 	return (_datasPtr->getUser(userName).getActiveChannel() == _chanName);
+}
+
+Datas*	Channel::getDatasPtr(void)
+{
+	return (_datasPtr);
 }
 
 // SETTERS
@@ -97,6 +102,7 @@ void Channel::setChanName(const Datas &datas, const string &newName)
 
 void Channel::setMod(const int newMode, const bool add)
 {
+	std::cout << "pwd: " << _datasPtr->getPwd() << std::endl;
 	if (add)
 		_mode = _mode | newMode;
 	else

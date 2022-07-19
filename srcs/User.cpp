@@ -187,30 +187,23 @@ void	User::sendMsgToChannel(const std::string msg)
 {
 	Channel	chan;
 	User	user;
-	usersInChannel	users;
-	usersInChannel_it	it;
-	usersInChannel_it	ite;
+	usersDatas	users;
+	usersDatas_it	it;
+	usersDatas_it	ite;
 
 	if (!_activeChannel.length())
 		throw std::invalid_argument("Invalid input");
 	chan = _datasPtr->getChannel(_activeChannel);
-	users = chan.getUsers();
+	users = _datasPtr->getUsers();
 	it = users.begin();
 	ite = users.end();
 	while (it != ite)
 	{
-		std::cout << "username: |" << _userName << "| -- it->first : |"
-			<< it->first << "|" << std::endl;
-		if (chan.userIsActive(it->first))
-		{
-			user = _datasPtr->getUser(it->first);
-			std::cout << "user: " << user.getUserName() << std::endl;
-			std::cout << "fd: " << user.getFd() << std::endl;
-			sendMsgToClientInChan(_nickName, user.getFd(), msg);
-		}
-		std::cout << "ToChan1" << std::endl;
+		user = *it->second;
+		if (!user.getActiveChannel().compare(chan.getChanName())
+				&& user.getUserName().compare(_userName))
+			sendMsgToClientInChan(_nickName, it->first, msg);
 		it++;
-		std::cout << "ToChan2" << std::endl;
 	}
 }
 

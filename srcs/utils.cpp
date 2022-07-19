@@ -20,7 +20,6 @@ void	sendMsgToClientInChan(const std::string sender, int fd, const std::string m
 	char	buf[lenS + lenM + 4];
  
 	buf[i++] = '<';
-	std::cout << "InChan2" << std::endl;
 	while (i < lenS + 1)
 	{
 		buf[i] = sender[i - 1];
@@ -28,16 +27,13 @@ void	sendMsgToClientInChan(const std::string sender, int fd, const std::string m
 	}
 	buf[i++] = '>';
 	buf[i++] = ' ';
-	std::cout << "InChan2" << std::endl;
 	while (i < lenS + lenM + 3)
 	{
 		buf[i] = msg[i - lenS - 3];
 		i++;
 	}
 	buf[i] = '\n';
-	std::cout << "InChan3" << std::endl;
 	send(fd, buf, lenS + lenM + 4, 0);
-	std::cout << "InChan4" << std::endl;
 }
 
 size_t	strlenP(std::string str)
