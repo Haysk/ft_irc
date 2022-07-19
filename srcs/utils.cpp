@@ -1,15 +1,34 @@
 # include "../includes/utils.hpp"
+# include <ctime>
 
 void	sendMsgToClient(int fd, const std::string msg)
 {
 	int	len = msg.length() + 1;
 	int	i;
-	char	buf[len];
- 
+	int	j = 0;
+	int	nNL = countOccurrences("\n", msg);
+	char	buf[len + nNL * 4 + 1];
+ 	time_t	tmm = time(0);
+	char*	dt = ctime(&tmm);
+
+	send(fd, dt + 11, 8, 0);
+	buf[j++] = ' ';
+	buf[j++] = '|';
+	buf[j++] = ' ';
 	for (i = 0; i < len - 1; i++)
-		buf[i] = msg[i];
-	buf[i] = '\n';
-	send(fd, buf, len, 0);
+	{
+		buf[j] = msg[i];
+		if (msg[i] == '\n' && i < len - 2)
+		{
+			buf[++j] = '\t';
+			buf[++j] = ' ';
+			buf[++j] = '|';
+			buf[++j] = ' ';
+		}
+		j++;
+	}
+	buf[j++] = '\n';
+	send(fd, buf, j, 0);
 }
 
 void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg)
@@ -18,7 +37,9 @@ void	sendMsgToClientInChan(const std::string sender, int fd, const std::string m
 	int	lenM = msg.length();
 	int	i = 0;
 	char	buf[lenS + lenM + 4];
- 
+ 	time_t	tmm = time(0);
+	char*	dt = ctime(&tmm);
+
 	buf[i++] = '<';
 	while (i < lenS + 1)
 	{
@@ -34,6 +55,13 @@ void	sendMsgToClientInChan(const std::string sender, int fd, const std::string m
 	}
 	buf[i] = '\n';
 	send(fd, buf, lenS + lenM + 4, 0);
+	send(fd, dt + 11, 8, 0);
+	send(fd, " | ", 3, 0);
+}
+
+void	cleanScreen(int fd)
+{
+	send(fd, "\x1B[2J\x1B[H", 7, 0);
 }
 
 size_t	strlenP(std::string str)

@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include <exception>
 #include <stdint.h>
+#include <ctime>
 #include "Command.hpp"
 
 #define IP "127.0.0.1"
@@ -33,11 +34,16 @@
 #define BITWISE_I 0
 #define BITWISE_T 1
 
+#define SERVLOGO "(  \x5c/  )( \x5c/ )___(_  _)(  _ \x5c / __)\n )    (  \x5c  /(___)_)(_  )   /( (__\n(_/\x5c/\x5c_) (__)    (____)(_)\x5c_) \x5c___)\n"
+
+
 using namespace std;
 
 void	sendMsgToClient(int fd, const std::string msg);
 
 void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg);
+
+void	cleanScreen(int fd);
 
 size_t	strlenP(std::string str);
 

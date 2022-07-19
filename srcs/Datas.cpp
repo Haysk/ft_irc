@@ -111,7 +111,6 @@ void	Datas::treatCmds(int fd, string lines)
 	std::string	msg;
 
 	if (it == usersData.end()) {
-		sendMsgToClient(fd, "Welcome to my server IRCserv !");
 		newUser(fd);
 	}
 	while (line.length() && posNL != std::string::npos) {
@@ -125,31 +124,23 @@ void	Datas::treatCmds(int fd, string lines)
 		posNL = lines.find_first_of("\n\r", posNL + 1);
 		line = lines.substr(posTmp + 1, posNL - (posTmp + 1));
 	}
-	sendMsgToClient(fd, msg);
+	if (msg.length())
+		sendMsgToClient(fd, msg);
 }
 
 void	Datas::sendPrompt(int fd)
 {
-	User	user = *_usersDatas.find(fd)->second; 
-	int	i = 0;
-	int	usernameLen;
-	char	buf[12];
-	std::string	username;
+	time_t	tmm = time(0);
+	char*	dt = ctime(&tmm);
 
-	if (user.getStep() > 4)
-	{
-		username = user.getUserName();
-		usernameLen = username.length();
-		buf[i++] = '<';
-		while (i - 1 < usernameLen)
-		{
-			buf[i] = username[i - 1];
-			i++;
-		}
-		buf[i++] = '>';
-		buf[i] = ' ';
-		send(fd, buf, i + 1, 0);
-	}
+	send(fd, dt + 11, 8, 0);
+	send(fd, " | ", 3, 0);
+}
+
+void	Datas::displayServLogo(int fd)
+{
+	cleanScreen(fd);
+	sendMsgToClient(fd, SERVLOGO);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)

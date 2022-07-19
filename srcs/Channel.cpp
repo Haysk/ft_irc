@@ -151,6 +151,7 @@ void	Channel::displayInterface(const int& fd)
 	usersInChannel_const_it it = _users.begin();
 	usersInChannel_const_it ite = _users.end();
 
+	cleanScreen(fd);
 	msg = "\n--> You have joined the channel #";
 	msg += _chanName;
 	msg += "\n*** The topic is <<To build>>";

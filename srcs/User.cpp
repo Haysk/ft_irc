@@ -103,7 +103,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 	std::string	nickname;
 
 	checkCmdName(nickCmd, "NICK");
-	checkRangeArg(nickCmd, 2, 3);
+	checkRangeArg(nickCmd, 2, 2);
 	nickname = getArgAt(nickCmd, 1, " ");
 	checkLenArg(nickname, 9);
 	while (it != ite)
@@ -230,6 +230,7 @@ void	User::join(const string &chanName)
 
 void	User::part(const string &chanName)
 {
+	_datasPtr->displayServLogo(_fd);
 	_datasPtr->removeUserFromChannel(_userName, chanName);
 }
 

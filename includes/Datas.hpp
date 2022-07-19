@@ -61,6 +61,8 @@ class	Datas
 
 		void sendPrompt(int fd);
 
+		void displayServLogo(int fd);
+
 		void newChannel(const string &chanName, const int mode, const string &userName);
 
 		void addUserInChannel(const string &userName, const string &chanName, bool role);
