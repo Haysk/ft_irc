@@ -9,13 +9,13 @@
 
 void signal_handler (int n);
 bool check_input(int ac, char **av);
+Datas *servDatas = new Datas();
 
 int main(int ac, char **av){
 
     if (check_input(ac, av) == false)
         return (0);
     std::string pwd = std::string(av[2]);
-    Datas *servDatas = new Datas(pwd);
     Socket sk("127.0.0.1", atoi(av[1]));
     Server sv;
     try {
@@ -51,6 +51,8 @@ int main(int ac, char **av){
         }
     }
     catch (std::exception &e){
+	servDatas->disconnectUsers();
+	delete servDatas;
         std::cerr << "Error: " << e.what() << std::endl;
     }
     return (0);

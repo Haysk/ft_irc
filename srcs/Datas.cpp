@@ -25,6 +25,13 @@ Datas &Datas::operator=(const Datas &rhs)
 	return *this;
 }
 
+// SETTERS
+
+void	Datas::setPwd(const std::string& pwd)
+{
+	_pwd = pwd;
+}
+
 // GETTERS
 
 usersDatas &Datas::getUsers()
@@ -42,18 +49,25 @@ const channelsDatas &Datas::getChannels() const
 	return _channelsDatas;
 }
 
-User &Datas::getUser(const string &userName) const
+User &Datas::getUser(const string &name, bool config) const
 {
 	usersDatas_const_it	it = _usersDatas.begin();
 	usersDatas_const_it	ite = _usersDatas.end();
+	const std::string&	(User::*fct) () const;
+	std::string	nameChecked;
 
+	if (config)
+		fct = &User::getNickName;
+	else
+		fct = &User::getUserName;
 	while (it != ite)
 	{
-		if (!it->second->getUserName().compare(userName))
+		nameChecked = (it->second->*fct) ();
+		if (!nameChecked.compare(name))
 			return (*it->second);
 		it++;
 	}
-	throw datasException("User doesn't exist", userName);
+	throw datasException("User doesn't exist", name);
 }
 
 User &Datas::getUser(int fd) const
@@ -93,6 +107,18 @@ Command	&Datas::getCmd(void)
 
 // FUNCTIONS
 
+void	Datas::disconnectUsers(void)
+{
+	usersDatas_it	it = _usersDatas.begin();
+	usersDatas_it	ite = _usersDatas.end();
+
+	while (it != ite)
+	{
+		disconnectUser(*it->second);
+		it++;
+	}
+}
+
 void	Datas::disconnectUser(User& user)
 {
 	channelsDatas_it	it = _channelsDatas.begin();
@@ -102,7 +128,7 @@ void	Datas::disconnectUser(User& user)
 	{
 		try
 		{
-			it->second->deleteUser(user.getUserName());
+			it->second->deleteUser(user.getUserName(), USERNAME);
 		}
 		catch (datasException& e)
 		{
@@ -110,6 +136,7 @@ void	Datas::disconnectUser(User& user)
 		it++;
 	}
 	_usersDatas.erase(user.getFd());
+	close(user.getFd());
 }
 
 void	Datas::newUser(int fd) {
@@ -143,7 +170,7 @@ void	Datas::treatCmds(int fd, string lines)
 		else if (!line.find_first_of("/"))
 			it->second->execCmd(line.substr(1));
 		else
-			it->second->sendMsgToChannel(line);
+			it->second->sendMsgToChannel(it->second->getActiveChannel(), line);
 		posTmp = posNL;
 		posNL = lines.find_first_of("\n\r", posNL + 1);
 		line = lines.substr(posTmp + 1, posNL - (posTmp + 1));
@@ -186,18 +213,28 @@ void Datas::addUserInChannel(const string &userName, const string &chanName, boo
 	if (chan.chanModeIs(MODE_I))
 		chan.useInvit(userName);
 	getChannel(chanName).addUser(userName, role);
-	getUser(userName).addChannel(chanName, role);
+	getUser(userName, USERNAME).addChannel(chanName, role);
 }
 
-void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
+void Datas::removeUserFromChannel(const string &nickName, const string &chanName) {
 	Channel &chan =  getChannel(chanName);
-	User &user = getUser(userName);
-	chan.deleteUser(userName);
+	User &user = getUser(nickName, NICKNAME);
+	chan.deleteUser(nickName, NICKNAME);
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);
 	}
 	user.deleteChannel(chanName);
+}
+
+void	Datas::updateKickedInterface(User& user, const std::string& chanName)
+{
+	std::string	msg;
+
+	displayServLogo(user.getFd());
+	msg = "You've been kicked from ";
+	msg += chanName;
+	sendMsgToClient(user.getFd(), msg);
 }
 
 void Datas::deleteChannel(const string chanName)

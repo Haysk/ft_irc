@@ -80,7 +80,6 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    {
         	std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
-        	close(sk->_client[i]);
         	sk->_client.erase(sk->_client.begin() + i);
 	    }
 	    servDatas.sendPrompt(sk->_client[i]);
@@ -88,7 +87,6 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     else if (ret == 0) {
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 	servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
-        close(sk->_client[i]);
         sk->_client.erase(sk->_client.begin() + i);
     }
     else 

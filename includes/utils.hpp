@@ -33,6 +33,8 @@
 #define MODE_T 2
 #define BITWISE_I 0
 #define BITWISE_T 1
+#define USERNAME 0
+#define NICKNAME 1
 
 #define SERVLOGO "(  \x5c/  )( \x5c/ )___(_  _)(  _ \x5c / __)\n )    (  \x5c  /(___)_)(_  )   /( (__\n(_/\x5c/\x5c_) (__)    (____)(_)\x5c_) \x5c___)\n"
 
@@ -75,5 +77,7 @@ void	checkLenArg(const std::string arg, size_t max);
 int	checkDoublons(const std::string str);
 
 void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
+
+std::string	getMsgMode(const int chanMode, const bool add);
 
 #endif //FT_IRC_UTILS_HPP

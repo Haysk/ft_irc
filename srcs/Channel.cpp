@@ -61,7 +61,7 @@ User &Channel::getUser(const string &userName) const
 
 	it = _users.find(userName);
 	if (it != _users.end())
-		return _datasPtr->getUser(it->first);
+		return _datasPtr->getUser(it->first, USERNAME);
 	throw datasException("User not in this Channel");
 }
 
@@ -76,7 +76,7 @@ bool Channel::userIsChanOp(const string &userName) const
 
 bool Channel::userIsActive(const string &userName)
 {
-	return (_datasPtr->getUser(userName).getActiveChannel() == _chanName);
+	return (_datasPtr->getUser(userName, USERNAME).getActiveChannel() == _chanName);
 }
 
 Datas*	Channel::getDatasPtr(void)
@@ -92,7 +92,7 @@ void Channel::setChanName(const Datas &datas, const string &newName)
 	usersInChannel_const_it ite = _users.end();
 	for (;it != ite; it++)
 	{
-		User &user = datas.getUser(it->first);
+		User &user = datas.getUser(it->first, USERNAME);
 		bool tmp = user.getChannels().find(_chanName)->second;
 		user.deleteChannel(_chanName);
 		user.addChannel(newName, tmp);
@@ -102,7 +102,6 @@ void Channel::setChanName(const Datas &datas, const string &newName)
 
 void Channel::setMod(const int newMode, const bool add)
 {
-	std::cout << "pwd: " << _datasPtr->getPwd() << std::endl;
 	if (add)
 		_mode = _mode | newMode;
 	else
@@ -128,9 +127,15 @@ void Channel::addUser(const string &userName, bool role = false)
 	}
 }
 
-void Channel::deleteUser(const string &userName)
+void Channel::deleteUser(const string &name, bool config)
 {
-	if (_users.erase(userName) <= 0)
+	std::string	username;
+
+	if (config)
+		username = _datasPtr->getUser(name, config).getUserName();
+	else
+		username = name;
+	if (_users.erase(username) <= 0)
 		throw datasException("User not in This Channel");
 }
 
@@ -160,7 +165,7 @@ void	Channel::displayInterface(const int& fd)
 	{
 		if (it->second)
 			msg += "@";
-		msg += it->first;
+		msg += _datasPtr->getUser(it->first, USERNAME).getNickName();
 		if (++it != _users.end())
 			msg += " ; ";
 	}
