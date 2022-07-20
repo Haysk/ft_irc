@@ -52,3 +52,15 @@ const char *Socket::SocketFailed::what()const throw(){
 const char *Socket::BindFailed::what()const throw(){
     return ("Bind failed");
 }
+
+void	Socket::closeClientFd(void)
+{
+	std::vector<int>::iterator	it = _client.begin();
+	std::vector<int>::iterator	ite = _client.end();
+
+	while (it != ite)
+	{
+		close(*it);
+		it++;
+	}
+}

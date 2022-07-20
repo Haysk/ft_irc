@@ -107,18 +107,6 @@ Command	&Datas::getCmd(void)
 
 // FUNCTIONS
 
-void	Datas::disconnectUsers(void)
-{
-	usersDatas_it	it = _usersDatas.begin();
-	usersDatas_it	ite = _usersDatas.end();
-
-	while (it != ite)
-	{
-		disconnectUser(*it->second);
-		it++;
-	}
-}
-
 void	Datas::disconnectUser(User& user)
 {
 	channelsDatas_it	it = _channelsDatas.begin();
@@ -136,7 +124,6 @@ void	Datas::disconnectUser(User& user)
 		it++;
 	}
 	_usersDatas.erase(user.getFd());
-	close(user.getFd());
 }
 
 void	Datas::newUser(int fd) {

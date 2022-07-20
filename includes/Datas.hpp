@@ -61,8 +61,6 @@ class	Datas
 
 		// FUNCTIONS
 
-		void disconnectUsers(void);
-
 		void disconnectUser(User&);
 		
 		void newUser(int fd);

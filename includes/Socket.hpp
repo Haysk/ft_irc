@@ -37,6 +37,7 @@ class Socket {
         void CreateFd(int domain, int type, int protocol);
         void SetAddr(int domain);
         void Bind();
+	void closeClientFd(void);
     
     //Exception
     class SocketFailed : public std::exception{
