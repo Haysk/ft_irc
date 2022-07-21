@@ -1,5 +1,6 @@
 # include "../includes/utils.hpp"
 # include <ctime>
+#include <fstream>
 
 void	sendMsgToClient(int fd, const std::string msg)
 {
@@ -182,4 +183,26 @@ size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
 	pos = str.find_first_of(charset, start);
 	pos = str.find_first_not_of(charset, pos);
 	return (pos);
+}
+
+map<string, string> getOperatorsConf()
+{
+	map<string, string> list;
+	ifstream conf ("irc.conf");
+
+	if (!conf.is_open())
+		throw std::invalid_argument("irc.conf is missing");
+	string line;
+	while(getline(conf, line)) {
+		for(string::iterator it = line.begin(), ite = line.end(); it != ite; it++)
+			if (isspace(*it.base()))
+				line.erase(it);
+		size_t delimiter = line.find('=');
+		if (delimiter == line.npos)
+			throw std::invalid_argument("irc.conf is bad");
+		string name = line.substr(0, delimiter);
+		string pass = line.substr(delimiter + 1);
+		list.insert(make_pair(name, pass));
+	}
+	return list;
 }

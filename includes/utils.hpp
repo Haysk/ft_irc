@@ -15,6 +15,7 @@
 #include <string>
 #include <unistd.h>
 #include <cerrno>
+#include <algorithm>
 #include <fcntl.h>
 #include <iostream>
 #include <sstream>
@@ -25,6 +26,7 @@
 #include <exception>
 #include <stdint.h>
 #include <ctime>
+#include <fstream>
 #include "Command.hpp"
 
 #define IP "127.0.0.1"
@@ -72,8 +74,10 @@ void	checkNbrArg(const std::string cmdLine, size_t expected);
 
 void	checkLenArg(const std::string arg, size_t max);
 
-int	checkDoublons(const std::string str);
+int		checkDoublons(const std::string str);
 
 void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
+
+map<string, string>	getOperatorsConf();
 
 #endif //FT_IRC_UTILS_HPP

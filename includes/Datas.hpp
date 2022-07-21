@@ -23,13 +23,15 @@ class	Datas
 
 		channelsDatas _channelsDatas; // map (chanName | chanSettings)
 
+		map<string, string> _operatorConf; // map (opName | opPwd)
+
 		const std::string _pwd;
 
 		Command	_cmd;
 
 	public:
 
-		Datas(void);
+		Datas();
 
 		Datas(std::string &pwd);
 
@@ -50,6 +52,8 @@ class	Datas
 		User &getUser(int fd) const;
 
 		Channel &getChannel(const string &chanName) const;
+
+		const map<string, string> &getOperatorConf() const;
 
 		const std::string &getPwd() const;
 

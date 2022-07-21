@@ -22,6 +22,8 @@ class User : public Datas
 
 		bool	_op;
 
+		string _password;
+
 		string	_userName;
 
 		string	_nickName;

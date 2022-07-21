@@ -91,6 +91,19 @@ std::string	User::initUserName(string &userCmd)
 	}
 	catch (datasException &e)
 	{
+		for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
+				it != ite; it++)
+		{
+			if (it->first == name)
+			{
+				if (it->second == _password) {
+					_userName = name;
+					_op = true;
+					return ("Great ! You are now Operator");
+				}
+				throw std::invalid_argument("The name passed is already assigned");
+			}
+		}
 		_userName = name;
 	}
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
@@ -132,13 +145,22 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 	checkCmdName(pwdLine, "PASS");
 	checkNbrArg(pwdLine, 2);
 	pwdSent = getArgAt(pwdLine, 1, " ");
+	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().begin();
+			it != ite; it++)
+	{
+		if (!it->second.compare(pwdSent))
+		{
+			_password = pwdSent;
+			return ("Hi new user !! Now enter your nickname or try another password:");
+		}
+	}
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
 		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
-	return ("Hi new operator !! Now enter your nickname or try another password:");
+	return ("Hi new user !! Now enter your nickname or try another password:");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
-	if (_channels.insert(make_pair(chanName, role)).second == false)
+	if (!_channels.insert(make_pair(chanName, role)).second)
 		throw datasException("User already in " + chanName , _userName);
 }
 
@@ -322,7 +344,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		sendMsgToClient(_fd, it->first);
 		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
 			string msg;
-			msg = "\t" + *vIt.base();
+			msg = "\t" + getUser(*vIt.base()).getNickName();
 			sendMsgToClient(_fd, msg);
 		}
 	}

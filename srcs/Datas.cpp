@@ -4,9 +4,13 @@
 #include "../includes/Command.hpp"
 #include "../includes/tester.hpp"
 
-Datas::Datas(void): _cmd(Command()) {}
+Datas::Datas(): _cmd(Command()) {
+	_operatorConf = getOperatorsConf();
+}
 
-Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(Command()) {}
+Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(Command()) {
+	_operatorConf = getOperatorsConf();
+}
 
 Datas::~Datas()
 {
@@ -16,6 +20,7 @@ Datas::~Datas()
 		delete it->second;
 	_usersDatas.clear();
 	_channelsDatas.clear();
+	_operatorConf.clear();
 }
 
 Datas &Datas::operator=(const Datas &rhs)
@@ -79,6 +84,11 @@ Channel &Datas::getChannel(const string &chanName) const
 	if (it != _channelsDatas.end())
 		return *it->second;
 	throw datasException("Channel doesn't exist", chanName);
+}
+
+const map<string, string> &Datas::getOperatorConf() const
+{
+	return _operatorConf;
 }
 
 const std::string &Datas::getPwd(void) const
