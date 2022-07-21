@@ -39,10 +39,6 @@ class	Datas
 
 		Datas &operator=(const Datas &rhs);
 
-		// SETTERS
-
-		void	setPwd(const std::string& pwd);
-
 		// GETTERS
 
 		usersDatas &getUsers();

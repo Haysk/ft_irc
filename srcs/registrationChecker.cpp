@@ -1,15 +1,26 @@
 # include "../includes/utils.hpp"
 
+
 void	isAlpha(const std::string& str)
 {
 	int	i = 0;
 
 	while (str[i])
 	{
-		if (!((str[i] >= 65 && str[i] <= 90)
-				|| (str[i] >= 97 && str[i] <= 122)
-				|| (str[i] == 32)))
+		if (!isalpha(str[i]))
 			throw std::invalid_argument("Not a alphabetic argument");
+		i++;
+	}
+}
+
+void	isAlphaNum(const std::string& str)
+{
+	int	i = 0;
+
+	while (str[i])
+	{
+		if (!isalnum(str[i]))
+			throw std::invalid_argument("Not a alphanumeric argument");
 		i++;
 	}
 }

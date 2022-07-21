@@ -64,13 +64,15 @@ std::string	getArgAt(const std::string& str, size_t index,
 
 std::string	getRealName(const std::string& str);
 
-void	isAlpha(const std::string& str);
-
 
 size_t	getNextArgPos(const std::string &str, size_t start,
 			std::string charset);
 
 	// REGISTRATION_CHECKER
+
+void	isAlphaNum(const std::string& str);
+
+void	isAlpha(const std::string& str);
 
 void	checkCmdName(const std::string cmdLine, const std::string expected);
 

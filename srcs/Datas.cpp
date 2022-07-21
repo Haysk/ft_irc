@@ -30,13 +30,6 @@ Datas &Datas::operator=(const Datas &rhs)
 	return *this;
 }
 
-// SETTERS
-
-void	Datas::setPwd(const std::string& pwd)
-{
-	_pwd = pwd;
-}
-
 // GETTERS
 
 usersDatas &Datas::getUsers()
@@ -134,6 +127,7 @@ void	Datas::disconnectUser(User& user)
 		it++;
 	}
 	_usersDatas.erase(user.getFd());
+	delete &user;
 }
 
 void	Datas::newUser(int fd) {

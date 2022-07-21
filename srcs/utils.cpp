@@ -123,7 +123,7 @@ std::string	getArgAt(const std::string& str, size_t index,
 		arg = str.substr(pos, len - pos);
 	else
 		arg = str.substr(pos);
-	isAlpha(arg);
+	isAlphaNum(arg);
 	return (arg);
 }
 
