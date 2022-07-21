@@ -12,7 +12,13 @@ int main(int ac, char **av){
     if (check_input(ac, av) == false)
         return (0);
     std::string pwd = std::string(av[2]);
-    Datas *servDatas = new Datas(pwd);
+    Datas *servDatas;
+    try {
+        servDatas = new Datas(pwd);
+    } catch (exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return (1);
+    }
     Socket sk("127.0.0.1", atoi(av[1]));
     Server sv;
     try {
@@ -48,11 +54,11 @@ int main(int ac, char **av){
         }
     }
     catch (std::exception &e){
-	delete servDatas;
 	sk.closeClientFd();
 	close(3);
         std::cerr << "Error: " << e.what() << std::endl;
     }
+    delete servDatas;
     return (0);
 }
 

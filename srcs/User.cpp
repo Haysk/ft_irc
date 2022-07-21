@@ -99,16 +99,15 @@ std::string	User::initUserName(string &userCmd)
 		for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
 				it != ite; it++)
 		{
-			if (it->first == name)
+			if (it->second == _password && it->first == name)
 			{
-				if (it->second == _password) {
-					_userName = name;
-					_op = true;
-					return ("Great ! You are now Operator");
-				}
-				throw std::invalid_argument("The name passed is already assigned");
+				_userName = name;
+				_op = true;
+				return ("Great ! You are now Operator");
 			}
 		}
+		if (_password != _datasPtr->getPwd())
+			throw datasException("Operator registration has failed");
 		_userName = name;
 	}
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
@@ -150,7 +149,7 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 	checkCmdName(pwdLine, "PASS");
 	checkNbrArg(pwdLine, 2);
 	pwdSent = getArgAt(pwdLine, 1, " ");
-	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().begin();
+	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
 			it != ite; it++)
 	{
 		if (!it->second.compare(pwdSent))
@@ -188,7 +187,12 @@ const string	User::fillUser(string &arg) {
 			msg = initNickName(_datasPtr->getUsers(), arg);
 			break;
 		case 4:
-			msg = initUserName(arg);
+			try {
+				msg = initUserName(arg);
+			} catch (datasException &e) {
+				sendMsgToClient(_fd, "ERROR: " + string(e.what()));
+				_step--;
+			}
 			break;
 		default:
 			throw std::out_of_range("This user is already complete");

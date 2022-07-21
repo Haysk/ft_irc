@@ -2,7 +2,7 @@
 # include <ctime>
 #include <fstream>
 
-void	sendMsgToClient(int fd, const std::string msg)
+void	sendMsgToClient(int fd, const std::string &msg)
 {
 	int	len = msg.length() + 1;
 	int	i;

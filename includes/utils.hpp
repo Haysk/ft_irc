@@ -47,7 +47,7 @@ void	signal_handler(int n);
 
 bool	check_input(int ac, char **av);
 
-void	sendMsgToClient(int fd, const std::string msg);
+void	sendMsgToClient(int fd, const std::string &msg);
 
 void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg);
 
