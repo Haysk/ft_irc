@@ -7,9 +7,6 @@
 #define LIMIT_MSG 512
 #define LIMIT_PORT 65535
 
-void signal_handler (int n);
-bool check_input(int ac, char **av);
-
 int main(int ac, char **av){
 
     if (check_input(ac, av) == false)
@@ -51,6 +48,9 @@ int main(int ac, char **av){
         }
     }
     catch (std::exception &e){
+	delete servDatas;
+	sk.closeClientFd();
+	close(3);
         std::cerr << "Error: " << e.what() << std::endl;
     }
     return (0);

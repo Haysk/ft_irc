@@ -39,6 +39,10 @@ class	Datas
 
 		Datas &operator=(const Datas &rhs);
 
+		// SETTERS
+
+		void	setPwd(const std::string& pwd);
+
 		// GETTERS
 
 		usersDatas &getUsers();
@@ -47,7 +51,7 @@ class	Datas
 
 		const channelsDatas &getChannels() const;
 
-		User &getUser(const string &userName) const;
+		User &getUser(const string &userName, bool config) const;
 		
 		User &getUser(int fd) const;
 
@@ -76,6 +80,8 @@ class	Datas
 		void addUserInChannel(const string &userName, const string &chanName, bool role);
 
 		void removeUserFromChannel(const string &userName, const string &chanName);
+
+		void updateKickedInterface(User& user, const std::string& chanName);
 
 		void deleteChannel(const string chanName);
 

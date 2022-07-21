@@ -20,6 +20,8 @@ class User : public Datas
 
 		int		_step;
 
+		bool	_co;
+
 		bool	_op;
 
 		string _password;
@@ -66,6 +68,8 @@ class User : public Datas
 		const bool &getOp() const;
 
 		bool &getOp(const string &chanName);
+		
+		bool getCo(void);
 
 		// REGISTRATION
 
@@ -89,11 +93,13 @@ class User : public Datas
 
 		void createChannel(const string &chanName, const int mode);
 
-		void sendMsgToChannel(const std::string msg);
+		void sendMsgToChannel(const std::string& chanName, const std::string& msg);
 
 		void join(const string &chanName);
 
 		void part(const string &chanName);
+
+		void quit(const std::string& msg);
 
 		void deleteChannel(const string &chanName);
 

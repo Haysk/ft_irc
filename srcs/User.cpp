@@ -3,7 +3,7 @@
 
 User::User() {};
 
-User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _op(0) {}
+User::User(Datas *datasPtr, int fd): _datasPtr(datasPtr), _fd(fd), _step(1), _co(true), _op(0) {}
 
 User::~User()
 {
@@ -71,6 +71,11 @@ bool &User::getOp(const string &chanName)
 	return (_channels[chanName]);
 }
 
+bool	User::getCo(void)
+{
+	return (_co);
+}
+
 // SETTERS
 
 std::string	User::initUserName(string &userCmd)
@@ -86,7 +91,7 @@ std::string	User::initUserName(string &userCmd)
 	_realName = getRealName(userCmd);
 	try
 	{
-		_datasPtr->getUser(name);
+		_datasPtr->getUser(name, USERNAME);
 		throw std::invalid_argument("The name passed is already assigned");
 	}
 	catch (datasException &e)
@@ -205,9 +210,8 @@ void	User::createChannel(const string &chanName, const int mode)
 	_channels.insert(make_pair(chanName, true));
 }
 
-void	User::sendMsgToChannel(const std::string msg)
+void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 {
-	Channel	chan;
 	User	user;
 	usersDatas	users;
 	usersDatas_it	it;
@@ -215,14 +219,13 @@ void	User::sendMsgToChannel(const std::string msg)
 
 	if (!_activeChannel.length())
 		throw std::invalid_argument("Invalid input");
-	chan = _datasPtr->getChannel(_activeChannel);
 	users = _datasPtr->getUsers();
 	it = users.begin();
 	ite = users.end();
 	while (it != ite)
 	{
 		user = *it->second;
-		if (!user.getActiveChannel().compare(chan.getChanName())
+		if (!user.getActiveChannel().compare(chanName)
 				&& user.getUserName().compare(_userName))
 			sendMsgToClientInChan(_nickName, it->first, msg);
 		it++;
@@ -235,12 +238,14 @@ void	User::join(const string &chanName)
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
 		_datasPtr->getChannel(chanName).displayInterface(_fd);
+		sendMsgToChannel(chanName, "JOINED THE CHANNEL");
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
 			if (_activeChannel != chanName) {
 				_activeChannel = chanName;
 				_datasPtr->getChannel(chanName).displayInterface(_fd);
+				sendMsgToChannel(chanName, "JOINED THE CHANNEL");
 			}
 		} catch (datasException &e) {
 			if (_op)
@@ -249,6 +254,7 @@ void	User::join(const string &chanName)
 				_datasPtr->addUserInChannel(_userName, chanName, false);
 			_activeChannel = chanName;
 			_datasPtr->getChannel(chanName).displayInterface(_fd);
+			sendMsgToChannel(chanName, "JOINED THE CHANNEL");
 		}
 	}
 }
@@ -259,12 +265,13 @@ void	User::part(const string &chanName)
 	_datasPtr->removeUserFromChannel(_userName, chanName);
 }
 
-//void	User::quit(std::string msg)
-//{
-//	_datasPtr->disconnectUser(*this);
+void	User::quit(const std::string& msg)
+{
+	(void)msg;
+	_co = false;
 //	if (msg.length())
 //		sendToAll(msg);
-//}
+}
 
 void	User::deleteChannel(const string &chanName)
 {
@@ -276,7 +283,7 @@ void	User::deleteChannel(const string &chanName)
 }
 
 void User::sendPrivateMessage(const string &destName, const string &message) {
-	User &dest = getUser(destName);
+	User &dest = _datasPtr->getUser(destName, NICKNAME);
 	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
 }
 
@@ -352,7 +359,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		sendMsgToClient(_fd, it->first);
 		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
 			string msg;
-			msg = "\t" + getUser(*vIt.base()).getNickName();
+			msg = "\t" + _datasPtr->getUser(*vIt.base(), USERNAME).getNickName();
 			sendMsgToClient(_fd, msg);
 		}
 	}
@@ -361,17 +368,25 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 
 // CHAN OPERATOR FUNCTION
 
-void	User::kick(const string &userName, const string &chanName)
+void	User::kick(const string &nickName, const string &chanName)
 {
+	std::string	msg;
+
 	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
-	_datasPtr->removeUserFromChannel(userName, chanName);
+	_datasPtr->removeUserFromChannel(nickName, chanName);
+	_datasPtr->updateKickedInterface(_datasPtr->getUser(nickName, NICKNAME),
+			chanName);
+	msg = "KICK " + nickName + " FROM THIS CHANNEL";
+	sendMsgToChannel(chanName, msg);
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add) {
-	Channel &chan = _datasPtr->getChannel(chanName);
+	Channel	&chan = _datasPtr->getChannel(chanName);
+
 	if (!chan.userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
+	sendMsgToChannel(chanName, getMsgMode(chanMode, add));
 	chan.setMod(chanMode, add);
 }
 
@@ -379,14 +394,14 @@ void	User::invite(const string &userName, const string &chanName) {
 	try {
 		_datasPtr->getChannel(chanName);
 	} catch (datasException &e) {
-		_datasPtr->getUser(userName);
+		_datasPtr->getUser(userName, USERNAME);
 		//envoyer un message au client;
 		return;
 	}
 	Channel &chan = _datasPtr->getChannel(chanName);
 	if (chan.chanModeIs(MODE_I) && !chan.userIsChanOp(_userName))
 		throw datasException("Channel " + chanName + " is in invite mode, you must be an operator", _userName);
-	_datasPtr->getUser(userName);
+	_datasPtr->getUser(userName, USERNAME);
 	chan.setInvit(userName);
 	//envoyer un message au client;
 }
@@ -394,6 +409,7 @@ void	User::invite(const string &userName, const string &chanName) {
 void	User::topic(const string &chanName, const string &newTopic)
 {
 	_datasPtr->newChannelTopic(_userName, chanName, newTopic);
+	sendMsgToChannel(chanName,"CHANGE THE TOPIC BY " + newTopic );
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
