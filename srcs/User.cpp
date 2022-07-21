@@ -243,7 +243,10 @@ void	User::join(const string &chanName)
 				_datasPtr->getChannel(chanName).displayInterface(_fd);
 			}
 		} catch (datasException &e) {
-			_datasPtr->addUserInChannel(_userName, chanName, false);
+			if (_op)
+				_datasPtr->addUserInChannel(_userName, chanName, true);
+			else
+				_datasPtr->addUserInChannel(_userName, chanName, false);
 			_activeChannel = chanName;
 			_datasPtr->getChannel(chanName).displayInterface(_fd);
 		}
@@ -270,6 +273,11 @@ void	User::deleteChannel(const string &chanName)
 	if (chanName == _activeChannel)
 		_activeChannel = "";
 
+}
+
+void User::sendPrivateMessage(const string &destName, const string &message) {
+	User &dest = getUser(destName);
+	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -301,7 +309,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 			catch (datasException &e) {}
 		}
 	}
-	else //LIST ALL CHANNELS 
+	else //LIST ALL CHANNELS
 	{
 		for (channelsDatas::const_iterator it = _datasPtr->getChannels().begin(),
 			ite = _datasPtr->getChannels().end(); it != ite; it++)
@@ -381,13 +389,11 @@ void	User::invite(const string &userName, const string &chanName) {
 	_datasPtr->getUser(userName);
 	chan.setInvit(userName);
 	//envoyer un message au client;
-	
-
 }
 
-void	User::topic(const string &chanName, const string &newChanName)
+void	User::topic(const string &chanName, const string &newTopic)
 {
-	_datasPtr->newChannelTopic(_userName, chanName, newChanName);
+	_datasPtr->newChannelTopic(_userName, chanName, newTopic);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)

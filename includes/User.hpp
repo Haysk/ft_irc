@@ -97,9 +97,7 @@ class User : public Datas
 
 		void deleteChannel(const string &chanName);
 
-		void sendChanMessage(const string &message, const string &destination);
-
-		//    void sendPrivateMessage();
+		void sendPrivateMessage(const string  &destName, const string &message);
 
 		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
 
