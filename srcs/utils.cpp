@@ -112,18 +112,19 @@ std::string	getArgAt(const std::string& str, size_t index,
 	size_t	len;
 	std::string	arg;
 
-	while (index)
+	while (pos != std::string::npos && index)
 	{
 		pos = str.find_first_of(charset, pos);
 		pos = str.find_first_not_of(charset, pos);
 		index--;
 	}
+	if (pos == std::string::npos)
+		return ("");
 	len = str.find_first_of(charset, pos);
 	if (len != std::string::npos)
 		arg = str.substr(pos, len - pos);
 	else
 		arg = str.substr(pos);
-	isAlphaNum(arg);
 	return (arg);
 }
 
@@ -156,8 +157,8 @@ std::string	getRealName(const std::string& str)
 		throw std::invalid_argument("RealName is missing");
 	if (pos != str.find_first_of(":"))
 		throw std::invalid_argument("Missing ':' for realname");
-	arg = str.substr(pos + 1);
-	isAlpha(arg);
+	pos = str.find_first_not_of(" ", pos + 1);
+	arg = str.substr(pos);
 	return (arg);
 }
 

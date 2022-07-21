@@ -64,6 +64,7 @@ void Server::Accept(Datas &servDatas, Socket *sk){
 
 void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     int ret;
+
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
 	    std::string	cmd = std::string(this->_buff);
 	    try
@@ -72,14 +73,13 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    }
 	    catch (std::exception &e)
 	    {
-		cmd = "ERROR: ";
-		cmd += e.what();
-		sendMsgToClient(sk->_client[i], cmd);
+		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()));
 	    }
 	    if (!servDatas.getUser(sk->_client[i]).getCo())
 	    {
         	std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
+		close(sk->_client[i]);
         	sk->_client.erase(sk->_client.begin() + i);
 	    }
 	    servDatas.sendPrompt(sk->_client[i]);
@@ -87,9 +87,10 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
     else if (ret == 0) {
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 	servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
+	close(sk->_client[i]);
         sk->_client.erase(sk->_client.begin() + i);
     }
-    else 
+    else
         std::cout << "fd " << sk->_client[i] << " recv return: " << ret << std::endl;
 }
 

@@ -13,6 +13,18 @@ void	isAlpha(const std::string& str)
 	}
 }
 
+void	isAlphaNumSp(const std::string& str)
+{
+	int	i = 0;
+
+	while (str[i])
+	{
+		if (!isalnum(str[i]) && str[i] != ' ')
+			throw std::invalid_argument("Not a alphanumeric argument");
+		i++;
+	}
+}
+
 void	isAlphaNum(const std::string& str)
 {
 	int	i = 0;

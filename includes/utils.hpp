@@ -70,6 +70,8 @@ size_t	getNextArgPos(const std::string &str, size_t start,
 
 	// REGISTRATION_CHECKER
 
+void	isAlphaNumSp(const std::string& str);
+
 void	isAlphaNum(const std::string& str);
 
 void	isAlpha(const std::string& str);
