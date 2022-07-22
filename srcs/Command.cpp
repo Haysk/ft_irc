@@ -86,7 +86,11 @@ void	Command::part(User &user)
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
+	{
+		std::cout << "CHAN NAME: " << chans[i] << std::endl;
 		user.part(chans[i]);
+		std::cout << "CHAN NAME: " << chans[i] << std::endl;
+	}
 }
 
 void	Command::names(User &user)
@@ -128,10 +132,20 @@ void	Command::topic(User &user)
 
 void	Command::quit(User &user)
 {
-	if (_cmd.size() > 2)
-		throw std::invalid_argument("Error syntax\nHow to use: /quit [comment]");
-	if (_cmd.size() > 1)
-		user.quit(_cmd[1]);
+	std::string	msg;
+	int		i = 1;
+	int		size = _cmd.size();
+
+	if (size > 1)
+	{
+		while (i < size)
+		{
+			msg += _cmd[i];
+			msg += " ";
+			i++;
+		}
+		user.quit(msg);
+	}
 	else
 		user.quit("");
 }

@@ -84,14 +84,14 @@ std::string	User::initUserName(string &userCmd)
 
 	checkCmdName(userCmd, "USER");
 	checkUserCmdNbrArg(userCmd, " ");
-	name = getArgAt(userCmd, 1, " ");
+	name = getArgAt(userCmd, 1, " ", 0);
 	checkLenArg(name, 9);
 	isAlphaNum(name);
-	_hostName = getArgAt(userCmd, 2, " ");
+	_hostName = getArgAt(userCmd, 2, " ", 0);
 	isAlphaNum(_hostName);
-	_serverName = getArgAt(userCmd, 3, " ");
+	_serverName = getArgAt(userCmd, 3, " ", 0);
 	isAlphaNum(_serverName);
-	_realName = getRealName(userCmd);
+	_realName = getArgAt(userCmd, 4, " ", 1);
 	isAlphaNumSp(_realName);
 	try
 	{
@@ -100,19 +100,7 @@ std::string	User::initUserName(string &userCmd)
 	}
 	catch (datasException &e)
 	{
-//		for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
-//				it != ite; it++)
-//		{
-//			if (it->second == _password && it->first == name)
-//			{
-//				_userName = name;
-//				_op = true;
-//				return ("Great ! You are now Operator");
-//			}
-//		}
-//		if (_password != _datasPtr->getPwd())
-//			throw datasException("Operator registration has failed");
-//		_userName = name;
+		std::cout << "EXCEPTION INITUSERNAME" << std::endl;
 	}
 	_userName = name;
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
@@ -126,7 +114,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 	checkCmdName(nickCmd, "NICK");
 	checkRangeArg(nickCmd, 2, 2);
-	nickname = getArgAt(nickCmd, 1, " ");
+	nickname = getArgAt(nickCmd, 1, " ", 0);
 	checkLenArg(nickname, 9);
 	isAlphaNum(nickname);
 	while (it != ite)
@@ -143,7 +131,8 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 
 std::string	User::checkCAPLS(std::string &arg)
 {
-	if (arg.find("CAP ") != 0 || getArgAt(arg, 1, " ").find("LS") != 0)
+	if (getArgAt(arg, 0, " ", 0).compare("CAP")
+			|| getArgAt(arg, 1, " ", 0).compare("LS"))
 		throw std::invalid_argument("You've to send us: CAP LS");
 	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>\nYou can quit the server by passing /quit [comment]");
 }
@@ -154,16 +143,7 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 
 	checkCmdName(pwdLine, "PASS");
 	checkNbrArg(pwdLine, 2);
-	pwdSent = getArgAt(pwdLine, 1, " ");
-//	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
-//			it != ite; it++)
-//	{
-//		if (!it->second.compare(pwdSent))
-//		{
-//			_password = pwdSent;
-//			return ("Hi new user !! Now enter your nickname or try another password:");
-//		}
-//	}
+	pwdSent = getArgAt(pwdLine, 1, " ", 0);
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
 		throw std::invalid_argument("The password passed isn't valid");
 	return ("Hi new user !! Now enter your nickname");
@@ -178,11 +158,11 @@ void	User::addChannel(const string &chanName, bool role) {
 
 const string	User::fillUser(string &arg) {
 	string	msg;
-	string	cmd = getArgAt(arg, 0, " ");
+	string	cmd = getArgAt(arg, 0, " ", 0);
 
 	if (!cmd.compare("/quit"))
 	{
-		quit(getArgAt(arg, 1, " "));
+		quit(arg.substr(cmd.length()));
 		return ("See you soon we hope !");
 	}
 	switch (_step) {
@@ -230,8 +210,6 @@ void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 	usersDatas_it	it;
 	usersDatas_it	ite;
 
-	if (!_activeChannel.length())
-		throw std::invalid_argument("Invalid input");
 	users = _datasPtr->getUsers();
 	it = users.begin();
 	ite = users.end();
@@ -274,8 +252,10 @@ void	User::join(const string &chanName)
 
 void	User::part(const string &chanName)
 {
+	std::cout << chanName << std::endl;
+	_datasPtr->removeUserFromChannel(_nickName, chanName);
 	_datasPtr->displayServLogo(_fd);
-	_datasPtr->removeUserFromChannel(_userName, chanName);
+	sendMsgToChannel(chanName, "LEFT THE CHANNEL");
 }
 
 void	User::quit(const std::string& msg)

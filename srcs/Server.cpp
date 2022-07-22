@@ -81,6 +81,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
 		close(sk->_client[i]);
         	sk->_client.erase(sk->_client.begin() + i);
+		return ;
 	    }
 	    servDatas.sendPrompt(sk->_client[i]);
     }

@@ -106,7 +106,7 @@ size_t	countOccurrences(std::string charset, const std::string str)
 }
 
 std::string	getArgAt(const std::string& str, size_t index,
-			std::string charset)
+			std::string charset, int config)
 {
 	size_t	pos = str.find_first_not_of(charset);
 	size_t	len;
@@ -120,45 +120,23 @@ std::string	getArgAt(const std::string& str, size_t index,
 	}
 	if (pos == std::string::npos)
 		return ("");
-	len = str.find_first_of(charset, pos);
-	if (len != std::string::npos)
-		arg = str.substr(pos, len - pos);
+	if (!config)
+	{
+		len = str.find_first_of(charset, pos);
+		if (len != std::string::npos)
+			arg = str.substr(pos, len - pos);
+		else
+			arg = str.substr(pos);
+	}
 	else
+	{
+		if (pos == std::string::npos)
+			throw std::invalid_argument("Argument.s missing");
+		if (pos != str.find_first_of(":"))
+			throw std::invalid_argument("Missing ':' for the last argument");
+		pos = str.find_first_not_of(" ", pos + 1);
 		arg = str.substr(pos);
-	return (arg);
-}
-
-std::string	getArg(const std::string& str, size_t start,
-			std::string charset)
-{
-	std::string	arg;
-	size_t		pos = str.find_first_not_of(charset, start);
-	size_t		len;
-
-	if (pos == std::string::npos)
-		throw std::invalid_argument("An argument is missing");
-	len = str.find_first_of(charset, pos);
-	if (len != std::string::npos)
-		arg = str.substr(pos, len - pos);
-	else
-		arg = str.substr(pos);
-	return (arg);
-}
-
-std::string	getRealName(const std::string& str)
-{
-	std::string	arg;
-	size_t		pos = getNextArgPos(str, 0, " ");
-
-	pos = getNextArgPos(str, pos, " ");
-	pos = getNextArgPos(str, pos, " ");
-	pos = getNextArgPos(str, pos, " ");
-	if (pos == std::string::npos)
-		throw std::invalid_argument("RealName is missing");
-	if (pos != str.find_first_of(":"))
-		throw std::invalid_argument("Missing ':' for realname");
-	pos = str.find_first_not_of(" ", pos + 1);
-	arg = str.substr(pos);
+	}
 	return (arg);
 }
 
