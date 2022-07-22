@@ -144,9 +144,19 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 	checkCmdName(pwdLine, "PASS");
 	checkNbrArg(pwdLine, 2);
 	pwdSent = getArgAt(pwdLine, 1, " ", 0);
+	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
+			it != ite; it++)
+	{
+		if (!it->second.compare(pwdSent))
+		{
+			_password = pwdSent;
+			return ("Hi new operator !! Now enter your nickname or try another password:");
+		}
+	}
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
-		throw std::invalid_argument("The password passed isn't valid");
-	return ("Hi new user !! Now enter your nickname");
+		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
+    _password = pwdSent;
+	return ("Hi new user !! Now enter your nickname or try another password:");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
@@ -300,9 +310,9 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 				{
 					if (chan.userIsActive(it->first)) {
 						if (it->second)
-							usersNames.insert(usersNames.begin(), "@" + it->first);
+							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(it->first, USERNAME).getNickName());
 						else
-							usersNames.insert(usersNames.begin(), it->first);
+							usersNames.insert(usersNames.begin(), _datasPtr->getUser(it->first, USERNAME).getNickName());
 					}
 				}
 				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
@@ -325,9 +335,9 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 				{
 					if (chan->userIsActive(it->first)) {
 						if (it->second)
-							usersNames.insert(usersNames.begin(), "@" + it->first);
+							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(it->first, USERNAME).getNickName());
 						else
-							usersNames.insert(usersNames.begin(), it->first);
+							usersNames.insert(usersNames.begin(), _datasPtr->getUser(it->first, USERNAME).getNickName());
 					}
 				}
 				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
@@ -353,7 +363,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		sendMsgToClient(_fd, it->first);
 		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
 			string msg;
-			msg = "\t" + _datasPtr->getUser(*vIt.base(), USERNAME).getNickName();
+			msg = "\t" + *vIt.base();
 			sendMsgToClient(_fd, msg);
 		}
 	}
