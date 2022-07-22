@@ -317,13 +317,13 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 			{
 				Channel &chan = _datasPtr->getChannel(*it.base());
 				users = chan.getUsers();
-				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
+				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; it++)
 				{
-					if (chan.userIsActive(it->first)) {
-						if (it->second)
-							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(it->first, USERNAME).getNickName());
+					if (chan.userIsActive(itb->first)) {
+						if (itb->second)
+							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
 						else
-							usersNames.insert(usersNames.begin(), _datasPtr->getUser(it->first, USERNAME).getNickName());
+							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
 					}
 				}
 				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
@@ -342,13 +342,13 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 			try
 			{
 				users = it->second->getUsers();
-				for (map<string, bool>::const_iterator it = users.begin(), ite = users.end(); it != ite; it++)
+				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
 				{
-					if (chan->userIsActive(it->first)) {
-						if (it->second)
-							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(it->first, USERNAME).getNickName());
+					if (chan->userIsActive(itb->first)) {
+						if (itb->second)
+							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
 						else
-							usersNames.insert(usersNames.begin(), _datasPtr->getUser(it->first, USERNAME).getNickName());
+							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
 					}
 				}
 				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
@@ -363,7 +363,7 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		ite = _datasPtr->getUsers().end(); it != ite; it++)
 	{
 		if (it->second->getChannels().empty())
-			usersNames.insert(usersNames.begin(), it->second->getUserName());
+			usersNames.insert(usersNames.begin(), it->second->getNickName());
 	}
 	if (!usersNames.empty())
 		list.insert(make_pair<string, vector<string> >("*", usersNames));
@@ -386,12 +386,16 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 void	User::kick(const string &nickName, const string &chanName)
 {
 	std::string	msg;
-
+    User &user = _datasPtr->getUser(nickName, NICKNAME);
 	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
 		throw datasException("Not operator in " + chanName, _userName);
-	_datasPtr->removeUserFromChannel(nickName, chanName);
-	_datasPtr->updateKickedInterface(_datasPtr->getUser(nickName, NICKNAME),
-			chanName);
+    if (user.getOp())
+    {
+        sendMsgToClient(_fd, "You can't kick " + nickName);
+        return;
+    }
+	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
+	_datasPtr->updateKickedInterface(user, chanName);
 	msg = "KICK " + nickName + " FROM THIS CHANNEL";
 	sendMsgToChannel(chanName, msg);
 }
@@ -405,19 +409,19 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	chan.setMod(chanMode, add);
 }
 
-void	User::invite(const string &userName, const string &chanName) {
+void	User::invite(const string &nickName, const string &chanName) {
 	try {
 		_datasPtr->getChannel(chanName);
 	} catch (datasException &e) {
-		_datasPtr->getUser(userName, USERNAME);
+		_datasPtr->getUser(nickName, NICKNAME);
 		//envoyer un message au client;
 		return;
 	}
 	Channel &chan = _datasPtr->getChannel(chanName);
 	if (chan.chanModeIs(MODE_I) && !chan.userIsChanOp(_userName))
 		throw datasException("Channel " + chanName + " is in invite mode, you must be an operator", _userName);
-	_datasPtr->getUser(userName, USERNAME);
-	chan.setInvit(userName);
+	_datasPtr->getUser(nickName, NICKNAME);
+	chan.setInvit(nickName);
 	//envoyer un message au client;
 }
 

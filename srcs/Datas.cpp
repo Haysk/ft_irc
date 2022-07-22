@@ -119,7 +119,7 @@ void	Datas::disconnectUser(User& user)
 	{
 		try
 		{
-			it->second->deleteUser(user.getUserName(), USERNAME);
+			it->second->deleteUser(user.getUserName());
 		}
 		catch (datasException& e)
 		{
@@ -207,10 +207,10 @@ void Datas::addUserInChannel(const string &userName, const string &chanName, boo
 	getUser(userName, USERNAME).addChannel(chanName, role);
 }
 
-void Datas::removeUserFromChannel(const string &nickName, const string &chanName) {
+void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
 	Channel &chan =  getChannel(chanName);
-	User &user = getUser(nickName, NICKNAME);
-	chan.deleteUser(nickName, NICKNAME);
+	User &user = getUser(userName, USERNAME);
+	chan.deleteUser(user.getUserName());
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);

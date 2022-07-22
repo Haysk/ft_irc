@@ -127,15 +127,9 @@ void Channel::addUser(const string &userName, bool role = false)
 	}
 }
 
-void Channel::deleteUser(const string &name, bool config)
+void Channel::deleteUser(const string &userName)
 {
-	std::string	username;
-
-	if (config)
-		username = _datasPtr->getUser(name, config).getUserName();
-	else
-		username = name;
-	if (_users.erase(username) <= 0)
+	if (_users.erase(userName) <= 0)
 		throw datasException("User not in This Channel");
 }
 
