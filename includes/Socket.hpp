@@ -12,6 +12,8 @@
 #include <iostream>
 #include <vector>
 
+class Datas;
+
 class Socket {
 
     public:
@@ -38,6 +40,7 @@ class Socket {
         void SetAddr(int domain);
         void Bind();
 	void closeClientFd(void);
+	void disconnectUser(Datas&, int);
     
     //Exception
     class SocketFailed : public std::exception{

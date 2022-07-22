@@ -86,9 +86,13 @@ std::string	User::initUserName(string &userCmd)
 	checkUserCmdNbrArg(userCmd, " ");
 	name = getArgAt(userCmd, 1, " ");
 	checkLenArg(name, 9);
+	isAlphaNum(name);
 	_hostName = getArgAt(userCmd, 2, " ");
+	isAlphaNum(_hostName);
 	_serverName = getArgAt(userCmd, 3, " ");
+	isAlphaNum(_serverName);
 	_realName = getRealName(userCmd);
+	isAlphaNumSp(_realName);
 	try
 	{
 		_datasPtr->getUser(name, USERNAME);
@@ -110,6 +114,7 @@ std::string	User::initUserName(string &userCmd)
 			throw datasException("Operator registration has failed");
 		_userName = name;
 	}
+	_userName = name;
 	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
 }
 
@@ -123,6 +128,7 @@ std::string	User::initNickName(const usersDatas &users, string &nickCmd)
 	checkRangeArg(nickCmd, 2, 2);
 	nickname = getArgAt(nickCmd, 1, " ");
 	checkLenArg(nickname, 9);
+	isAlphaNum(nickname);
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
@@ -139,7 +145,7 @@ std::string	User::checkCAPLS(std::string &arg)
 {
 	if (arg.find("CAP ") != 0 || getArgAt(arg, 1, " ").find("LS") != 0)
 		throw std::invalid_argument("You've to send us: CAP LS");
-	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>");
+	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>\nYou can quit the server by passing /quit [comment]");
 }
 
 std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
@@ -159,7 +165,7 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 		}
 	}
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
-		return ("The password passed isn't valid\nNow enter your nickname or try another password:");
+        throw std::invalid_argument("The password passed isn't valid");
     _password = pwdSent;
 	return ("Hi new user !! Now enter your nickname or try another password:");
 }
@@ -175,8 +181,11 @@ const string	User::fillUser(string &arg) {
 	string	msg;
 	string	cmd = getArgAt(arg, 0, " ");
 
-	if (!cmd.compare("PASS") && _step == 3)
-		_step--;
+	if (!cmd.compare("/quit"))
+	{
+		quit(getArgAt(arg, 1, " "));
+		return ("See you soon we hope !");
+	}
 	switch (_step) {
 		case 1:
 			msg = checkCAPLS(arg);
@@ -272,10 +281,11 @@ void	User::part(const string &chanName)
 
 void	User::quit(const std::string& msg)
 {
-	(void)msg;
 	_co = false;
-//	if (msg.length())
-//		sendToAll(msg);
+	if (msg.length())
+		std::cout << "<" + _userName + "> " + msg << std::endl;
+	else
+		std::cout << "<" + _userName + "> HAS LEFT THE SERVER" << std::endl;
 }
 
 void	User::deleteChannel(const string &chanName)
