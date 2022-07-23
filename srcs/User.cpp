@@ -109,6 +109,8 @@ std::string	User::initUserName(string &userCmd)
 				_op = true;
 				return ("Great ! You are now Operator");
 			}
+            if (it->first == name)
+                throw datasException("Registration has failed");
 		}
 		if (_password != _datasPtr->getPwd())
 			throw datasException("Operator registration has failed");
