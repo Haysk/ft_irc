@@ -22,6 +22,7 @@ class	Command
 		void	mode(User&);
 		void	invite(User&);
 		void	topic(User&);
+		void	squit(User&);
 
 	public:
 		Command(void);

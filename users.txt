@@ -4,8 +4,8 @@ NICK nn
 USER uu uu uu :uu
 
 CAP LS
-PASS ppp
+PASS oppass1
 NICK oo
-USER oo uu uu :uu
+USER operator1 uu uu :uu
 
 

@@ -40,6 +40,11 @@
 
 #define SERVLOGO "(  \x5c/  )( \x5c/ )___(_  _)(  _ \x5c / __)\n )    (  \x5c  /(___)_)(_  )   /( (__\n(_/\x5c/\x5c_) (__)    (____)(_)\x5c_) \x5c___)\n"
 
+//the following are UBUNTU/LINUX, and MacOS ONLY terminal color codes.
+#define RESET   "\033[0m"
+#define MAGENTA "\033[35m"      /* Magenta */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
 
 using namespace std;
 
@@ -47,7 +52,7 @@ void	signal_handler(int n);
 
 bool	check_input(int ac, char **av);
 
-void	sendMsgToClient(int fd, const std::string &msg);
+void	sendMsgToClient(int fd, const std::string &msg, int config);
 
 void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg);
 

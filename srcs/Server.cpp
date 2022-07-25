@@ -3,15 +3,6 @@
 #include "../includes/tester.hpp"
 #define LIMIT_MSG 512
 
-
-//the following are UBUNTU/LINUX, and MacOS ONLY terminal color codes.
-#define RESET   "\033[0m"
-#define MAGENTA "\033[35m"      /* Magenta */
-#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
-#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
-
-
-
 Server::Server(){
     this->_buff = new char[LIMIT_MSG];
     memset(this->_buff, 0, LIMIT_MSG);
@@ -56,9 +47,9 @@ void Server::Accept(Datas &servDatas, Socket *sk){
         std::cout << BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
 	servDatas.displayServLogo(fd);
-	sendMsgToClient(fd, "Welcome to my MY-IRC !\nEnter CAP LS to continue:");
+	sendMsgToClient(fd, "Welcome to my MY-IRC !\nEnter CAP LS to continue:", 0);
 	servDatas.newUser(fd);
-	servDatas.sendPrompt(fd);
+	//servDatas.sendPrompt(fd);
     }
 }
 
@@ -67,15 +58,16 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 
     if ((ret = recv(sk->_client[i], this->_buff, LIMIT_MSG, flag)) > 0){
 	    std::string	cmd = std::string(this->_buff);
+		std::cout << "Client send: " << cmd << std::endl;
 	    try
 	    {
 	    	servDatas.treatCmds(sk->_client[i], cmd);
 	    }
 	    catch (std::exception &e)
 	    {
-		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()));
+		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()), 0);
 	    }
-	    if (!servDatas.getUser(sk->_client[i]).getCo())
+	    if (servDatas.getCo() && !servDatas.getUser(sk->_client[i]).getCo())
 	    {
         	std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
@@ -83,7 +75,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
         	sk->_client.erase(sk->_client.begin() + i);
 		return ;
 	    }
-	    servDatas.sendPrompt(sk->_client[i]);
+	  //  servDatas.sendPrompt(sk->_client[i]);
     }
     else if (ret == 0) {
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;

@@ -164,7 +164,7 @@ void	Channel::displayInterface(const int& fd)
 			msg += " ; ";
 	}
 	msg += "\n---------------------------------------------";
-	sendMsgToClient(fd, msg);
+	sendMsgToClient(fd, msg, 0);
 }
 
 ostream& operator<<(ostream& os, const Channel& rhs) {

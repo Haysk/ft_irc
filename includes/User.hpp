@@ -116,6 +116,10 @@ class User : public Datas
 		void topic(const string &chanName, const string &newChanName);
 
 		void invite(const string &userName, const string &chanName);
+
+		// SERVER OPERATOR FUNCTION
+
+		void	squit(const string& comment);
 };
 
 ostream& operator<<(ostream& os, const User& rhs);

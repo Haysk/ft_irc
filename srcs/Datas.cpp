@@ -9,6 +9,7 @@ Datas::Datas(): _cmd(Command()) {
 }
 
 Datas::Datas(std::string& pwd): _pwd(pwd), _cmd(Command()) {
+	_co = true;
 	_operatorConf = getOperatorsConf();
 }
 
@@ -108,6 +109,11 @@ Command	&Datas::getCmd(void)
 	return (_cmd);
 }
 
+bool	Datas::getCo(void) const
+{
+	return (_co);
+}
+
 // FUNCTIONS
 
 void	Datas::disconnectUser(User& user)
@@ -147,27 +153,31 @@ void	Datas::treatCmds(int fd, string lines)
 {
 	usersDatas		usersData = getUsers();
 	usersDatas_const_it	it = usersData.find(fd);
-	size_t		posNL = lines.find_first_of("\n\r");
-	size_t		posTmp;
-	std::string	line = lines.substr(0, posNL);
+	size_t		start = 0;
+	size_t		end = lines.find_first_of("\n\r");
+	std::string	line = lines.substr(start, end);
 	std::string	msg;
 
 	if (it == usersData.end()) {
 		newUser(fd);
 	}
-	while (line.length() && posNL != std::string::npos) {
+	while (line.length() && start != std::string::npos) {
+		std::cout << "CMD: " << line << std::endl;
+		std::cout << "STEP: " << it->second->getStep() << std::endl;
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(line);
-		else if (!line.find_first_of("/"))
-			it->second->execCmd(line.substr(1));
 		else
-			it->second->sendMsgToChannel(it->second->getActiveChannel(), line);
-		posTmp = posNL;
-		posNL = lines.find_first_of("\n\r", posNL + 1);
-		line = lines.substr(posTmp + 1, posNL - (posTmp + 1));
+			it->second->execCmd(line.substr(1));
+//		else
+//			it->second->sendMsgToChannel(it->second->getActiveChannel(), line);
+		start = lines.find_first_not_of("\n\r", end);
+		end = lines.find_first_of("\n\r", start);
+		if (start == std::string::npos)
+			break;
+		line = lines.substr(start, end - start);
 	}
 	if (msg.length())
-		sendMsgToClient(fd, msg);
+		sendMsgToClient(fd, msg, 0);
 }
 
 void	Datas::sendPrompt(int fd)
@@ -182,7 +192,7 @@ void	Datas::sendPrompt(int fd)
 void	Datas::displayServLogo(int fd)
 {
 	cleanScreen(fd);
-	sendMsgToClient(fd, SERVLOGO);
+	sendMsgToClient(fd, SERVLOGO, 0);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)
@@ -225,7 +235,7 @@ void	Datas::updateKickedInterface(User& user, const std::string& chanName)
 	displayServLogo(user.getFd());
 	msg = "You've been kicked from ";
 	msg += chanName;
-	sendMsgToClient(user.getFd(), msg);
+	sendMsgToClient(user.getFd(), msg, 0);
 }
 
 void Datas::deleteChannel(const string chanName)
@@ -258,4 +268,19 @@ void Datas::newChannelTopic(const string userName, const string chanName, const 
 void Datas::clearCmd(void)
 {
 	_cmd.clearCmd();
+}
+
+void Datas::disconnectAllUsers(const string& comment)
+{
+	usersDatas_it	it = _usersDatas.begin();
+	usersDatas_it	ite = _usersDatas.end();
+
+	while (it != ite)
+	{
+		sendMsgToClient(it->first, "SERVER SHUTTING DOWN: " + comment, 1);
+		std::cout << BOLDRED << "client fd " << it->first << ": disconnected"<< RESET << std::endl;
+		close(it->first);
+		it++;
+	}
+	_co = false;
 }

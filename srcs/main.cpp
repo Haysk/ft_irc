@@ -27,7 +27,7 @@ int main(int ac, char **av){
         sk.SetAddr(AF_INET);
         sk.Bind();
         sv.Listen(&sk, 10);
-        while(1){
+        while (servDatas->getCo()){
             FD_ZERO(&sk._readfs);
             // set master fd in fd_set
             FD_SET(sk._fd, &sk._readfs);
@@ -55,10 +55,10 @@ int main(int ac, char **av){
     }
     catch (std::exception &e){
 	sk.closeClientFd();
-	close(3);
         std::cerr << "Error: " << e.what() << std::endl;
     }
     delete servDatas;
+    close(3);
     return (0);
 }
 

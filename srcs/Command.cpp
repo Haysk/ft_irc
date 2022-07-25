@@ -4,17 +4,16 @@
 Command::Command(void) : _cmd()
 {
 //	std::cout << "Command default constructor called" << std::endl;
-	_cmdMap["show"] = &Command::show;
-	_cmdMap["join"] = &Command::join;
-	_cmdMap["part"] = &Command::part;
-	_cmdMap["names"] = &Command::names;
-//	_cmdMap["privmsg"] = &Command::privmsg;
-	_cmdMap["quit"] = &Command::quit;
-	_cmdMap["kick"] = &Command::kick;
-	_cmdMap["mode"] = &Command::mode;
-	_cmdMap["invite"] = &Command::invite;
-	_cmdMap["topic"] = &Command::topic;
-//	_cmdMap["squit"] = &Command::squit;
+	_cmdMap["JOIN"] = &Command::join;
+	_cmdMap["PART"] = &Command::part;
+	_cmdMap["NAMES"] = &Command::names;
+//	_cmdMap["PRIVMSG"] = &Command::privmsg;
+	_cmdMap["QUIT"] = &Command::quit;
+	_cmdMap["KICK"] = &Command::kick;
+	_cmdMap["MODE"] = &Command::mode;
+	_cmdMap["INVITE"] = &Command::invite;
+	_cmdMap["TOPIC"] = &Command::topic;
+	_cmdMap["SQUIT"] = &Command::squit;
 }
 
 Command::~Command(void)
@@ -62,7 +61,7 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 
 void	Command::show(User &user)
 {
-	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>");
+	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>", 0);
 }
 
 void	Command::join(User &user)
@@ -148,6 +147,13 @@ void	Command::quit(User &user)
 	}
 	else
 		user.quit("");
+}
+
+void	Command::squit(User& user)
+{
+	if (_cmd.size() != 2)
+		throw std::invalid_argument("Error syntax\nHow to use: /squit <comment>");
+	user.squit(_cmd[1]);
 }
 
 void	Command::displayCmd(void)

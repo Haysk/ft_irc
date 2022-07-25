@@ -117,7 +117,14 @@ std::string	User::initUserName(string &userCmd)
 		_userName = name;
 	}
 	_userName = name;
-	return ("Great ! You are now registered\nTo see all the availables commands, enter: /show");
+	std::string msg = ":localhost 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
+	sendMsgToClient(_fd, msg, 0);
+	msg = ":localhost 002 " + _nickName + " :Your host is MyIrc, running version ircd";
+	sendMsgToClient(_fd, msg, 0);
+	msg =":localhost 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
+	sendMsgToClient(_fd, msg, 0);
+	msg = ":localhost 004 " + _nickName + " localhost tella(enterprise)-2.3(12)-netty(5.4c)-proxy(0.9) oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
+	return (msg);
 }
 
 std::string	User::initNickName(const usersDatas &users, string &nickCmd)
@@ -203,7 +210,7 @@ const string	User::fillUser(string &arg) {
 			try {
 				msg = initUserName(arg);
 			} catch (datasException &e) {
-				sendMsgToClient(_fd, "ERROR: " + string(e.what()));
+				sendMsgToClient(_fd, "ERROR: " + string(e.what()), 0);
 				_step--;
 			}
 			break;
@@ -302,7 +309,7 @@ void	User::deleteChannel(const string &chanName)
 
 void User::sendPrivateMessage(const string &destName, const string &message) {
 	User &dest = _datasPtr->getUser(destName, NICKNAME);
-	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+	sendMsgToClient(dest.getFd(), "PRIVATE : " + message, 0);
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -374,11 +381,11 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 	//PRINT LIST
 	for (map<string, vector<string> >::const_iterator it = list.begin(), ite = list.end(); it != ite; it++)
 	{
-		sendMsgToClient(_fd, it->first);
+		sendMsgToClient(_fd, it->first, 0);
 		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
 			string msg;
 			msg = "\t" + *vIt.base();
-			sendMsgToClient(_fd, msg);
+			sendMsgToClient(_fd, msg, 0);
 		}
 	}
 	return(list);
@@ -394,7 +401,7 @@ void	User::kick(const string &nickName, const string &chanName)
 		throw datasException("Not operator in " + chanName, _userName);
     if (user.getOp())
     {
-        sendMsgToClient(_fd, "You can't kick " + nickName);
+        sendMsgToClient(_fd, "You can't kick " + nickName, 0);
         return;
     }
 	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
@@ -432,6 +439,13 @@ void	User::topic(const string &chanName, const string &newTopic)
 {
 	_datasPtr->newChannelTopic(_userName, chanName, newTopic);
 	sendMsgToChannel(chanName,"CHANGE THE TOPIC BY " + newTopic );
+}
+
+void	User::squit(const string& comment)
+{
+	if (!_op)
+		throw std::invalid_argument("You're not allowed do execute this command");
+	_datasPtr->disconnectAllUsers(comment);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)

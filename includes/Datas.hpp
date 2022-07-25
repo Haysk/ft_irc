@@ -29,6 +29,8 @@ class	Datas
 
 		Command	_cmd;
 
+		bool	_co;
+
 	public:
 
 		Datas();
@@ -59,6 +61,8 @@ class	Datas
 
 		Command&	getCmd(void);
 
+		bool	getCo(void) const;
+
 		// FUNCTIONS
 
 		void disconnectUser(User&);
@@ -84,6 +88,8 @@ class	Datas
 		void newChannelTopic(const string userName, const string chanName, const string newChanName);
 
 		void clearCmd(void);
+
+		void disconnectAllUsers(const string& comment);
 
 };
 
