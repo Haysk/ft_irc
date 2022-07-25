@@ -62,7 +62,7 @@ User &Channel::getUser(const string &userName) const
 	it = _users.find(userName);
 	if (it != _users.end())
 		return _datasPtr->getUser(it->first, USERNAME);
-	throw datasException("User not in this Channel");
+	throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 bool Channel::userIsChanOp(const string &userName) const
@@ -71,7 +71,7 @@ bool Channel::userIsChanOp(const string &userName) const
 	it = _users.find(userName);
 	if (it != _users.end())
 		return it->second;
-	throw datasException("User not in this Channel", userName);
+	throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 bool Channel::userIsActive(const string &userName)
@@ -114,10 +114,15 @@ void Channel::setMod(const int newMode, const bool add)
 
 void Channel::setInvit(const string &userName)
 {
-	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
-		if (!it.base()->compare(userName))
-			throw (datasException("User already invited in " + _chanName, userName));
-	_invit.push_back(userName);
+	try {
+		getUser(userName);
+		throw datasException(userName +  _chanName + " :is already on channel");
+	} catch (datasException &e) {
+		for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
+			if (!it.base()->compare(userName))
+				return;
+		_invit.push_back(userName);
+	}
 }
 
 // FUNCTIONS
@@ -134,7 +139,7 @@ void Channel::addUser(const string &userName, bool role = false)
 void Channel::deleteUser(const string &userName)
 {
 	if (_users.erase(userName) <= 0)
-		throw datasException("User not in This Channel");
+		throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 void Channel::useInvit(const string &userName)
