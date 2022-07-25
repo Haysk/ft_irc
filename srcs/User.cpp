@@ -249,6 +249,8 @@ void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 
 void	User::join(const string &chanName)
 {
+	if (chanName.empty() || chanName[0] != '#')
+		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
@@ -277,7 +279,6 @@ void	User::join(const string &chanName)
 void	User::part(const string &chanName)
 {
 	_datasPtr->removeUserFromChannel(_userName, chanName);
-	_datasPtr->displayServLogo(_fd);
 	sendMsgToChannel(chanName, "LEFT THE CHANNEL");
 }
 
@@ -295,8 +296,10 @@ void	User::deleteChannel(const string &chanName)
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
 	if (chanName == _activeChannel)
+	{
 		_activeChannel = "";
-
+		_datasPtr->displayServLogo(_fd);
+	}
 }
 
 void User::sendPrivateMessage(const string &destName, const string &message) {
@@ -418,25 +421,19 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 }
 
 void	User::invite(const string &nickName, const string &chanName) {
-	try {
-		_datasPtr->getChannel(chanName);
-	} catch (datasException &e) {
-		_datasPtr->getUser(nickName, NICKNAME);
-		//envoyer un message au client;
-		return;
-	}
 	Channel &chan = _datasPtr->getChannel(chanName);
 	if (chan.chanModeIs(MODE_I) && !chan.userIsChanOp(_userName))
 		throw datasException("Channel " + chanName + " is in invite mode, you must be an operator", _userName);
-	_datasPtr->getUser(nickName, NICKNAME);
-	chan.setInvit(nickName);
-	//envoyer un message au client;
+	User &usr = _datasPtr->getUser(nickName, NICKNAME);
+	chan.setInvit(usr.getUserName());
+	sendMsgToClient(usr._fd, "/nYou are invited by " + _nickName + "in channel " + chanName);
+	sendMsgToClient(usr._fd, "");
 }
 
-void	User::topic(const string &chanName, const string &newTopic)
+void	User::topic(const string &chanName, const string &newTopicName)
 {
-	_datasPtr->newChannelTopic(_userName, chanName, newTopic);
-	sendMsgToChannel(chanName,"CHANGE THE TOPIC BY " + newTopic );
+	_datasPtr->newChannelTopic(_userName, chanName, newTopicName);
+	sendMsgToChannel(chanName,"CHANGE THE TOPIC BY " + newTopicName);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)

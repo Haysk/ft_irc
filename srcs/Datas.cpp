@@ -234,25 +234,15 @@ void Datas::deleteChannel(const string chanName)
 		throw datasException("Channel doesn't exist", chanName);
 }
 
-void Datas::newChannelTopic(const string userName, const string chanName, const string newChanName)
+void Datas::newChannelTopic(const string userName, const string chanName, const string newTopicName)
 {
-	try
-	{
-		getChannel(newChanName);
-	} catch (datasException &e) {
-		Channel &chan = getChannel(chanName);
-		if (!chan.userIsChanOp(userName))
-			throw datasException("Not operator in " + chanName, userName);
-		if (!chan.chanModeIs(MODE_T))
-			throw datasException("Channel not in +t mode", chanName);
-		chan.setChanName(*this, newChanName);
-		Channel *tmp = new Channel(chan);
-		delete _channelsDatas.find(chanName)->second;
-		_channelsDatas.erase(chanName);
-		_channelsDatas.insert(make_pair<string, Channel *>(newChanName, tmp));
-		return;
-	}
-	throw datasException("Channel name already used", chanName + " -> " + newChanName);
+	Channel &chan = getChannel(chanName);
+	if (!chan.userIsChanOp(userName))
+		throw datasException("Not operator in " + chanName, userName);
+	if (!chan.chanModeIs(MODE_T))
+		throw datasException("Channel not in +t mode", chanName);
+	chan.setTopic(newTopicName);
+	return;
 }
 
 void Datas::clearCmd(void)

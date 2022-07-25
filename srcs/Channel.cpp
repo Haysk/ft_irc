@@ -100,6 +100,10 @@ void Channel::setChanName(const Datas &datas, const string &newName)
 	_chanName = newName;
 }
 
+void Channel::setTopic(const string &newTopic) {
+	_topic = newTopic;
+}
+
 void Channel::setMod(const int newMode, const bool add)
 {
 	if (add)
@@ -141,7 +145,7 @@ void Channel::useInvit(const string &userName)
 			_invit.erase(it);
 			return;
 		}
-	throw (datasException("User " + userName + " is not invited in this channel", _chanName));
+	throw (datasException("You are not invited in this channel", _chanName));
 }
 
 void	Channel::displayInterface(const int& fd)
@@ -151,9 +155,9 @@ void	Channel::displayInterface(const int& fd)
 	usersInChannel_const_it ite = _users.end();
 
 	cleanScreen(fd);
-	msg = "\n--> You have joined the channel #";
+	msg = "\n--> You have joined the channel ";
 	msg += _chanName;
-	msg += "\n*** The topic is <<To build>>";
+	msg += "\n*** Topic : " + _topic;
 	msg += "\n*** The members are : ";
 	while (it != ite)
 	{
