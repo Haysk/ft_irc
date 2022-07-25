@@ -276,8 +276,7 @@ void	User::join(const string &chanName)
 
 void	User::part(const string &chanName)
 {
-	std::cout << chanName << std::endl;
-	_datasPtr->removeUserFromChannel(_nickName, chanName);
+	_datasPtr->removeUserFromChannel(_userName, chanName);
 	_datasPtr->displayServLogo(_fd);
 	sendMsgToChannel(chanName, "LEFT THE CHANNEL");
 }
@@ -309,18 +308,24 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 {
 	map<string, vector<string> > list;
 
-	//LIST CHANNELS IN PARAMS
+	for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
+	{
+		cout << *it.base() << endl;
+	}
+		//LIST CHANNELS IN PARAMS
 	if (!channels.empty())
 	{
 		for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
 		{
 			vector<string> usersNames;
 			map<string, bool> users;
+			cout << *it.base() << endl;
 			try
 			{
+				cout << "ca passe" << endl;
 				Channel &chan = _datasPtr->getChannel(*it.base());
 				users = chan.getUsers();
-				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; it++)
+				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
 				{
 					if (chan.userIsActive(itb->first)) {
 						if (itb->second)

@@ -63,6 +63,7 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 void	Command::show(User &user)
 {
 	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>");
+	clearCmd();
 }
 
 void	Command::join(User &user)
@@ -86,18 +87,16 @@ void	Command::part(User &user)
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
-	{
-		std::cout << "CHAN NAME: " << chans[i] << std::endl;
 		user.part(chans[i]);
-		std::cout << "CHAN NAME: " << chans[i] << std::endl;
-	}
 }
 
 void	Command::names(User &user)
 {
+	vector<string>	chans;
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Error syntax\nHow to use: /names [<canal>{,<canal>}]");
-	vector<string>	chans = explode(_cmd[1], ',');
+	if (_cmd.size() > 1)
+		chans = explode(_cmd[1], ',');
 	user.names(chans);
 }
 
