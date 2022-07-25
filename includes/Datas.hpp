@@ -47,7 +47,7 @@ class	Datas
 
 		const channelsDatas &getChannels() const;
 
-		User &getUser(const string &userName, bool config) const;
+		User &getUser(const string &name, bool config) const;
 		
 		User &getUser(int fd) const;
 
