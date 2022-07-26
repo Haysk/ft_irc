@@ -62,12 +62,14 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    try
 	    {
 	    	servDatas.treatCmds(sk->_client[i], cmd);
-	    }
-	    catch (std::exception &e)
-	    {
-		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()));
-	    }
-	    if (servDatas.getCo() && !servDatas.getUser(sk->_client[i]).getCo())
+	    } catch (datasException &e) {
+			stringstream ss;
+			ss << "ircserv " << e.getOption() << " " << e.what();
+			sendMsgToClient(sk->_client[i], ss.str());
+		} catch (std::exception &e) {
+			sendMsgToClient(sk->_client[i], "ircserv " + string(e.what()));
+		}
+	    if (!servDatas.getUser(sk->_client[i]).getCo())
 	    {
         	std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
 		servDatas.disconnectUser(servDatas.getUser(sk->_client[i]));
@@ -75,7 +77,6 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
         	sk->_client.erase(sk->_client.begin() + i);
 		return ;
 	    }
-	  //  servDatas.sendPrompt(sk->_client[i]);
     }
     else if (ret == 0) {
         std::cout << BOLDRED << "client fd " << sk->_client[i]<< ": disconnected"<< RESET << std::endl;
