@@ -299,9 +299,26 @@ void	User::deleteChannel(const string &chanName)
 	}
 }
 
-void User::sendPrivateMessage(const string &destName, const string &message) {
-	User &dest = _datasPtr->getUser(destName, NICKNAME);
-	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+void User::privMsg(const string &destName, const string &message) {
+	if (message.empty())
+		throw datasException(":No text to send", 412);
+	if (!destName.empty() && destName[0] != '#') {
+		User &dest = _datasPtr->getUser(destName, NICKNAME);
+		sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+	}
+	if  (!destName.empty() && destName[0] == '#')
+	{
+		try {
+			Channel &dest = _datasPtr->getChannel(destName);
+			dest.getUser(_userName);
+			sendMsgToChannel(destName, "PRIVATE :" + message);
+		} catch (datasException &e) {
+			if (!string(e.getOption()).compare("403"))
+				throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
+			if (!string(e.getOption()).compare("442"))
+				throw datasException(destName + " :Cannot send to channel", 404); // ERR_CANNOTSENDTOCHAN
+		}
+	}
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
