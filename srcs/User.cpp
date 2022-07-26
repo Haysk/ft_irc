@@ -265,9 +265,11 @@ void	User::join(const string &chanName)
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_activeChannel = chanName;
+			std::cout << "HEY1" << std::endl;
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
 	}
+	std::cout << "HEY2" << std::endl;
 }
 
 void	User::part(const string &chanName)
