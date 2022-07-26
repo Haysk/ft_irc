@@ -91,6 +91,7 @@ class	Datas
 
 		void disconnectAllUsers(const string& comment);
 
+		void responseToCmd(User& user, const string& cmdLine, const string& prevNickName = "");
 };
 
 #endif // DATAS_HPP

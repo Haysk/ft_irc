@@ -73,13 +73,13 @@ class User : public Datas
 
 		// REGISTRATION
 
-		std::string initUserName(string &userCmd);
+		void initUserName(string &userCmd);
 
-		std::string checkCAPLS(string &arg);
+		void checkCAPLS(string &arg);
 
-		std::string checkPwd(const string pwd, string &arg);
+		void checkPwd(const string pwd, string &arg);
 
-		const string fillUser(string &arg);
+		void fillUser(string &arg);
 
 		// UTILS
 
@@ -99,13 +99,15 @@ class User : public Datas
 
 		void quit(const std::string& msg);
 
-		std::string	 nick(const std::string& nickName);
+		void	 nick(const std::string& nickName);
 
 		void deleteChannel(const string &chanName);
 
 		void sendPrivateMessage(const string  &destName, const string &message);
 
 		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
+
+		void sendRegistrationComplete(void);
 
 		// CHAN OPERATOR FUNCTION
 
@@ -116,10 +118,6 @@ class User : public Datas
 		void topic(const string &chanName, const string &newChanName);
 
 		void invite(const string &userName, const string &chanName);
-
-		// SERVER OPERATOR FUNCTION
-
-		void	squit(const string& comment);
 };
 
 ostream& operator<<(ostream& os, const User& rhs);

@@ -6,7 +6,6 @@ Command::Command(void) : _cmd()
 //	std::cout << "Command default constructor called" << std::endl;
 	_cmdMap["JOIN"] = &Command::join;
 	_cmdMap["PART"] = &Command::part;
-	_cmdMap["NAMES"] = &Command::names;
 //	_cmdMap["PRIVMSG"] = &Command::privmsg;
 	_cmdMap["PING"] = &Command::ping;
 	_cmdMap["QUIT"] = &Command::quit;
@@ -14,7 +13,6 @@ Command::Command(void) : _cmd()
 	_cmdMap["MODE"] = &Command::mode;
 	_cmdMap["INVITE"] = &Command::invite;
 	_cmdMap["TOPIC"] = &Command::topic;
-	_cmdMap["SQUIT"] = &Command::squit;
 	_cmdMap["PASS"] = &Command::pass;
 	_cmdMap["USER"] = &Command::user;
 	_cmdMap["NICK"] = &Command::nick;
@@ -64,16 +62,11 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	_cmd.push_back(line.substr(tmp + 1, argLen - (tmp + 1)));
 }
 
-void	Command::show(User &user)
-{
-	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>");
-}
-
 void	Command::join(User &user)
 {
 	size_t	vecSize;
 
-	if (_cmd.size() != 2)
+	if (_cmd.size() <= 2)
 		throw datasException("JOIN :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
@@ -85,27 +78,17 @@ void	Command::part(User &user)
 {
 	size_t	vecSize;
 
-	if (_cmd.size() != 2)
-		throw std::invalid_argument("Error syntax\nHow to use: /part <channel>{,[channel]}");
+	if (_cmd.size() <= 2)
+		throw datasException("PART :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
 		user.part(chans[i]);
 }
 
-void	Command::names(User &user)
-{
-	vector<string>	chans;
-	if (_cmd.size() > 2)
-		throw std::invalid_argument("Error syntax\nHow to use: /names [<canal>{,<canal>}]");
-	if (_cmd.size() > 1)
-		chans = explode(_cmd[1], ',');
-	user.names(chans);
-}
-
 void	Command::ping(User &user)
 {
-	if (_cmd.size() != 2)
+	if (_cmd.size() <= 2)
 		throw datasException(":No origin specified", 409);
 	if (_cmd[1] != "MyIrc")
 		throw datasException(_cmd[1] + " :No such server", 409);
@@ -114,8 +97,8 @@ void	Command::ping(User &user)
 
 void	Command::kick(User &user)
 {
-	if (_cmd.size() != 3)
-		throw std::invalid_argument("Error syntax\nHow to use: /kick <channel> <nickname>");
+	if (_cmd.size() <= 3)
+		throw datasException("KICK :Not enough parameters", 461);
 	user.kick(_cmd[2], _cmd[1]);
 }
 
@@ -123,23 +106,23 @@ void	Command::mode(User &user)
 {
 	if (_cmd.size() == 2)
 		user.mode(_cmd[1], -1, 0);
-	if (_cmd.size() != 3)
-		throw std::invalid_argument("Error syntax\nHow to use: /mode <channel> <{+|-}{i|t}>");
+	if (_cmd.size() <= 2)
+		throw datasException("MODE :Not enough parameters", 461);
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
 }
 
 void	Command::invite(User &user)
 {
-	if (_cmd.size() != 3)
-		throw std::invalid_argument("Error syntax\nHow to use: /invite <nickname> <channel>");
+	if (_cmd.size() <= 3)
+		throw datasException("INVITE :Not enough parameters", 461);
 	user.invite(_cmd[1], _cmd[2]);
 }
 
 void	Command::topic(User &user)
 {
-	if (_cmd.size() != 3)
-		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <newsubject>");
+	if (_cmd.size() <= 3)
+		throw datasException("TOPIC :Not enough parameters", 461);
 	user.topic(_cmd[1], _cmd[2]);
 }
 
@@ -161,13 +144,6 @@ void	Command::quit(User &user)
 	}
 	else
 		user.quit("");
-}
-
-void	Command::squit(User& user)
-{
-	if (_cmd.size() != 2)
-		throw std::invalid_argument("Error syntax\nHow to use: /squit <comment>");
-	user.squit(_cmd[1]);
 }
 
 void	Command::pass(User& user)

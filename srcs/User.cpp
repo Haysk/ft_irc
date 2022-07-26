@@ -78,7 +78,7 @@ bool	User::getCo(void)
 
 // SETTERS
 
-std::string	User::initUserName(string &userCmd)
+void	User::initUserName(string &userCmd)
 {
 	std::string	name;
 
@@ -93,46 +93,31 @@ std::string	User::initUserName(string &userCmd)
 	isAlphaNum(_serverName);
 	_realName = getArgAt(userCmd, 4, " ", 1);
 	isAlphaNumSp(_realName);
-	try
+	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
+			it != ite; it++)
 	{
-		_datasPtr->getUser(name, USERNAME);
-		throw std::invalid_argument("The name passed is already assigned");
-	}
-	catch (datasException &e)
-	{
-		for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
-				it != ite; it++)
+		if (it->second == _password && it->first == name)
 		{
-			if (it->second == _password && it->first == name)
-			{
-				_userName = name;
-				_op = true;
-				return ("Great ! You are now Operator");
-			}
-            if (it->first == name)
-                throw datasException("Registration has failed");
+			_userName = name;
+			_op = true;
+			sendRegistrationComplete();
 		}
-		if (_password != _datasPtr->getPwd())
-			throw datasException("Operator registration has failed");
-		_userName = name;
+		if (it->first == name)
+			throw datasException("Registration has failed");
 	}
+	if (_password != _datasPtr->getPwd())
+		throw datasException("Operator registration has failed");
 	_userName = name;
-	std::string msg = ":MyIrc 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
-	sendMsgToClient(_fd, msg);
-	msg = ":MyIrc 002 " + _nickName + " :Your host is MyIrc, running version ircd";
-	sendMsgToClient(_fd, msg);
-	msg =":MyIrc 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
-	sendMsgToClient(_fd, msg);
-	msg = ":MyIrc 004 " + _nickName + " MyIrc HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
-	return (msg);
+	sendRegistrationComplete();
 }
 
-std::string	User::nick(const string &nickCmd)
+void	User::nick(const string &nickCmd)
 {
 	const usersDatas	&users = _datasPtr->getUsers();
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
 	std::string	nickname;
+	std::string	prevNick = _nickName;
 
 	checkCmdName(nickCmd, "NICK");
 	checkRangeArg(nickCmd, 2, 2);
@@ -146,7 +131,7 @@ std::string	User::nick(const string &nickCmd)
 		throw datasException(":No nickname given", 431);
 	}
 	checkLenArg(nickname, 9);
-	isAlphaNum(nickname);
+	//	check nickname syntaxe ERR_ERRONEUSNICKNAME
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
@@ -154,20 +139,20 @@ std::string	User::nick(const string &nickCmd)
 		it++;
 	}
 	_nickName = nickname;
-	return ("Well " + _nickName + ", now enter your username:");
+	if (prevNick.length())
+		_datasPtr->responseToCmd(*this, nickCmd, prevNick);
 }
 
 // UTILS
 
-std::string	User::checkCAPLS(std::string &arg)
+void	User::checkCAPLS(std::string &arg)
 {
 	if (getArgAt(arg, 0, " ", 0).compare("CAP")
 			|| getArgAt(arg, 1, " ", 0).compare("LS"))
 		throw std::invalid_argument("You've to send us: CAP LS");
-	return ("In order to register on our Ircserv, enter the commands in sequence\n1) PASS <password>\n2) NICK <nickname>\n3) USER <username> <host> <server> <:realname>\nYou can quit the server by passing /quit [comment]");
 }
 
-std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
+void	User::checkPwd(const std::string pwd, std::string &pwdLine)
 {
 	std::string	pwdSent;
 
@@ -180,13 +165,11 @@ std::string	User::checkPwd(const std::string pwd, std::string &pwdLine)
 		if (!it->second.compare(pwdSent))
 		{
 			_password = pwdSent;
-			return ("Hi new operator !! Now enter your nickname or try another password:");
 		}
 	}
 	if (pwdSent.compare(0, strlenP(pwdSent), pwd))
         throw std::invalid_argument("The password passed isn't valid");
     _password = pwdSent;
-	return ("Hi new user !! Now enter your nickname or try another password:");
 }
 
 void	User::addChannel(const string &chanName, bool role) {
@@ -196,28 +179,26 @@ void	User::addChannel(const string &chanName, bool role) {
 
 // FUNCTIONS
 
-const string	User::fillUser(string &arg) {
-	string	msg;
+void	User::fillUser(string &arg)
+{
 	string	cmd = getArgAt(arg, 0, " ", 0);
 
 	if (!cmd.compare("/quit"))
-	{
 		quit(arg.substr(cmd.length()));
-		return ("See you soon we hope !");
-	}
 	switch (_step) {
 		case 1:
-			msg = checkCAPLS(arg);
+			checkCAPLS(arg);
 			break;
 		case 2:
-			msg = checkPwd(_datasPtr->getPwd(), arg);
+			checkPwd(_datasPtr->getPwd(), arg);
 			break;
 		case 3:
-			msg = nick(arg);
+			nick(arg);
 			break;
 		case 4:
+			// JE NE COMPRENDS PAS
 			try {
-				msg = initUserName(arg);
+				initUserName(arg);
 			} catch (datasException &e) {
 				sendMsgToClient(_fd, "ERROR: " + string(e.what()));
 				_step--;
@@ -227,7 +208,6 @@ const string	User::fillUser(string &arg) {
 			throw std::out_of_range("This user is already complete");
 	}
 	_step++;
-	return (msg);
 }
 
 void	User::execCmd(const string &cmd)
@@ -412,6 +392,18 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 	return(list);
 }
 
+void	User::sendRegistrationComplete(void)
+{
+	std::string msg = ":MyIrc 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
+	sendMsgToClient(_fd, msg);
+	msg = ":MyIrc 002 " + _nickName + " :Your host is MyIrc, running version ircd";
+	sendMsgToClient(_fd, msg);
+	msg =":MyIrc 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
+	sendMsgToClient(_fd, msg);
+	msg = ":MyIrc 004 " + _nickName + " MyIrc HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
+	sendMsgToClient(_fd, msg);
+}
+
 // CHAN OPERATOR FUNCTION
 
 void	User::kick(const string &nickName, const string &chanName)
@@ -475,13 +467,6 @@ void	User::topic(const string &chanName, const string &newTopicName)
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
 	sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
-}
-
-void	User::squit(const string& comment)
-{
-	if (!_op)
-		throw std::invalid_argument("You're not allowed do execute this command");
-	_datasPtr->disconnectAllUsers(comment);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)

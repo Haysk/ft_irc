@@ -158,7 +158,6 @@ void	Datas::treatCmds(int fd, string lines)
 	size_t		start = 0;
 	size_t		end = lines.find_first_of("\n\r");
 	std::string	line = lines.substr(start, end);
-	std::string	msg;
 
 	if (it == usersData.end()) {
 		newUser(fd);
@@ -166,7 +165,7 @@ void	Datas::treatCmds(int fd, string lines)
 	while (line.length() && start != std::string::npos) {
 		std::cout << "CMD: " << line << std::endl;
 		if (it->second->getStep() < 5)
-			msg = it->second->fillUser(line);
+			it->second->fillUser(line);
 		else
 			it->second->execCmd(line);
 		start = lines.find_first_not_of("\n\r", end);
@@ -175,17 +174,6 @@ void	Datas::treatCmds(int fd, string lines)
 			break;
 		line = lines.substr(start, end - start);
 	}
-	if (msg.length())
-		sendMsgToClient(fd, msg);
-}
-
-void	Datas::sendPrompt(int fd)
-{
-	time_t	tmm = time(0);
-	char*	dt = ctime(&tmm);
-
-	send(fd, dt + 11, 8, 0);
-	send(fd, " | ", 3, 0);
 }
 
 void	Datas::displayServLogo(int fd)
@@ -272,4 +260,34 @@ void Datas::disconnectAllUsers(const string& comment)
 		it++;
 	}
 	_co = false;
+}
+
+void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevNickName)
+{
+	size_t	cmdLen = cmdLine.length();
+	char	buf[cmdLen + 25];
+	size_t	i = 0;
+	string	msg = ":";
+
+	if (prevNickName.length())
+		msg += prevNickName;
+	else
+		msg += user.getNickName();
+	std::cout << "RESPONSETOCMD" << std::endl;
+	msg += "!~" + user.getUserName();
+	msg += "@62.210.32.149 ";
+	msg += getArgAt(cmdLine, 0, " ", 0);
+	msg += " :" + getArgAt(cmdLine, 1, " ", 0); 
+	cmdLen = msg.length();
+	std::cout << "RESPONSETOCMD: ";
+	while (i < cmdLen)
+	{
+		buf[i] = msg[i];
+		std::cout << buf[i];
+		i++;
+	}
+	buf[i++] = '\n';
+	std::cout << std::endl;
+	send(user.getFd(), buf, i, 0);
+	std::cout << "RESPONSETOCMD SENT" << std::endl;
 }

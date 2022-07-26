@@ -13,17 +13,14 @@ class	Command
 	private:
 		mapper	_cmdMap;
 		std::deque<std::string>	_cmd;
-		void	show(User&);
 		void	join(User&);
 		void	part(User&);
-		void	names(User&);
 		void	quit(User&);
 		void	ping(User&);
 		void	kick(User&);
 		void	mode(User&);
 		void	invite(User&);
 		void	topic(User&);
-		void	squit(User&);
 		void	pass(User&);
 		void	user(User&);
 		void	nick(User&);
