@@ -275,7 +275,8 @@ void	User::join(const string &chanName)
 void	User::part(const string &chanName)
 {
 	_datasPtr->removeUserFromChannel(_userName, chanName); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
-	//sendMsgToChannel(chanName, "LEFT THE CHANNEL");
+	sendMsgToClient(_fd, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
+	sendMsgToChannel(chanName, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
 }
 
 void	User::quit(const std::string& msg)
@@ -292,10 +293,8 @@ void	User::deleteChannel(const string &chanName)
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
 	if (chanName == _activeChannel)
-	{
 		_activeChannel = "";
-		_datasPtr->displayServLogo(_fd);
-	}
+
 }
 
 void User::privMsg(const string &destName, const string &message) {
@@ -441,7 +440,10 @@ void	User::kick(const string &nickName, const string &chanName)
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add) {
+	if (!chanName.empty() && chanName[0] != '#')
+		return;
 	Channel	&chan = _datasPtr->getChannel(chanName);
+
 	bool isOp;
 	try {
 		isOp = chan.userIsChanOp(_userName);

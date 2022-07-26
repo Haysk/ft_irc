@@ -106,8 +106,10 @@ void	Command::kick(User &user)
 
 void	Command::mode(User &user)
 {
-	if (_cmd.size() == 2)
+	if (_cmd.size() == 2) {
 		user.mode(_cmd[1], -1, 0);
+		return;
+	}
 	if (_cmd.size() < 2)
 		throw datasException("MODE :Not enough parameters", 461);
 	checkModeParam(_cmd[2]);
