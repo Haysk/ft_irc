@@ -30,6 +30,7 @@ void	Command::checkCmd(User &user)
 	std::string	str;
 
 	str = _cmd.front();
+	std::cout << "CMD: " << str << std::endl;
 	for (mapper::iterator it = _cmdMap.begin();
 		it != _cmdMap.end(); it++)
 	{
@@ -66,10 +67,11 @@ void	Command::join(User &user)
 {
 	size_t	vecSize;
 
-	if (_cmd.size() <= 2)
+	if (_cmd.size() < 2)
 		throw datasException("JOIN :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
+	std::cout << "VECSIZE: " << vecSize << std::endl;
 	for (unsigned int i = 0; i < vecSize; i++)
 		user.join(chans[i]);
 }
@@ -78,7 +80,7 @@ void	Command::part(User &user)
 {
 	size_t	vecSize;
 
-	if (_cmd.size() <= 2)
+	if (_cmd.size() < 2)
 		throw datasException("PART :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
@@ -88,7 +90,7 @@ void	Command::part(User &user)
 
 void	Command::ping(User &user)
 {
-	if (_cmd.size() <= 2)
+	if (_cmd.size() < 2)
 		throw datasException(":No origin specified", 409);
 	if (_cmd[1] != "MyIrc")
 		throw datasException(_cmd[1] + " :No such server", 409);
@@ -97,7 +99,7 @@ void	Command::ping(User &user)
 
 void	Command::kick(User &user)
 {
-	if (_cmd.size() <= 3)
+	if (_cmd.size() < 3)
 		throw datasException("KICK :Not enough parameters", 461);
 	user.kick(_cmd[2], _cmd[1]);
 }
@@ -106,7 +108,7 @@ void	Command::mode(User &user)
 {
 	if (_cmd.size() == 2)
 		user.mode(_cmd[1], -1, 0);
-	if (_cmd.size() <= 2)
+	if (_cmd.size() < 2)
 		throw datasException("MODE :Not enough parameters", 461);
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
@@ -114,14 +116,14 @@ void	Command::mode(User &user)
 
 void	Command::invite(User &user)
 {
-	if (_cmd.size() <= 3)
+	if (_cmd.size() < 3)
 		throw datasException("INVITE :Not enough parameters", 461);
 	user.invite(_cmd[1], _cmd[2]);
 }
 
 void	Command::topic(User &user)
 {
-	if (_cmd.size() <= 3)
+	if (_cmd.size() < 3)
 		throw datasException("TOPIC :Not enough parameters", 461);
 	user.topic(_cmd[1], _cmd[2]);
 }

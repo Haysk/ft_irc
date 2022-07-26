@@ -91,7 +91,18 @@ class	Datas
 
 		void disconnectAllUsers(const string& comment);
 
-		void responseToCmd(User& user, const string& cmdLine, const string& prevNickName = "");
+		void responseToCmd(User& user, const string& cmdLine, const string& prevNickName = "", int fd = 0);
+
+		void sendJoinMsgs(User& user, Channel& chan);
+
+
+		// UTILS
+
+		string getChanNamesListMsg(User& user, Channel& chan);
+
+		string getChanNamesEndMsg(const string& nickName, const string& chanName);
+
+		void responseChanNamesList(User& user, Channel& chan);
 };
 
 #endif // DATAS_HPP

@@ -153,27 +153,21 @@ void Channel::useInvit(const string &userName)
 	throw (datasException(_chanName + " :Cannot join channel (+i)", 473)); // ERR_INVITEONLYCHAN
 }
 
-void	Channel::displayInterface(const int& fd)
+void Channel::responseJoinToUsersInChan(User& joiner)
 {
-	std::string	msg;
-	usersInChannel_const_it it = _users.begin();
-	usersInChannel_const_it ite = _users.end();
+	usersInChannel_it	it = _users.begin();
+	usersInChannel_it	ite = _users.end();
+	User	user;
 
-	cleanScreen(fd);
-	msg = "\n--> You have joined the channel ";
-	msg += _chanName;
-	msg += "\n*** Topic : " + _topic;
-	msg += "\n*** The members are : ";
 	while (it != ite)
 	{
-		if (it->second)
-			msg += "@";
-		msg += _datasPtr->getUser(it->first, USERNAME).getNickName();
-		if (++it != _users.end())
-			msg += " ; ";
+		if (it->first != joiner.getUserName())
+		{
+			user = _datasPtr->getUser(it->first, USERNAME);
+			_datasPtr->responseToCmd(user, "JOIN :" + _chanName, "", user.getFd());
+		}
+		it++;
 	}
-	msg += "\n---------------------------------------------";
-	sendMsgToClient(fd, msg);
 }
 
 ostream& operator<<(ostream& os, const Channel& rhs) {

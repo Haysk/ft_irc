@@ -70,7 +70,7 @@ class Channel : public Datas
 
 		void useInvit(const string &userName);
 
-		void displayInterface(const int& fd);
+		void responseJoinToUsersInChan(User& joiner);
 };
 
 ostream& operator<<(ostream& os, const Channel& rhs);

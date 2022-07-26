@@ -140,7 +140,7 @@ void	User::nick(const string &nickCmd)
 	}
 	_nickName = nickname;
 	if (prevNick.length())
-		_datasPtr->responseToCmd(*this, nickCmd, prevNick);
+		_datasPtr->responseToCmd(*this, "NICK :" + nickCmd, prevNick);
 }
 
 // UTILS
@@ -251,15 +251,13 @@ void	User::join(const string &chanName)
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
-		_datasPtr->getChannel(chanName).displayInterface(_fd);
-		sendMsgToChannel(chanName, "JOINED THE CHANNEL");
+		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
 			if (_activeChannel != chanName) {
 				_activeChannel = chanName;
-				_datasPtr->getChannel(chanName).displayInterface(_fd);
-				sendMsgToChannel(chanName, "JOINED THE CHANNEL");
+				_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 			}
 		} catch (datasException &e) {
 			if (_op)
@@ -267,10 +265,11 @@ void	User::join(const string &chanName)
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_activeChannel = chanName;
-			_datasPtr->getChannel(chanName).displayInterface(_fd);
-			sendMsgToChannel(chanName, "JOINED THE CHANNEL");
+			std::cout << "HEY1" << std::endl;
+			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
 	}
+	std::cout << "HEY2" << std::endl;
 }
 
 void	User::part(const string &chanName)
