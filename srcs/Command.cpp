@@ -8,12 +8,17 @@ Command::Command(void) : _cmd()
 	_cmdMap["PART"] = &Command::part;
 	_cmdMap["NAMES"] = &Command::names;
 //	_cmdMap["PRIVMSG"] = &Command::privmsg;
+	_cmdMap["PING"] = &Command::ping;
 	_cmdMap["QUIT"] = &Command::quit;
 	_cmdMap["KICK"] = &Command::kick;
 	_cmdMap["MODE"] = &Command::mode;
 	_cmdMap["INVITE"] = &Command::invite;
 	_cmdMap["TOPIC"] = &Command::topic;
 	_cmdMap["SQUIT"] = &Command::squit;
+	_cmdMap["PASS"] = &Command::pass;
+	_cmdMap["USER"] = &Command::user;
+	_cmdMap["NICK"] = &Command::nick;
+	
 }
 
 Command::~Command(void)
@@ -61,7 +66,7 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 
 void	Command::show(User &user)
 {
-	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>", 0);
+	sendMsgToClient(user.getFd(), "Command parts in <> are mandatory and in [] are optional\n/join <channel>{,[channel]}\n/part <channel>{,[channel]}\n/quit [comment]\n/names [<canal>{,<canal>}]\n/kick <channel> <nickname>\n/mode <channel> <{+|-}{i|t}>\n/invite <nickname> <channel>\n/topic <channel> <newSubject>");
 }
 
 void	Command::join(User &user)
@@ -69,7 +74,7 @@ void	Command::join(User &user)
 	size_t	vecSize;
 
 	if (_cmd.size() != 2)
-		throw std::invalid_argument("Error syntax\nHow to use: /join <channel>{,[channel]}");
+		throw datasException("JOIN :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
@@ -85,19 +90,26 @@ void	Command::part(User &user)
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
-	{
-		std::cout << "CHAN NAME: " << chans[i] << std::endl;
 		user.part(chans[i]);
-		std::cout << "CHAN NAME: " << chans[i] << std::endl;
-	}
 }
 
 void	Command::names(User &user)
 {
+	vector<string>	chans;
 	if (_cmd.size() > 2)
 		throw std::invalid_argument("Error syntax\nHow to use: /names [<canal>{,<canal>}]");
-	vector<string>	chans = explode(_cmd[1], ',');
+	if (_cmd.size() > 1)
+		chans = explode(_cmd[1], ',');
 	user.names(chans);
+}
+
+void	Command::ping(User &user)
+{
+	if (_cmd.size() != 2)
+		throw datasException(":No origin specified", 409);
+	if (_cmd[1] != "MyIrc")
+		throw datasException(_cmd[1] + " :No such server", 409);
+	sendMsgToClient(user.getFd(), "MyIrc PONG MyIrc :MyIrc");
 }
 
 void	Command::kick(User &user)
@@ -154,6 +166,24 @@ void	Command::squit(User& user)
 	if (_cmd.size() != 2)
 		throw std::invalid_argument("Error syntax\nHow to use: /squit <comment>");
 	user.squit(_cmd[1]);
+}
+
+void	Command::pass(User& user)
+{
+	(void)user;
+	throw datasException(":Unauthorized command (already registered)", 462);
+}
+
+void	Command::user(User& user)
+{
+	(void)user;
+	throw datasException(":Unauthorized command (already registered)", 462);
+}
+
+void	Command::nick(User& user)
+{
+	(void)user;
+	throw datasException(":Unauthorized command (already registered)", 462);
 }
 
 void	Command::displayCmd(void)

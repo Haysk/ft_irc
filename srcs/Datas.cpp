@@ -66,6 +66,8 @@ User &Datas::getUser(const string &name, bool config) const
 			return (*it->second);
 		it++;
 	}
+	if (config)
+		throw datasException(name + " :No such nick/channel");
 	throw datasException("User doesn't exist", name);
 }
 
@@ -91,7 +93,7 @@ Channel &Datas::getChannel(const string &chanName) const
 	it = _channelsDatas.find(chanName);
 	if (it != _channelsDatas.end())
 		return *it->second;
-	throw datasException("Channel doesn't exist", chanName);
+	throw datasException(chanName + " :No such channel");
 }
 
 const map<string, string> &Datas::getOperatorConf() const
@@ -163,13 +165,10 @@ void	Datas::treatCmds(int fd, string lines)
 	}
 	while (line.length() && start != std::string::npos) {
 		std::cout << "CMD: " << line << std::endl;
-		std::cout << "STEP: " << it->second->getStep() << std::endl;
 		if (it->second->getStep() < 5)
 			msg = it->second->fillUser(line);
 		else
-			it->second->execCmd(line.substr(1));
-//		else
-//			it->second->sendMsgToChannel(it->second->getActiveChannel(), line);
+			it->second->execCmd(line);
 		start = lines.find_first_not_of("\n\r", end);
 		end = lines.find_first_of("\n\r", start);
 		if (start == std::string::npos)
@@ -177,7 +176,7 @@ void	Datas::treatCmds(int fd, string lines)
 		line = lines.substr(start, end - start);
 	}
 	if (msg.length())
-		sendMsgToClient(fd, msg, 0);
+		sendMsgToClient(fd, msg);
 }
 
 void	Datas::sendPrompt(int fd)
@@ -192,7 +191,7 @@ void	Datas::sendPrompt(int fd)
 void	Datas::displayServLogo(int fd)
 {
 	cleanScreen(fd);
-	sendMsgToClient(fd, SERVLOGO, 0);
+	sendMsgToClient(fd, SERVLOGO);
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)
@@ -235,7 +234,7 @@ void	Datas::updateKickedInterface(User& user, const std::string& chanName)
 	displayServLogo(user.getFd());
 	msg = "You've been kicked from ";
 	msg += chanName;
-	sendMsgToClient(user.getFd(), msg, 0);
+	sendMsgToClient(user.getFd(), msg);
 }
 
 void Datas::deleteChannel(const string chanName)
@@ -244,25 +243,15 @@ void Datas::deleteChannel(const string chanName)
 		throw datasException("Channel doesn't exist", chanName);
 }
 
-void Datas::newChannelTopic(const string userName, const string chanName, const string newChanName)
+void Datas::newChannelTopic(const string userName, const string chanName, const string newTopicName)
 {
-	try
-	{
-		getChannel(newChanName);
-	} catch (datasException &e) {
-		Channel &chan = getChannel(chanName);
-		if (!chan.userIsChanOp(userName))
-			throw datasException("Not operator in " + chanName, userName);
-		if (!chan.chanModeIs(MODE_T))
-			throw datasException("Channel not in +t mode", chanName);
-		chan.setChanName(*this, newChanName);
-		Channel *tmp = new Channel(chan);
-		delete _channelsDatas.find(chanName)->second;
-		_channelsDatas.erase(chanName);
-		_channelsDatas.insert(make_pair<string, Channel *>(newChanName, tmp));
-		return;
-	}
-	throw datasException("Channel name already used", chanName + " -> " + newChanName);
+	Channel &chan = getChannel(chanName);
+	if (!chan.userIsChanOp(userName))
+		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+	if (!chan.chanModeIs(MODE_T))
+		throw datasException(chanName + " :Channel doesn't support modes");
+	chan.setTopic(newTopicName);
+	return;
 }
 
 void Datas::clearCmd(void)
@@ -277,7 +266,7 @@ void Datas::disconnectAllUsers(const string& comment)
 
 	while (it != ite)
 	{
-		sendMsgToClient(it->first, "SERVER SHUTTING DOWN: " + comment, 1);
+		sendMsgToClient(it->first, "SERVER SHUTTING DOWN: " + comment);
 		std::cout << BOLDRED << "client fd " << it->first << ": disconnected"<< RESET << std::endl;
 		close(it->first);
 		it++;

@@ -47,7 +47,7 @@ void Server::Accept(Datas &servDatas, Socket *sk){
         std::cout << BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
 	servDatas.displayServLogo(fd);
-	sendMsgToClient(fd, "Welcome to my MY-IRC !\nEnter CAP LS to continue:", 0);
+	sendMsgToClient(fd, "Welcome to my MY-IRC !\nEnter CAP LS to continue:");
 	servDatas.newUser(fd);
 	//servDatas.sendPrompt(fd);
     }
@@ -65,7 +65,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    }
 	    catch (std::exception &e)
 	    {
-		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()), 0);
+		sendMsgToClient(sk->_client[i], "ERROR: " + string(e.what()));
 	    }
 	    if (servDatas.getCo() && !servDatas.getUser(sk->_client[i]).getCo())
 	    {

@@ -62,7 +62,7 @@ User &Channel::getUser(const string &userName) const
 	it = _users.find(userName);
 	if (it != _users.end())
 		return _datasPtr->getUser(it->first, USERNAME);
-	throw datasException("User not in this Channel");
+	throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 bool Channel::userIsChanOp(const string &userName) const
@@ -71,7 +71,7 @@ bool Channel::userIsChanOp(const string &userName) const
 	it = _users.find(userName);
 	if (it != _users.end())
 		return it->second;
-	throw datasException("User not in this Channel", userName);
+	throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 bool Channel::userIsActive(const string &userName)
@@ -100,6 +100,10 @@ void Channel::setChanName(const Datas &datas, const string &newName)
 	_chanName = newName;
 }
 
+void Channel::setTopic(const string &newTopic) {
+	_topic = newTopic;
+}
+
 void Channel::setMod(const int newMode, const bool add)
 {
 	if (add)
@@ -110,10 +114,15 @@ void Channel::setMod(const int newMode, const bool add)
 
 void Channel::setInvit(const string &userName)
 {
-	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
-		if (!it.base()->compare(userName))
-			throw (datasException("User already invited in " + _chanName, userName));
-	_invit.push_back(userName);
+	try {
+		getUser(userName);
+		throw datasException(userName +  _chanName + " :is already on channel");
+	} catch (datasException &e) {
+		for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
+			if (!it.base()->compare(userName))
+				return;
+		_invit.push_back(userName);
+	}
 }
 
 // FUNCTIONS
@@ -130,7 +139,7 @@ void Channel::addUser(const string &userName, bool role = false)
 void Channel::deleteUser(const string &userName)
 {
 	if (_users.erase(userName) <= 0)
-		throw datasException("User not in This Channel");
+		throw datasException(_chanName + " : You\'re not on that Channel"); // ERR_NOTONCHANNEL
 }
 
 void Channel::useInvit(const string &userName)
@@ -141,7 +150,7 @@ void Channel::useInvit(const string &userName)
 			_invit.erase(it);
 			return;
 		}
-	throw (datasException("User " + userName + " is not invited in this channel", _chanName));
+	throw (datasException("You are not invited in this channel", _chanName));
 }
 
 void	Channel::displayInterface(const int& fd)
@@ -151,9 +160,9 @@ void	Channel::displayInterface(const int& fd)
 	usersInChannel_const_it ite = _users.end();
 
 	cleanScreen(fd);
-	msg = "\n--> You have joined the channel #";
+	msg = "\n--> You have joined the channel ";
 	msg += _chanName;
-	msg += "\n*** The topic is <<To build>>";
+	msg += "\n*** Topic : " + _topic;
 	msg += "\n*** The members are : ";
 	while (it != ite)
 	{
@@ -164,7 +173,7 @@ void	Channel::displayInterface(const int& fd)
 			msg += " ; ";
 	}
 	msg += "\n---------------------------------------------";
-	sendMsgToClient(fd, msg, 0);
+	sendMsgToClient(fd, msg);
 }
 
 ostream& operator<<(ostream& os, const Channel& rhs) {

@@ -16,6 +16,8 @@ class Channel : public Datas
 
 		string _chanName;
 
+		string _topic;
+
 		int _mode;
 
 		usersInChannel _users; // map (userName | role)
@@ -53,6 +55,8 @@ class Channel : public Datas
 		// SETTERS
 
 		void setChanName(const Datas &datas, const string &newName);
+
+		void setTopic(const string &newTopic);
 
 		void setMod(const int newMode, const bool add);
 

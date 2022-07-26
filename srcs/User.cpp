@@ -117,13 +117,13 @@ std::string	User::initUserName(string &userCmd)
 		_userName = name;
 	}
 	_userName = name;
-	std::string msg = ":localhost 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
-	sendMsgToClient(_fd, msg, 0);
-	msg = ":localhost 002 " + _nickName + " :Your host is MyIrc, running version ircd";
-	sendMsgToClient(_fd, msg, 0);
-	msg =":localhost 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
-	sendMsgToClient(_fd, msg, 0);
-	msg = ":localhost 004 " + _nickName + " localhost tella(enterprise)-2.3(12)-netty(5.4c)-proxy(0.9) oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
+	std::string msg = ":MyIrc 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
+	sendMsgToClient(_fd, msg);
+	msg = ":MyIrc 002 " + _nickName + " :Your host is MyIrc, running version ircd";
+	sendMsgToClient(_fd, msg);
+	msg =":MyIrc 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
+	sendMsgToClient(_fd, msg);
+	msg = ":MyIrc 004 " + _nickName + " MyIrc HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
 	return (msg);
 }
 
@@ -210,7 +210,7 @@ const string	User::fillUser(string &arg) {
 			try {
 				msg = initUserName(arg);
 			} catch (datasException &e) {
-				sendMsgToClient(_fd, "ERROR: " + string(e.what()), 0);
+				sendMsgToClient(_fd, "ERROR: " + string(e.what()));
 				_step--;
 			}
 			break;
@@ -256,6 +256,9 @@ void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 
 void	User::join(const string &chanName)
 {
+	std::cout << "JOIN CHAN: " << chanName << std::endl;
+	if (chanName.empty() || chanName[0] != '#')
+		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
@@ -283,10 +286,8 @@ void	User::join(const string &chanName)
 
 void	User::part(const string &chanName)
 {
-	std::cout << chanName << std::endl;
-	_datasPtr->removeUserFromChannel(_nickName, chanName);
-	_datasPtr->displayServLogo(_fd);
-	sendMsgToChannel(chanName, "LEFT THE CHANNEL");
+	_datasPtr->removeUserFromChannel(_userName, chanName);
+	//sendMsgToChannel(chanName, "LEFT THE CHANNEL");
 }
 
 void	User::quit(const std::string& msg)
@@ -303,31 +304,39 @@ void	User::deleteChannel(const string &chanName)
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
 	if (chanName == _activeChannel)
+	{
 		_activeChannel = "";
-
+		_datasPtr->displayServLogo(_fd);
+	}
 }
 
 void User::sendPrivateMessage(const string &destName, const string &message) {
 	User &dest = _datasPtr->getUser(destName, NICKNAME);
-	sendMsgToClient(dest.getFd(), "PRIVATE : " + message, 0);
+	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
 {
 	map<string, vector<string> > list;
 
-	//LIST CHANNELS IN PARAMS
+	for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
+	{
+		cout << *it.base() << endl;
+	}
+		//LIST CHANNELS IN PARAMS
 	if (!channels.empty())
 	{
 		for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
 		{
 			vector<string> usersNames;
 			map<string, bool> users;
+			cout << *it.base() << endl;
 			try
 			{
+				cout << "ca passe" << endl;
 				Channel &chan = _datasPtr->getChannel(*it.base());
 				users = chan.getUsers();
-				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; it++)
+				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
 				{
 					if (chan.userIsActive(itb->first)) {
 						if (itb->second)
@@ -379,15 +388,19 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		list.insert(make_pair<string, vector<string> >("*", usersNames));
 
 	//PRINT LIST
-	for (map<string, vector<string> >::const_iterator it = list.begin(), ite = list.end(); it != ite; it++)
+	map<string, vector<string> >::const_iterator it = list.begin();
+	for (map<string, vector<string> >::const_iterator ite = list.end(); it != ite; it++)
 	{
-		sendMsgToClient(_fd, it->first, 0);
+		sendMsgToClient(_fd, "=" + it->first);
+		stringstream msg;
 		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
-			string msg;
-			msg = "\t" + *vIt.base();
-			sendMsgToClient(_fd, msg, 0);
+			msg << *vIt.base();
+			if (vIt + 1 != vIte)
+				msg << " * ";
 		}
+		sendMsgToClient(_fd, msg.str()); // RPL_NAMEREPLY
 	}
+	sendMsgToClient(_fd, it->first + " :End of NAMES list");
 	return(list);
 }
 
@@ -397,48 +410,66 @@ void	User::kick(const string &nickName, const string &chanName)
 {
 	std::string	msg;
     User &user = _datasPtr->getUser(nickName, NICKNAME);
-	if (!_datasPtr->getChannel(chanName).userIsChanOp(_userName))
-		throw datasException("Not operator in " + chanName, _userName);
+	Channel &chan = _datasPtr->getChannel(chanName);
+	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
+		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
     if (user.getOp())
-    {
-        sendMsgToClient(_fd, "You can't kick " + nickName, 0);
-        return;
-    }
+		throw datasException( ":Permission Denied- You're not an IRC operator"); // ERR_NOPRIVILEGES ????????????????????????
+	try {
+		chan.getUser(user.getUserName());
+	} catch (datasException &e) {
+		throw datasException(user.getNickName() + chanName + " :They aren't on that channel"); // ERR_USERNOTINCHANNEL
+	}
 	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
 	_datasPtr->updateKickedInterface(user, chanName);
-	msg = "KICK " + nickName + " FROM THIS CHANNEL";
-	sendMsgToChannel(chanName, msg);
+//	msg = "KICK " + nickName + " FROM THIS CHANNEL";
+//	sendMsgToChannel(chanName, msg);
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	Channel	&chan = _datasPtr->getChannel(chanName);
-
+	bool isOp;
+	try {
+		isOp = chan.userIsChanOp(_userName);
+	} catch (datasException& e) {
+		(void)e;
+		throw datasException(_nickName + chanName + " :They aren't on that channel"); // ERR_USERNOTINCHANNEL
+	}
 	if (!chan.userIsChanOp(_userName))
-		throw datasException("Not operator in " + chanName, _userName);
-	sendMsgToChannel(chanName, getMsgMode(chanMode, add));
+		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+	//sendMsgToChannel(chanName, getMsgMode(chanMode, add));
+	if (chanMode == -1)
+	{
+		stringstream ss;
+		ss << chanName << " " << chan.getMode(); // RPL_CHANNELMODEIS
+		sendMsgToClient(_fd, ss.str());
+		return;
+	}
 	chan.setMod(chanMode, add);
 }
 
 void	User::invite(const string &nickName, const string &chanName) {
-	try {
-		_datasPtr->getChannel(chanName);
-	} catch (datasException &e) {
-		_datasPtr->getUser(nickName, NICKNAME);
-		//envoyer un message au client;
-		return;
-	}
 	Channel &chan = _datasPtr->getChannel(chanName);
-	if (chan.chanModeIs(MODE_I) && !chan.userIsChanOp(_userName))
-		throw datasException("Channel " + chanName + " is in invite mode, you must be an operator", _userName);
-	_datasPtr->getUser(nickName, NICKNAME);
-	chan.setInvit(nickName);
-	//envoyer un message au client;
+	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
+		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+	if (!chan.chanModeIs(MODE_I))
+		throw datasException(chanName + " :Cannot join channel (+i)"); // ERR_INVITEONLYCHAN ????????????????????????????
+	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
+	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
+	sendMsgToClient(usr._fd, chanName + " " + _nickName);
+	sendMsgToClient(_fd, chanName + " " + usr.getNickName()); //RPL_INVITE (a check)
 }
 
-void	User::topic(const string &chanName, const string &newTopic)
+void	User::topic(const string &chanName, const string &newTopicName)
 {
-	_datasPtr->newChannelTopic(_userName, chanName, newTopic);
-	sendMsgToChannel(chanName,"CHANGE THE TOPIC BY " + newTopic );
+	_datasPtr->getChannel(chanName).getUser(_userName); // ERR_NOTONCHANNEL
+	if (newTopicName.empty())
+	{
+		sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
+		return;
+	}
+	_datasPtr->newChannelTopic(_userName, chanName, newTopicName);
+	sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
 }
 
 void	User::squit(const string& comment)

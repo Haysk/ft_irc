@@ -2,19 +2,14 @@
 # include <ctime>
 #include <fstream>
 
-void	sendMsgToClient(int fd, const std::string &msg, int config)
+void	sendMsgToClient(int fd, const std::string &msg)
 {
 	int	len = msg.length() + 1;
 	int	i;
 	int	j = 0;
 	int	nNL = countOccurrences("\n", msg);
 	char	buf[len + nNL * 4 + 1];
- //	time_t	tmm = time(0);
-//	char*	dt = ctime(&tmm);
 
-	if (config)
-		send(fd, "\n", 1, 0);
-//	send(fd, dt + 11, 8, 0);
 	for (i = 0; i < len - 1; i++)
 	{
 		buf[j] = msg[i];
