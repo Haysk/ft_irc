@@ -66,7 +66,7 @@ User &Datas::getUser(const string &name, bool config) const
 		it++;
 	}
 	if (config)
-		throw datasException(name + " :No such nick/channel");
+		throw datasException(name + " :No such nick/channel", 401); // ERR_NOSUCHNICK
 	throw datasException("User doesn't exist", name);
 }
 
@@ -92,7 +92,7 @@ Channel &Datas::getChannel(const string &chanName) const
 	it = _channelsDatas.find(chanName);
 	if (it != _channelsDatas.end())
 		return *it->second;
-	throw datasException(chanName + " :No such channel");
+	throw datasException(chanName + " :No such channel", 403); // ERR_NOSUCHCHANNEL
 }
 
 const map<string, string> &Datas::getOperatorConf() const
@@ -240,9 +240,9 @@ void Datas::newChannelTopic(const string userName, const string chanName, const 
 {
 	Channel &chan = getChannel(chanName);
 	if (!chan.userIsChanOp(userName))
-		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_T))
-		throw datasException(chanName + " :Channel doesn't support modes");
+		throw datasException(chanName + " :Channel doesn't support modes", 477); // ERR_NOCHANMODE
 	chan.setTopic(newTopicName);
 	return;
 }

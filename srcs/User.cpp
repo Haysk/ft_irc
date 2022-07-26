@@ -266,9 +266,9 @@ void	User::join(const string &chanName)
 			}
 		} catch (datasException &e) {
 			if (_op)
-				_datasPtr->addUserInChannel(_userName, chanName, true);
+				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
-				_datasPtr->addUserInChannel(_userName, chanName, false);
+				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_activeChannel = chanName;
 			_datasPtr->getChannel(chanName).displayInterface(_fd);
 			sendMsgToChannel(chanName, "JOINED THE CHANNEL");
@@ -278,7 +278,7 @@ void	User::join(const string &chanName)
 
 void	User::part(const string &chanName)
 {
-	_datasPtr->removeUserFromChannel(_userName, chanName);
+	_datasPtr->removeUserFromChannel(_userName, chanName); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
 	//sendMsgToChannel(chanName, "LEFT THE CHANNEL");
 }
 
@@ -325,7 +325,6 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 			cout << *it.base() << endl;
 			try
 			{
-				cout << "ca passe" << endl;
 				Channel &chan = _datasPtr->getChannel(*it.base());
 				users = chan.getUsers();
 				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
@@ -402,15 +401,15 @@ void	User::kick(const string &nickName, const string &chanName)
 {
 	std::string	msg;
     User &user = _datasPtr->getUser(nickName, NICKNAME);
-	Channel &chan = _datasPtr->getChannel(chanName);
+	Channel &chan = _datasPtr->getChannel(chanName); // ERR_NOSUCHCHANNEL
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
-		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
     if (user.getOp())
-		throw datasException( ":Permission Denied- You're not an IRC operator"); // ERR_NOPRIVILEGES ????????????????????????
+		throw datasException( ":Permission Denied- You're not an IRC operator", 481); // ERR_NOPRIVILEGES ????????????????????????
 	try {
 		chan.getUser(user.getUserName());
 	} catch (datasException &e) {
-		throw datasException(user.getNickName() + chanName + " :They aren't on that channel"); // ERR_USERNOTINCHANNEL
+		throw datasException(user.getNickName() + chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
 	}
 	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
 	_datasPtr->updateKickedInterface(user, chanName);
@@ -423,11 +422,11 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	bool isOp;
 	try {
 		isOp = chan.userIsChanOp(_userName);
-	} catch {
-		throw datasException(_nickName + chanName + " :They aren't on that channel"); // ERR_USERNOTINCHANNEL
+	} catch (datasException &e){
+		throw datasException(_nickName + chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
 	}
 	if (!chan.userIsChanOp(_userName))
-		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	//sendMsgToChannel(chanName, getMsgMode(chanMode, add));
 	if (chanMode == -1)
 	{
@@ -442,9 +441,9 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 void	User::invite(const string &nickName, const string &chanName) {
 	Channel &chan = _datasPtr->getChannel(chanName);
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
-		throw datasException(chanName + " :You're not channel operator"); // ERR_CHANOPRIVSNEEDED
+		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_I))
-		throw datasException(chanName + " :Cannot join channel (+i)"); // ERR_INVITEONLYCHAN ????????????????????????????
+		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES ????????????????????????????
 	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
 	sendMsgToClient(usr._fd, chanName + " " + _nickName);
@@ -459,7 +458,7 @@ void	User::topic(const string &chanName, const string &newTopicName)
 		sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
 		return;
 	}
-	_datasPtr->newChannelTopic(_userName, chanName, newTopicName);
+	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
 	sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
 }
 
