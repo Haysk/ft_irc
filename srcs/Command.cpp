@@ -121,6 +121,8 @@ void	Command::kick(User &user)
 
 void	Command::mode(User &user)
 {
+	if (_cmd.size() == 2)
+		user.mode(_cmd[1], -1, 0);
 	if (_cmd.size() != 3)
 		throw std::invalid_argument("Error syntax\nHow to use: /mode <channel> <{+|-}{i|t}>");
 	checkModeParam(_cmd[2]);
@@ -182,8 +184,16 @@ void	Command::user(User& user)
 
 void	Command::nick(User& user)
 {
-	(void)user;
-	throw datasException(":Unauthorized command (already registered)", 462);
+	std::string	arg;
+	size_t	i = 0;
+	while (i < _cmd.size())
+	{
+		arg += _cmd[i];
+		if (i + 1 != _cmd.size())
+			arg += " ";
+		i++;
+	}
+	user.nick(arg);
 }
 
 void	Command::displayCmd(void)

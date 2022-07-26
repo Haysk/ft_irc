@@ -127,21 +127,30 @@ std::string	User::initUserName(string &userCmd)
 	return (msg);
 }
 
-std::string	User::initNickName(const usersDatas &users, string &nickCmd)
+std::string	User::nick(const string &nickCmd)
 {
+	const usersDatas	&users = _datasPtr->getUsers();
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
 	std::string	nickname;
 
 	checkCmdName(nickCmd, "NICK");
 	checkRangeArg(nickCmd, 2, 2);
-	nickname = getArgAt(nickCmd, 1, " ", 0);
+	try
+	{
+		nickname = getArgAt(nickCmd, 1, " ", 0);
+	}
+	catch (datasException& e)
+	{
+		(void)e;
+		throw datasException(":No nickname given", 431);
+	}
 	checkLenArg(nickname, 9);
 	isAlphaNum(nickname);
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
-			throw std::invalid_argument("The nickname passed is already assigned");
+			throw datasException(nickname + " :Nickname is already in use");
 		it++;
 	}
 	_nickName = nickname;
@@ -204,7 +213,7 @@ const string	User::fillUser(string &arg) {
 			msg = checkPwd(_datasPtr->getPwd(), arg);
 			break;
 		case 3:
-			msg = initNickName(_datasPtr->getUsers(), arg);
+			msg = nick(arg);
 			break;
 		case 4:
 			try {

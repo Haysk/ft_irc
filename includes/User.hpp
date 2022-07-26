@@ -75,8 +75,6 @@ class User : public Datas
 
 		std::string initUserName(string &userCmd);
 
-		std::string initNickName(const usersDatas &users, string &nickCmd);
-
 		std::string checkCAPLS(string &arg);
 
 		std::string checkPwd(const string pwd, string &arg);
@@ -100,6 +98,8 @@ class User : public Datas
 		void part(const string &chanName);
 
 		void quit(const std::string& msg);
+
+		std::string	 nick(const std::string& nickName);
 
 		void deleteChannel(const string &chanName);
 
