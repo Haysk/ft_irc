@@ -262,7 +262,7 @@ void Datas::disconnectAllUsers(const string& comment)
 	_co = false;
 }
 
-void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevNickName)
+void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevNickName, int fd)
 {
 	size_t	cmdLen = cmdLine.length();
 	char	buf[cmdLen + 25];
@@ -273,11 +273,9 @@ void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevN
 		msg += prevNickName;
 	else
 		msg += user.getNickName();
-	std::cout << "RESPONSETOCMD" << std::endl;
 	msg += "!~" + user.getUserName();
-	msg += "@62.210.32.149 ";
-	msg += getArgAt(cmdLine, 0, " ", 0);
-	msg += " :" + getArgAt(cmdLine, 1, " ", 0); 
+	msg += "@localhost ";
+	msg += cmdLine;
 	cmdLen = msg.length();
 	std::cout << "RESPONSETOCMD: ";
 	while (i < cmdLen)
@@ -288,6 +286,67 @@ void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevN
 	}
 	buf[i++] = '\n';
 	std::cout << std::endl;
+	if (fd)
+		send(fd, buf, i, 0);
+	else
+		send(user.getFd(), buf, i, 0);
+}
+
+void Datas::sendJoinMsgs(User& user, Channel& chan)
+{
+	responseToCmd(user, "JOIN " + chan.getChanName());
+	responseChanNamesList(user, chan);
+	chan.responseJoinToUsersInChan(user.getUserName());
+}
+
+string Datas::getChanNamesListMsg(User& user, Channel& chan)
+{
+	string	msg = ":MyIrc 353 ";
+	usersInChannel	users = chan.getUsers();
+	usersInChannel_it	it = users.begin();
+	usersInChannel_it	ite = users.end();
+	User	tmp;
+
+	msg += user.getNickName();
+	msg += " = ";
+	msg += chan.getChanName();
+	msg += " :";
+	while (it != ite)
+	{
+		tmp = getUser(it->first, USERNAME);
+		if (it->second)
+			msg += "@";
+		msg += tmp.getNickName();
+		if (it++ != ite)
+			msg += " ";
+	}
+	return (msg);
+}
+
+string Datas::getChanNamesEndMsg(const string& nickName, const string& chanName)
+{
+	string	msg = ":MyIrc 366 ";
+	
+	msg += nickName;
+	msg += " ";
+	msg += chanName;
+	msg += " :End of NAMES list.";
+	return (msg);
+}
+
+void Datas::responseChanNamesList(User& user, Channel& chan)
+{
+	string	msg = getChanNamesListMsg(user, chan) + string("\n")
+			+ getChanNamesEndMsg(user.getNickName(), chan.getChanName());
+	char	buf[msg.length() + 1];
+	size_t	i = 0;
+
+	std::cout << "CHAN_NAMES_LIST_MSG: " << msg << std::endl;
+	while (i < msg.length())
+	{
+		buf[i] = msg[i];
+		i++;
+	}
+	buf[i++] = '\n';
 	send(user.getFd(), buf, i, 0);
-	std::cout << "RESPONSETOCMD SENT" << std::endl;
 }
