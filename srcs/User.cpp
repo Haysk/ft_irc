@@ -140,7 +140,7 @@ void	User::nick(const string &nickCmd)
 	}
 	_nickName = nickname;
 	if (prevNick.length())
-		_datasPtr->responseToCmd(*this, nickCmd, prevNick);
+		_datasPtr->responseToCmd(*this, "NICK :" + nickCmd, prevNick);
 }
 
 // UTILS

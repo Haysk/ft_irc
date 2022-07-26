@@ -294,9 +294,9 @@ void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevN
 
 void Datas::sendJoinMsgs(User& user, Channel& chan)
 {
-	responseToCmd(user, "JOIN " + chan.getChanName());
+	responseToCmd(user, "JOIN :" + chan.getChanName());
 	responseChanNamesList(user, chan);
-	chan.responseJoinToUsersInChan(user.getUserName());
+	chan.responseJoinToUsersInChan(user);
 }
 
 string Datas::getChanNamesListMsg(User& user, Channel& chan)

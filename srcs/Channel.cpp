@@ -153,7 +153,7 @@ void Channel::useInvit(const string &userName)
 	throw (datasException(_chanName + " :Cannot join channel (+i)", 473)); // ERR_INVITEONLYCHAN
 }
 
-void Channel::responseJoinToUsersInChan(const string& joinerUserName)
+void Channel::responseJoinToUsersInChan(User& joiner)
 {
 	usersInChannel_it	it = _users.begin();
 	usersInChannel_it	ite = _users.end();
@@ -161,11 +161,12 @@ void Channel::responseJoinToUsersInChan(const string& joinerUserName)
 
 	while (it != ite)
 	{
-		if (it->first != joinerUserName)
+		if (it->first != joiner.getUserName())
 		{
 			user = _datasPtr->getUser(it->first, USERNAME);
-			it++;
+			_datasPtr->responseToCmd(user, "JOIN :" + _chanName, "", user.getFd());
 		}
+		it++;
 	}
 }
 
