@@ -457,7 +457,7 @@ void	User::invite(const string &nickName, const string &chanName) {
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
 	//SEND MSG TO BY SERVER TO EXECUTER
 	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + nickName + " " + chanName);
-//	_datasPtr->responseToCmd();
+	_datasPtr->responseToCmd(*this, "INVITE " + _nickName + " :" + chanName, _datasPtr->getUser(nickName, NICKNAME).getFd());
 }
 
 void	User::topic(const string &chanName, const string &newTopicName)

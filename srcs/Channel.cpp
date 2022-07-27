@@ -150,7 +150,9 @@ void Channel::useInvit(const string &userName)
 			_invit.erase(it);
 			return;
 		}
-	throw (datasException(_chanName + " :Cannot join channel (+i)", 473)); // ERR_INVITEONLYCHAN
+	throw (datasException(_datasPtr->getUser(userName,
+			USERNAME).getNickName() + " " +  _chanName
+			+ " :Cannot join channel (+i)", 473)); // ERR_INVITEONLYCHAN
 }
 
 void Channel::responseCmdToUsersInChan(User& executer, const std::string& msg)
