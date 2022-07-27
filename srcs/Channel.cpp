@@ -21,6 +21,8 @@ Channel &Channel::operator=(const Channel &rhs)
 	this->_chanName = rhs.getChanName();
 	this->_mode = rhs.getMode();
 	this->_users = rhs.getUsers();
+	_topic = rhs.getTopic();
+	_invit = rhs.getInvit();
 	return *this;
 }
 
@@ -84,6 +86,18 @@ Datas*	Channel::getDatasPtr(void)
 	return (_datasPtr);
 }
 
+string	Channel::getTopic(void) const
+{
+	return (_topic);
+}
+
+vector<string>	Channel::getInvit(void) const
+{
+	return (_invit);
+}
+
+
+
 // SETTERS
 
 void Channel::setChanName(const Datas &datas, const string &newName)
@@ -116,13 +130,14 @@ void Channel::setInvit(const string &userName)
 {
 	try {
 		getUser(userName);
-		throw datasException(userName +  _chanName + " :is already on channel", 443); // ERR_USERONCHANNEL
 	} catch (datasException &e) {
 		for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
 			if (!it.base()->compare(userName))
 				return;
 		_invit.push_back(userName);
 	}
+	// MSG d'error a fix
+	throw datasException(userName + " " +  _chanName + " :is already on channel", 443); // ERR_USERONCHANNEL
 }
 
 // FUNCTIONS

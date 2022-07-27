@@ -444,15 +444,18 @@ void	User::mode(const string &chanName, const int chanMode, const bool add)
 	chan.setMod(chanMode, add);
 }
 
-void	User::invite(const string &nickName, const string &chanName) {
+void	User::invite(const string &nickName, const string &chanName)
+{
 	Channel &chan = _datasPtr->getChannel(chanName); // ERR_NOSUCHCHANNEL
+
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_I))
 		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES
+
 	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
-	//SEND MSG TO BY SERVER TO EXECUTER
+
 	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + nickName + " " + chanName);
 	_datasPtr->responseToCmd(*this, "INVITE " + _nickName + " :" + chanName, _datasPtr->getUser(nickName, NICKNAME).getFd());
 }
