@@ -284,7 +284,7 @@ void	User::deleteChannel(const string &chanName)
 
 void User::privMsg(const string &destName, const string &message) {
 	if (message.empty())
-		throw datasException(":No text to send", 412);
+		throw datasException(destName + " :No text to send", 412);
 	if (!destName.empty() && destName[0] != '#') {
 		User &dest = _datasPtr->getUser(destName, NICKNAME);
 		_datasPtr->responseToCmd(*this, "PRIVMSG " + destName + " " + message, dest.getFd());
@@ -414,14 +414,14 @@ void	User::kick(const string &nickName, const string &chanName)
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
     if (user.getOp())
-		throw datasException( ":Permission Denied- You're not an IRC operator", 481); // ERR_NOPRIVILEGES ????????????????????????
+		throw datasException(chanName + ":Permission Denied- You're not an IRC operator", 481); // ERR_NOPRIVILEGES ????????????????????????
 	try {
 		chan.getUser(user.getUserName());
 	} catch (datasException &e) {
-		throw datasException(user.getNickName() + chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
+		throw datasException(chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
 	}
 	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
-	_datasPtr->updateKickedInterface(user, chanName);
+	chan.responseCmdToAllInChan(*this, "KICK " + chanName + " " + nickName + " :no reason");
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add)

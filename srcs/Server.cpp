@@ -65,7 +65,7 @@ void Server::Recv(Datas &servDatas, Socket *sk, int i, int flag){
 	    	servDatas.treatCmds(sk->_client[i], cmd);
 	    } catch (datasException &e) {
 			stringstream ss;
-			ss << "ircserv " << e.getOption() << " " << e.what();
+			ss << "ircserv " << e.getOption() << " " << servDatas.getUser(sk->_client[i]).getNickName() << " " << e.what();
 			sendMsgToClient(sk->_client[i], ss.str());
 		} catch (std::exception &e) {
 			sendMsgToClient(sk->_client[i], "ircserv " + string(e.what()));

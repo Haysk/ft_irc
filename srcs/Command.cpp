@@ -90,7 +90,7 @@ void	Command::privmsg(User &user) {
 	if (_cmd.size() < 2)
 		throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
 	if (_cmd.size() < 3)
-		throw datasException(":No text to send", 412);
+		throw datasException(_cmd[1] + " :No text to send", 412);
 	user.privMsg(_cmd[1], _cmd[2]);
 }
 
