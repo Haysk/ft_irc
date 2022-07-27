@@ -83,6 +83,9 @@ bool	User::getCo(void)
 void	User::initUserName(string &userCmd)
 {
 	std::string	name;
+	const usersDatas	&users = _datasPtr->getUsers();
+	usersDatas_const_it	it = users.begin();
+	usersDatas_const_it	ite = users.end();
 
 	checkCmdName(userCmd, "USER");
 	checkUserCmdNbrArg(userCmd, " ");
@@ -94,6 +97,12 @@ void	User::initUserName(string &userCmd)
 	isAlphaNum(_serverName);
 	_realName = getArgAt(userCmd, 4, " ", 1);
 	isAlphaNumSp(_realName);
+	while (it != ite)
+	{
+		if (!it->second->getUserName().compare(name))
+			throw datasException(name + " :Username is already in use");
+		it++;
+	}
 	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
 			it != ite; it++)
 	{
