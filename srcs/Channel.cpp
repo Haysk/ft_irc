@@ -157,15 +157,10 @@ void Channel::responseJoinToUsersInChan(User& joiner)
 {
 	usersInChannel_it	it = _users.begin();
 	usersInChannel_it	ite = _users.end();
-	User	user;
 
 	while (it != ite)
 	{
-		if (it->first != joiner.getUserName())
-		{
-			user = _datasPtr->getUser(it->first, USERNAME);
-			_datasPtr->responseToCmd(user, "JOIN :" + _chanName, "", user.getFd());
-		}
+		_datasPtr->responseToCmd(joiner, "JOIN :" + _chanName, "", _datasPtr->getUser(it->first, USERNAME).getFd());
 		it++;
 	}
 }

@@ -300,10 +300,8 @@ void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevN
 
 void Datas::sendJoinMsgs(User& user, Channel& chan)
 {
-	std::cout << "IN SEND_JOIN_MSGS" << std::endl;
-	responseToCmd(user, "JOIN :" + chan.getChanName());
-	responseChanNamesList(user, chan);
 	chan.responseJoinToUsersInChan(user);
+	responseChanNamesList(user, chan);
 }
 
 string Datas::getChanNamesListMsg(User& user, Channel& chan)

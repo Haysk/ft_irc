@@ -71,7 +71,6 @@ void	Command::join(User &user)
 		throw datasException("JOIN :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
-	std::cout << "VECSIZE: " << vecSize << std::endl;
 	for (unsigned int i = 0; i < vecSize; i++)
 		user.join(chans[i]);
 }
@@ -106,9 +105,9 @@ void	Command::kick(User &user)
 
 void	Command::mode(User &user)
 {
-	if (_cmd.size() == 2)
-		user.mode(_cmd[1], -1, 0);
-	if (_cmd.size() < 2)
+//	if (_cmd.size() == 2)
+//		user.mode(_cmd[1], -1, 0);
+	if (_cmd.size() < 3)
 		throw datasException("MODE :Not enough parameters", 461);
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));

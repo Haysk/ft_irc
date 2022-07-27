@@ -14,6 +14,8 @@ User &User::operator=(const User &rhs)
 {
 	_userName = rhs.getUserName();
 	_nickName = rhs.getNickName();
+	_fd = rhs.getFd();
+	_step = rhs.getStep();
 	_activeChannel = rhs.getActiveChannel();
 	_channels = rhs.getChannels();
 	return *this;
@@ -245,13 +247,14 @@ void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 
 void	User::join(const string &chanName)
 {
-	std::cout << "JOIN CHAN: " << chanName << std::endl;
+	std::cout << "JOINER FD: " << getFd() << std::endl;
 	if (chanName.empty() || chanName[0] != '#')
 		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
+		std::cout << "FD JOIN: " << _datasPtr->getUser(_userName, USERNAME).getFd() << endl;
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
@@ -260,17 +263,14 @@ void	User::join(const string &chanName)
 				_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 			}
 		} catch (datasException &e) {
-			std::cout << "HEY3" << std::endl;
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_activeChannel = chanName;
-			std::cout << "HEY1" << std::endl;
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
 	}
-	std::cout << "HEY2" << std::endl;
 }
 
 void	User::part(const string &chanName)
@@ -427,6 +427,7 @@ void	User::kick(const string &nickName, const string &chanName)
 void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	Channel	&chan = _datasPtr->getChannel(chanName);
 	bool isOp;
+
 	try {
 		isOp = chan.userIsChanOp(_userName);
 	} catch (datasException &e){
@@ -472,6 +473,8 @@ void	User::topic(const string &chanName, const string &newTopicName)
 ostream&	operator<<(ostream& os, const User& rhs)
 {
 	os << "\n" << rhs.getUserName() << ":\n\tNick Name : \t" << rhs.getNickName();
+	os << "\n" << "\tfd : \t" << rhs.getFd();
+	os << "\n" << "\tstep : \t" << rhs.getStep();
 	os << "\n\tChannels :\n";
 	const userChannels &channels = rhs.getChannels();
 	for (userChannels_const_it it = channels.begin(); it != channels.end(); it++)
