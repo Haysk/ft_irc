@@ -287,14 +287,14 @@ void User::privMsg(const string &destName, const string &message) {
 		throw datasException(":No text to send", 412);
 	if (!destName.empty() && destName[0] != '#') {
 		User &dest = _datasPtr->getUser(destName, NICKNAME);
-		sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+		_datasPtr->responseToCmd(*this, "PRIVMSG " + destName + " " + message, dest.getFd());
 	}
 	if  (!destName.empty() && destName[0] == '#')
 	{
 		try {
 			Channel &dest = _datasPtr->getChannel(destName);
 			dest.getUser(_userName);
-	//		sendMsgToChannel(destName, "PRIVATE :" + message);
+			dest.responseCmdToDestInChan(*this, "PRIVMSG " + destName + " " + message);
 		} catch (datasException &e) {
 			if (!string(e.getOption()).compare("403"))
 				throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT

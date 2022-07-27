@@ -15,6 +15,7 @@ class	Command
 		std::deque<std::string>	_cmd;
 		void	join(User&);
 		void	part(User&);
+		void	privmsg(User&);
 		void	quit(User&);
 		void	ping(User&);
 		void	kick(User&);

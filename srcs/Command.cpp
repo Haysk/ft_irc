@@ -6,7 +6,7 @@ Command::Command(void) : _cmd()
 //	std::cout << "Command default constructor called" << std::endl;
 	_cmdMap["JOIN"] = &Command::join;
 	_cmdMap["PART"] = &Command::part;
-//	_cmdMap["PRIVMSG"] = &Command::privmsg;
+	_cmdMap["PRIVMSG"] = &Command::privmsg;
 	_cmdMap["PING"] = &Command::ping;
 	_cmdMap["QUIT"] = &Command::quit;
 	_cmdMap["KICK"] = &Command::kick;
@@ -84,6 +84,14 @@ void	Command::part(User &user)
 	vecSize = chans.size();
 	for (unsigned int i = 0; i < vecSize; i++)
 		user.part(chans[i]);
+}
+
+void	Command::privmsg(User &user) {
+	if (_cmd.size() < 2)
+		throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
+	if (_cmd.size() < 3)
+		throw datasException(":No text to send", 412);
+	user.privMsg(_cmd[1], _cmd[2]);
 }
 
 void	Command::ping(User &user)
