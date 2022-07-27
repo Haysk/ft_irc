@@ -4,7 +4,7 @@
 
 void	sendMsgToClient(int fd, const std::string &msg)
 {
-	int	len = msg.length() + 1;
+	int	len = msg.length() + 2;
 	int	i;
 	char	buf[len];
 

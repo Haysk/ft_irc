@@ -407,13 +407,13 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 
 void	User::sendRegistrationComplete(void)
 {
-	std::string msg = ":MyIrc 001 " + _nickName + " :Welcome to MyIrc, " + _nickName;
+	std::string msg = ":ircserv 001 " + _nickName + " :Welcome to ircserv, " + _nickName;
 	sendMsgToClient(_fd, msg);
-	msg = ":MyIrc 002 " + _nickName + " :Your host is MyIrc, running version ircd";
+	msg = ":ircserv 002 " + _nickName + " :Your host is ircserv, running version ircd";
 	sendMsgToClient(_fd, msg);
-	msg =":MyIrc 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
+	msg =":ircserv 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
 	sendMsgToClient(_fd, msg);
-	msg = ":MyIrc 004 " + _nickName + " MyIrc HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
+	msg = ":ircserv 004 " + _nickName + " ircserv HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
 	sendMsgToClient(_fd, msg);
 }
 

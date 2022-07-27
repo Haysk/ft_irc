@@ -90,9 +90,9 @@ void	Command::ping(User &user)
 {
 	if (_cmd.size() < 2)
 		throw datasException(":No origin specified", 409);
-	if (_cmd[1] != "MyIrc")
+	if (_cmd[1] != "ircserv")
 		throw datasException(_cmd[1] + " :No such server", 409);
-	sendMsgToClient(user.getFd(), "MyIrc PONG MyIrc :MyIrc");
+	sendMsgToClient(user.getFd(), "ircserv PONG ircserv :ircserv");
 }
 
 void	Command::kick(User &user)

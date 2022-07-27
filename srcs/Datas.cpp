@@ -301,13 +301,13 @@ void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevN
 
 void Datas::sendJoinMsgs(User& user, Channel& chan)
 {
-	chan.responseJoinToUsersInChan(user);
+	chan.responseCmdToUsersInChan(user, "JOIN :" + chan.getChanName());
 	responseChanNamesList(user, chan);
 }
 
 string Datas::getChanNamesListMsg(User& user, Channel& chan)
 {
-	string	msg = ":MyIrc 353 ";
+	string	msg = ":ircserv 353 ";
 	usersInChannel	users = chan.getUsers();
 	usersInChannel_it	it = users.begin();
 	usersInChannel_it	ite = users.end();
@@ -331,7 +331,7 @@ string Datas::getChanNamesListMsg(User& user, Channel& chan)
 
 string Datas::getChanNamesEndMsg(const string& nickName, const string& chanName)
 {
-	string	msg = ":MyIrc 366 ";
+	string	msg = ":ircserv 366 ";
 	
 	msg += nickName;
 	msg += " ";
