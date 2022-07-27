@@ -224,26 +224,6 @@ void	User::createChannel(const string &chanName, const int mode)
 	_channels.insert(make_pair(chanName, true));
 }
 
-void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
-{
-	User	user;
-	usersDatas	users;
-	usersDatas_it	it;
-	usersDatas_it	ite;
-
-	users = _datasPtr->getUsers();
-	it = users.begin();
-	ite = users.end();
-	while (it != ite)
-	{
-		user = *it->second;
-		if (!user.getActiveChannel().compare(chanName)
-				&& user.getUserName().compare(_userName))
-			sendMsgToClientInChan(_nickName, it->first, msg);
-		it++;
-	}
-}
-
 void	User::join(const string &chanName)
 {
 	if (chanName.empty() || chanName[0] != '#')
@@ -273,8 +253,6 @@ void	User::join(const string &chanName)
 void	User::part(const string &chanName)
 {
 	_datasPtr->removeUserFromChannel(_userName, chanName); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
-	sendMsgToClient(_fd, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
-	sendMsgToChannel(chanName, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
 }
 
 void	User::quit(const std::string& msg)
@@ -307,7 +285,7 @@ void User::privMsg(const string &destName, const string &message) {
 		try {
 			Channel &dest = _datasPtr->getChannel(destName);
 			dest.getUser(_userName);
-			sendMsgToChannel(destName, "PRIVATE :" + message);
+	//		sendMsgToChannel(destName, "PRIVATE :" + message);
 		} catch (datasException &e) {
 			if (!string(e.getOption()).compare("403"))
 				throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
@@ -481,7 +459,7 @@ void	User::topic(const string &chanName, const string &newTopicName)
 		return;
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
-	sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
+	//sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)

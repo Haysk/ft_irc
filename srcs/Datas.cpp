@@ -215,6 +215,8 @@ void Datas::removeUserFromChannel(const string &userName, const string &chanName
 	Channel &chan =  getChannel(chanName);
 	User &user = getUser(userName, USERNAME);
 	chan.deleteUser(user.getUserName());
+	getChannel(chanName).responseCmdToUsersInChan(user, "PART " + chanName + " :");
+	responseToCmd(user, "PART " + chanName + " :");
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);

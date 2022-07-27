@@ -91,8 +91,6 @@ class User : public Datas
 
 		void createChannel(const string &chanName, const int mode);
 
-		void sendMsgToChannel(const std::string& chanName, const std::string& msg);
-
 		void join(const string &chanName);
 
 		void part(const string &chanName);

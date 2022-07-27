@@ -54,8 +54,6 @@ bool	check_input(int ac, char **av);
 
 void	sendMsgToClient(int fd, const std::string &msg);
 
-void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg);
-
 size_t	strlenP(std::string str);
 
 const	vector<string> explode(const string& s, const char& c);
@@ -84,7 +82,7 @@ void	checkNbrArg(const std::string cmdLine, size_t expected);
 
 void	checkLenArg(const std::string arg, size_t max);
 
-int		checkDoublons(const std::string str);
+int	checkDoublons(const std::string str);
 
 void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
 

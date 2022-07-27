@@ -16,34 +16,6 @@ void	sendMsgToClient(int fd, const std::string &msg)
 	send(fd, buf, i, 0);
 }
 
-void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg)
-{
-	int	lenS = sender.length();
-	int	lenM = msg.length();
-	int	i = 0;
-	char	buf[lenS + lenM + 4];
- 	time_t	tmm = time(0);
-	char*	dt = ctime(&tmm);
-
-	buf[i++] = '<';
-	while (i < lenS + 1)
-	{
-		buf[i] = sender[i - 1];
-		i++;
-	}
-	buf[i++] = '>';
-	buf[i++] = ' ';
-	while (i < lenS + lenM + 3)
-	{
-		buf[i] = msg[i - lenS - 3];
-		i++;
-	}
-	buf[i] = '\n';
-	send(fd, buf, lenS + lenM + 4, 0);
-	send(fd, dt + 11, 8, 0);
-	send(fd, " | ", 3, 0);
-}
-
 size_t	strlenP(std::string str)
 {
 	size_t	l = 0;
