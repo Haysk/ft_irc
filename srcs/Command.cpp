@@ -123,7 +123,7 @@ void	Command::ping(User &user)
 		throw datasException(":No origin specified", 409);
 	if (_cmd[1] != "ircserv")
 		throw datasException(_cmd[1] + " :No such server", 409);
-	sendMsgToClient(user.getFd(), "ircserv PONG ircserv :ircserv");
+	sendMsgToClient(user.getFd(), ":ircserv PONG ircserv :ircserv");
 }
 
 void	Command::kick(User &user)
@@ -162,7 +162,7 @@ void	Command::topic(User &user)
 
 void	Command::quit(User &user)
 {
-	std::string	msg;
+	stringstream	msg;
 	int		i = 1;
 	int		size = _cmd.size();
 
@@ -170,11 +170,11 @@ void	Command::quit(User &user)
 	{
 		while (i < size)
 		{
-			msg += _cmd[i];
-			msg += " ";
+			msg << _cmd[i];
+			msg << " ";
 			i++;
 		}
-		user.quit(msg);
+		user.quit(msg.str());
 	}
 	else
 		user.quit("");

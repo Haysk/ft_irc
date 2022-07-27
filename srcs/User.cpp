@@ -16,7 +16,7 @@ User &User::operator=(const User &rhs)
 	_nickName = rhs.getNickName();
 	_fd = rhs.getFd();
 	_step = rhs.getStep();
-	_activeChannel = rhs.getActiveChannel();
+//	_activeChannel = rhs.getActiveChannel();
 	_channels = rhs.getChannels();
 	return *this;
 }
@@ -43,10 +43,10 @@ const string &User::getNickName() const
 	return _nickName;
 }
 
-const string &User::getActiveChannel() const
-{
-	return _activeChannel;
-}
+//const string &User::getActiveChannel() const
+//{
+//	return _activeChannel;
+//}
 
 const userChannels &User::getChannels() const
 {
@@ -239,21 +239,21 @@ void	User::join(const string &chanName)
 		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
-		_activeChannel = chanName;
+//		_activeChannel = chanName;
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
 		try {
-			_datasPtr->getChannel(chanName).getUser(_userName);
-			if (_activeChannel != chanName) {
-				_activeChannel = chanName;
+			_datasPtr->getChannel(chanName).inactiveToActiveUser(_userName);
+			//if (_activeChannel != chanName) {
+			//	_activeChannel = chanName;
+
 				_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-			}
 		} catch (datasException &e) {
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
-			_activeChannel = chanName;
+//			_activeChannel = chanName;
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
 	}
@@ -267,6 +267,10 @@ void	User::part(const string &chanName)
 void	User::quit(const std::string& msg)
 {
 	_co = false;
+	_datasPtr->responseToCmd(*this, "QUIT : " + msg);
+//	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); it != ite; it++)
+//		part(it->first);
+//	cout << "________________________________\n";
 	if (msg.length())
 		std::cout << "<" + _userName + "> " + msg << std::endl;
 	else
@@ -277,9 +281,8 @@ void	User::deleteChannel(const string &chanName)
 {
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
-	if (chanName == _activeChannel)
-		_activeChannel = "";
-
+//	if (chanName == _activeChannel)
+//		_activeChannel = "";
 }
 
 void User::privMsg(const string &destName, const string &message) {
@@ -326,12 +329,12 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 				users = chan.getUsers();
 				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
 				{
-					if (chan.userIsActive(itb->first)) {
-						if (itb->second)
-							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
-						else
-							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
-					}
+//					if (chan.userIsActive(itb->first)) {
+//						if (itb->second)
+//							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
+//						else
+//							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
+//					}
 				}
 				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
 			}
@@ -345,18 +348,18 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 		{
 			vector<string> usersNames;
 			map<string, bool> users;
-			Channel *chan = it->second;
+//			Channel *chan = it->second;
 			try
 			{
 				users = it->second->getUsers();
 				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
 				{
-					if (chan->userIsActive(itb->first)) {
-						if (itb->second)
-							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
-						else
-							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
-					}
+//					if (chan->userIsActive(itb->first)) {
+//						if (itb->second)
+//							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
+//						else
+//							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
+//					}
 				}
 				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
 			}
@@ -425,21 +428,19 @@ void	User::mode(const string &chanName, const int chanMode, const bool add)
 {
 	if (!chanName.empty() && chanName[0] != '#')
 		return;
-
 	Channel	&chan = _datasPtr->getChannel(chanName);
-	bool isOp;
-
 	if (chanMode == -1)
 	{
 		chan.sendModeChannel(*this);
 		return;
 	}
+	bool isOp;
 	try {
 		isOp = chan.userIsChanOp(_userName);
 	} catch (datasException &e){
-		throw datasException(_nickName + chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
+		throw datasException(chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
 	}
-	if (!chan.userIsChanOp(_userName))
+	if (!isOp)
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	chan.setMod(chanMode, add);
 }
@@ -456,7 +457,7 @@ void	User::invite(const string &nickName, const string &chanName)
 	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
 
-	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + nickName + " " + chanName);
+	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + _nickName + " " + nickName + " " + chanName);
 	_datasPtr->responseToCmd(*this, "INVITE " + _nickName + " :" + chanName, _datasPtr->getUser(nickName, NICKNAME).getFd());
 }
 

@@ -8,7 +8,7 @@ void	sendMsgToClient(int fd, const std::string &msg)
 	int	i;
 	char	buf[len];
 
-	for (i = 0; i < len - 1; i++)
+	for (i = 0; i < len - 2; i++)
 		buf[i] = msg[i];
 	buf[i++] = '\n';
 	buf[i] = '\0';

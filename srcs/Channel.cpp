@@ -67,6 +67,16 @@ User &Channel::getUser(const string &userName) const
 	throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
 }
 
+User &Channel::getInactiveUser(const string &userName) const
+{
+	usersInChannel_const_it it;
+
+	it = _inactiveUsers.find(userName);
+	if (it != _inactiveUsers.end())
+		return _datasPtr->getUser(it->first, USERNAME);
+	throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
+}
+
 bool Channel::userIsChanOp(const string &userName) const
 {
 	usersInChannel_const_it it;
@@ -76,10 +86,10 @@ bool Channel::userIsChanOp(const string &userName) const
 	throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
 }
 
-bool Channel::userIsActive(const string &userName)
-{
-	return (_datasPtr->getUser(userName, USERNAME).getActiveChannel() == _chanName);
-}
+//bool Channel::userIsActive(const string &userName)
+//{
+//	return (_datasPtr->getUser(userName, USERNAME).getActiveChannel() == _chanName);
+//}
 
 Datas*	Channel::getDatasPtr(void)
 {
@@ -130,14 +140,15 @@ void Channel::setInvit(const string &userName)
 {
 	try {
 		getUser(userName);
+		getInactiveUser(userName);
 	} catch (datasException &e) {
 		for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
 			if (!it.base()->compare(userName))
 				return;
 		_invit.push_back(userName);
+		return;
 	}
-	// MSG d'error a fix
-	throw datasException(_chanName + " :is already on channel", 443); // ERR_USERONCHANNEL
+	throw datasException(userName + " :is already on channel", 443); // ERR_USERONCHANNEL
 }
 
 // FUNCTIONS
@@ -153,8 +164,11 @@ void Channel::addUser(const string &userName, bool role = false)
 
 void Channel::deleteUser(const string &userName)
 {
-	if (_users.erase(userName) <= 0)
+	usersInChannel_const_it usr = _users.find(userName);
+	if (usr == _users.end())
 		throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
+	_inactiveUsers.insert(*usr);
+	_users.erase(userName);
 }
 
 void Channel::useInvit(const string &userName)
@@ -164,6 +178,14 @@ void Channel::useInvit(const string &userName)
 			return;
 	}
 	throw datasException(_chanName + " :Cannot join channel (+i)", 473); // ERR_INVITEONLYCHAN
+}
+
+void Channel::inactiveToActiveUser(const string &userName) {
+	usersInChannel_const_it usr = _inactiveUsers.find(userName);
+	if (usr == _inactiveUsers.end())
+		throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
+	_users.insert(*usr);
+	_inactiveUsers.erase(userName);
 }
 
 void Channel::responseCmdToAllInChan(User& joiner, const std::string& msg)

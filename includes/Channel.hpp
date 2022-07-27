@@ -22,6 +22,8 @@ class Channel : public Datas
 
 		usersInChannel _users; // map (userName | role)
 
+		usersInChannel _inactiveUsers;
+
 		vector<string> _invit;
 
 	public:
@@ -46,9 +48,11 @@ class Channel : public Datas
 
 		User &getUser(const string &userName) const;
 
+		User &getInactiveUser(const string &userName) const;
+
 		bool userIsChanOp(const string &userName) const;
 
-		bool userIsActive(const string &userName);
+//		bool userIsActive(const string &userName);
 
 		Datas *getDatasPtr(void);
 
@@ -73,6 +77,8 @@ class Channel : public Datas
 		void deleteUser(const string &userName);
 
 		void useInvit(const string &userName);
+
+		void inactiveToActiveUser(const string &userName);
 
 		void responseCmdToAllInChan(User& joiner, const std::string& msg);
 
