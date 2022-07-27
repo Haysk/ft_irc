@@ -452,11 +452,12 @@ void	User::invite(const string &nickName, const string &chanName) {
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_I))
-		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES ????????????????????????????
+		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES
 	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
-	sendMsgToClient(usr._fd, chanName + " " + _nickName);
-	sendMsgToClient(_fd, chanName + " " + usr.getNickName()); //RPL_INVITE (a check)
+	//SEND MSG TO BY SERVER TO EXECUTER
+	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + nickName + " " + chanName);
+//	_datasPtr->responseToCmd();
 }
 
 void	User::topic(const string &chanName, const string &newTopicName)
