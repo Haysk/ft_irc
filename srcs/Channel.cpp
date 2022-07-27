@@ -165,6 +165,24 @@ void Channel::responseJoinToUsersInChan(User& joiner)
 	}
 }
 
+void	Channel::sendModeChannel(User& user)
+{
+	string	msg = ":ircserv 324 " + user.getNickName() + " " + _chanName;
+	switch (_mode)
+	{
+		case MODE_I:
+			msg += " +i";
+			break;
+		case MODE_T:
+			msg += " +t";
+			break;
+		case MODE_I | MODE_T:
+			msg += " +it";
+			break;
+	}
+	sendMsgToClient(user.getFd(), msg);
+}
+
 ostream& operator<<(ostream& os, const Channel& rhs) {
 	os << "\n" << rhs.getChanName() << " :" << endl;
 	const usersInChannel &users = rhs.getUsers();

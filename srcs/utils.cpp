@@ -6,24 +6,14 @@ void	sendMsgToClient(int fd, const std::string &msg)
 {
 	int	len = msg.length() + 1;
 	int	i;
-	int	j = 0;
-	int	nNL = countOccurrences("\n", msg);
-	char	buf[len + nNL * 4 + 1];
+	char	buf[len];
 
 	for (i = 0; i < len - 1; i++)
-	{
-		buf[j] = msg[i];
-		if (msg[i] == '\n' && i < len - 2)
-		{
-			buf[++j] = '\t';
-			buf[++j] = ' ';
-			buf[++j] = '|';
-			buf[++j] = ' ';
-		}
-		j++;
-	}
-	buf[j++] = '\n';
-	send(fd, buf, j, 0);
+		buf[i] = msg[i];
+	buf[i++] = '\n';
+	buf[i] = '\0';
+	std::cout << "MSG SEND TO " << fd << " : " << buf << std::endl;
+	send(fd, buf, i, 0);
 }
 
 void	sendMsgToClientInChan(const std::string sender, int fd, const std::string msg)

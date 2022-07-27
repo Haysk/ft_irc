@@ -181,7 +181,7 @@ void	Datas::displayServLogo(int fd)
 	vector<string>	logo = explode(SERVLOGO, '\n');
 	size_t	vecSize = logo.size();
 	size_t	i = 0;
-	while (vecSize--)
+	while (--vecSize)
 	{
 		sendMsgToClient(fd, logo[i]);
 		i++;
@@ -204,6 +204,7 @@ void Datas::newChannel(const string &chanName, const int mode, const string &use
 void Datas::addUserInChannel(const string &userName, const string &chanName, bool role = false)
 {
 	Channel &chan = getChannel(chanName);
+	cout << chan.getMode() << endl;
 	if (chan.chanModeIs(MODE_I))
 		chan.useInvit(userName);
 	getChannel(chanName).addUser(userName, role);

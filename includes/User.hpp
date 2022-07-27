@@ -99,11 +99,11 @@ class User : public Datas
 
 		void quit(const std::string& msg);
 
-		void	 nick(const std::string& nickName);
+		void nick(const std::string& nickName);
 
 		void deleteChannel(const string &chanName);
 
-		void sendPrivateMessage(const string  &destName, const string &message);
+		void privMsg(const string  &destName, const string &message);
 
 		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
 

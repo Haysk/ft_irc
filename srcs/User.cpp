@@ -90,7 +90,6 @@ void	User::initUserName(string &userCmd)
 	checkLenArg(name, 9);
 	isAlphaNum(name);
 	_hostName = getArgAt(userCmd, 2, " ", 0);
-	isAlphaNum(_hostName);
 	_serverName = getArgAt(userCmd, 3, " ", 0);
 	isAlphaNum(_serverName);
 	_realName = getArgAt(userCmd, 4, " ", 1);
@@ -142,7 +141,7 @@ void	User::nick(const string &nickCmd)
 	}
 	_nickName = nickname;
 	if (prevNick.length())
-		_datasPtr->responseToCmd(*this, "NICK :" + nickCmd, prevNick);
+		_datasPtr->responseToCmd(*this, "NICK :" + nickname, prevNick);
 }
 
 // UTILS
@@ -247,14 +246,12 @@ void	User::sendMsgToChannel(const std::string& chanName, const std::string& msg)
 
 void	User::join(const string &chanName)
 {
-	std::cout << "JOINER FD: " << getFd() << std::endl;
 	if (chanName.empty() || chanName[0] != '#')
 		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
 		_activeChannel = chanName;
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-		std::cout << "FD JOIN: " << _datasPtr->getUser(_userName, USERNAME).getFd() << endl;
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).getUser(_userName);
@@ -276,7 +273,8 @@ void	User::join(const string &chanName)
 void	User::part(const string &chanName)
 {
 	_datasPtr->removeUserFromChannel(_userName, chanName); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
-	//sendMsgToChannel(chanName, "LEFT THE CHANNEL");
+	sendMsgToClient(_fd, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
+	sendMsgToChannel(chanName, ":" + _nickName + "!" + "~" + _userName + "@62.210.32.149 PART " + chanName + " :");
 }
 
 void	User::quit(const std::string& msg)
@@ -293,15 +291,30 @@ void	User::deleteChannel(const string &chanName)
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
 	if (chanName == _activeChannel)
-	{
 		_activeChannel = "";
-		_datasPtr->displayServLogo(_fd);
-	}
+
 }
 
-void User::sendPrivateMessage(const string &destName, const string &message) {
-	User &dest = _datasPtr->getUser(destName, NICKNAME);
-	sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+void User::privMsg(const string &destName, const string &message) {
+	if (message.empty())
+		throw datasException(":No text to send", 412);
+	if (!destName.empty() && destName[0] != '#') {
+		User &dest = _datasPtr->getUser(destName, NICKNAME);
+		sendMsgToClient(dest.getFd(), "PRIVATE : " + message);
+	}
+	if  (!destName.empty() && destName[0] == '#')
+	{
+		try {
+			Channel &dest = _datasPtr->getChannel(destName);
+			dest.getUser(_userName);
+			sendMsgToChannel(destName, "PRIVATE :" + message);
+		} catch (datasException &e) {
+			if (!string(e.getOption()).compare("403"))
+				throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
+			if (!string(e.getOption()).compare("442"))
+				throw datasException(destName + " :Cannot send to channel", 404); // ERR_CANNOTSENDTOCHAN
+		}
+	}
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -424,10 +437,19 @@ void	User::kick(const string &nickName, const string &chanName)
 	_datasPtr->updateKickedInterface(user, chanName);
 }
 
-void	User::mode(const string &chanName, const int chanMode, const bool add) {
+void	User::mode(const string &chanName, const int chanMode, const bool add)
+{
+	if (!chanName.empty() && chanName[0] != '#')
+		return;
+
 	Channel	&chan = _datasPtr->getChannel(chanName);
 	bool isOp;
 
+	if (chanMode == -1)
+	{
+		chan.sendModeChannel(*this);
+		return;
+	}
 	try {
 		isOp = chan.userIsChanOp(_userName);
 	} catch (datasException &e){
@@ -435,14 +457,6 @@ void	User::mode(const string &chanName, const int chanMode, const bool add) {
 	}
 	if (!chan.userIsChanOp(_userName))
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
-	//sendMsgToChannel(chanName, getMsgMode(chanMode, add));
-	if (chanMode == -1)
-	{
-		stringstream ss;
-		ss << chanName << " " << chan.getMode(); // RPL_CHANNELMODEIS
-		sendMsgToClient(_fd, ss.str());
-		return;
-	}
 	chan.setMod(chanMode, add);
 }
 

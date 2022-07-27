@@ -71,6 +71,8 @@ class Channel : public Datas
 		void useInvit(const string &userName);
 
 		void responseJoinToUsersInChan(User& joiner);
+
+		void sendModeChannel(User& user);
 };
 
 ostream& operator<<(ostream& os, const Channel& rhs);

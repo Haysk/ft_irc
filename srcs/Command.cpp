@@ -16,7 +16,6 @@ Command::Command(void) : _cmd()
 	_cmdMap["PASS"] = &Command::pass;
 	_cmdMap["USER"] = &Command::user;
 	_cmdMap["NICK"] = &Command::nick;
-	
 }
 
 Command::~Command(void)
@@ -105,9 +104,12 @@ void	Command::kick(User &user)
 
 void	Command::mode(User &user)
 {
-//	if (_cmd.size() == 2)
-//		user.mode(_cmd[1], -1, 0);
-	if (_cmd.size() < 3)
+	if (_cmd.size() == 2)
+	{
+		user.mode(_cmd[1], -1, 0);
+		return ;
+	}
+	else if (_cmd.size() < 3)
 		throw datasException("MODE :Not enough parameters", 461);
 	checkModeParam(_cmd[2]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
