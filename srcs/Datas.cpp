@@ -215,7 +215,7 @@ void Datas::removeUserFromChannel(const string &userName, const string &chanName
 	Channel &chan =  getChannel(chanName);
 	User &user = getUser(userName, USERNAME);
 	chan.deleteUser(user.getUserName());
-	getChannel(chanName).responseCmdToUsersInChan(user, "PART " + chanName + " :");
+	getChannel(chanName).responseCmdToAllInChan(user, "PART " + chanName + " :");
 	responseToCmd(user, "PART " + chanName + " :");
 	if (chan.getUsers().empty()) {
 		delete &chan;
@@ -303,7 +303,7 @@ void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const strin
 
 void Datas::sendJoinMsgs(User& user, Channel& chan)
 {
-	chan.responseCmdToUsersInChan(user, "JOIN :" + chan.getChanName());
+	chan.responseCmdToAllInChan(user, "JOIN :" + chan.getChanName());
 	responseChanNamesList(user, chan);
 }
 

@@ -70,7 +70,9 @@ class Channel : public Datas
 
 		void useInvit(const string &userName);
 
-		void responseCmdToUsersInChan(User& joiner, const std::string& msg);
+		void responseCmdToAllInChan(User& joiner, const std::string& msg);
+
+		void responseCmdToDestInChan(User& joiner, const std::string& msg);
 
 		void sendModeChannel(User& user);
 };
