@@ -160,7 +160,7 @@ void Channel::responseCmdToUsersInChan(User& executer, const std::string& msg)
 
 	while (it != ite)
 	{
-		_datasPtr->responseToCmd(executer, msg, "", _datasPtr->getUser(it->first, USERNAME).getFd());
+		_datasPtr->responseToCmd(executer, msg, _datasPtr->getUser(it->first, USERNAME).getFd());
 		it++;
 	}
 }

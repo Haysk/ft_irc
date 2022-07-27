@@ -271,7 +271,7 @@ void Datas::disconnectAllUsers(const string& comment)
 	_co = false;
 }
 
-void Datas::responseToCmd(User& user, const string& cmdLine, const string& prevNickName, int fd)
+void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const string &prevNickName)
 {
 	size_t	cmdLen = cmdLine.length();
 	char	buf[cmdLen + 25];
