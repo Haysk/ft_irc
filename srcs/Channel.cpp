@@ -146,10 +146,7 @@ void Channel::useInvit(const string &userName)
 {
 	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++)
 		if (!it.base()->compare(userName))
-		{
-			_invit.erase(it);
 			return;
-		}
 	throw (datasException(_datasPtr->getUser(userName,
 			USERNAME).getNickName() + " " +  _chanName
 			+ " :Cannot join channel (+i)", 473)); // ERR_INVITEONLYCHAN
