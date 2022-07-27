@@ -358,3 +358,10 @@ void Datas::responseChanNamesList(User& user, Channel& chan)
 	buf[i++] = '\n';
 	send(user.getFd(), buf, i, 0);
 }
+
+void Datas::sendMsgByServerToExecuter(User& user, const string& cmdLine)
+{
+	string msg = ":ircserv " + cmdLine;
+
+	sendMsgToClient(user.getFd(), msg);
+}

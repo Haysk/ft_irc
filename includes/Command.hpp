@@ -30,6 +30,7 @@ class	Command
 		Command(void);
 		~Command(void);
 		void	buildCmd(size_t, std::string);
+		void	buildCmdPrivmsg(std::string);
 		void	checkCmd(User&);
 		void	displayCmd(void);
 		void	clearCmd(void);

@@ -48,18 +48,40 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	int	tmp = -1;
 	size_t	pos;
 	size_t	argLen;
+	string	arg;
 
 	while (nOpt--)
 	{
 		pos = line.find_first_of(" ", tmp + 1);
 		if (nOpt)
 		{
-			_cmd.push_back(line.substr(tmp + 1, pos - (tmp + 1)));
+			arg = line.substr(tmp + 1, pos - (tmp + 1));
+			_cmd.push_back(arg);
+			if (!arg.compare("PRIVMSG"))
+			{
+				buildCmdPrivmsg(line);
+				return ;
+			}
 			tmp = pos;
 		}
 	}
 	argLen = line.find_first_of(" ", tmp + 1);
 	_cmd.push_back(line.substr(tmp + 1, argLen - (tmp + 1)));
+	std::cout << "LINE END: " << line.substr(tmp + 1, pos - (tmp + 1)) << std::endl;
+}
+
+void	Command::buildCmdPrivmsg(std::string line)
+{
+	size_t	tmp;
+	size_t	pos;
+	string	arg;
+
+	pos = line.find_first_not_of(" ", _cmd[0].length());
+	tmp = line.find_first_of(" ", pos);
+	arg = line.substr(pos, tmp - pos);
+	_cmd.push_back(arg);
+	pos = line.find_first_of(":", _cmd[0].length());
+	_cmd.push_back(line.substr(pos));
 }
 
 void	Command::join(User &user)
@@ -86,7 +108,8 @@ void	Command::part(User &user)
 		user.part(chans[i]);
 }
 
-void	Command::privmsg(User &user) {
+void	Command::privmsg(User &user) 
+{
 	if (_cmd.size() < 2)
 		throw datasException(":No recipient given (PRIVMSG)", 411); // ERR_NORECIPIENT
 	if (_cmd.size() < 3)

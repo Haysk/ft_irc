@@ -395,12 +395,9 @@ map<string, vector<string> > User::names(const vector<string> &channels)
 void	User::sendRegistrationComplete(void)
 {
 	std::string msg = ":ircserv 001 " + _nickName + " :Welcome to ircserv, " + _nickName;
-	sendMsgToClient(_fd, msg);
-	msg = ":ircserv 002 " + _nickName + " :Your host is ircserv, running version ircd";
-	sendMsgToClient(_fd, msg);
-	msg =":ircserv 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
-	sendMsgToClient(_fd, msg);
-	msg = ":ircserv 004 " + _nickName + " ircserv HHA_entreprise oOiwscrknfbghexzSjFI bhijklmMnoOstvcdSuU bkohv";
+	msg += "\n:ircserv 002 " + _nickName + " :Your host is ircserv, running version ircd";
+	msg += "\n:ircserv 003 " + _nickName + " :This server was created Fri Apr 10 2017 at 16:33:19 UTC";
+	msg += "\n:ircserv 004 " + _nickName + " ircserv HHA_entreprise";
 	sendMsgToClient(_fd, msg);
 }
 
@@ -447,16 +444,20 @@ void	User::mode(const string &chanName, const int chanMode, const bool add)
 	chan.setMod(chanMode, add);
 }
 
-void	User::invite(const string &nickName, const string &chanName) {
+void	User::invite(const string &nickName, const string &chanName)
+{
 	Channel &chan = _datasPtr->getChannel(chanName); // ERR_NOSUCHCHANNEL
+
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_I))
-		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES ????????????????????????????
+		throw datasException(chanName+ " :Channel doesn't support modes", 477); // ERR_NOCHANMODES
+
 	User &usr = _datasPtr->getUser(nickName, NICKNAME); // ERR_NOSUCHNICK
 	chan.setInvit(usr.getUserName()); // ERR_USERONCHANNEL
-	sendMsgToClient(usr._fd, chanName + " " + _nickName);
-	sendMsgToClient(_fd, chanName + " " + usr.getNickName()); //RPL_INVITE (a check)
+
+	_datasPtr->sendMsgByServerToExecuter(*this, "341 " + nickName + " " + chanName);
+	_datasPtr->responseToCmd(*this, "INVITE " + _nickName + " :" + chanName, _datasPtr->getUser(nickName, NICKNAME).getFd());
 }
 
 void	User::topic(const string &chanName, const string &newTopicName)

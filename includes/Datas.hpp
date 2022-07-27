@@ -103,6 +103,8 @@ class	Datas
 		string getChanNamesEndMsg(const string& nickName, const string& chanName);
 
 		void responseChanNamesList(User& user, Channel& chan);
+
+		void sendMsgByServerToExecuter(User& user, const string& cmdLine);
 };
 
 #endif // DATAS_HPP

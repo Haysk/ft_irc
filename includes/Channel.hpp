@@ -52,6 +52,10 @@ class Channel : public Datas
 
 		Datas *getDatasPtr(void);
 
+		string	getTopic(void) const;
+
+		vector<string>	getInvit(void) const;
+
 		// SETTERS
 
 		void setChanName(const Datas &datas, const string &newName);
