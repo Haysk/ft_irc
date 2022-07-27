@@ -141,7 +141,7 @@ void	User::nick(const string &nickCmd)
 	}
 	_nickName = nickname;
 	if (prevNick.length())
-		_datasPtr->responseToCmd(*this, "NICK :" + nickname, prevNick);
+		_datasPtr->responseToCmd(*this, "NICK :" + nickname, 0 ,prevNick);
 }
 
 // UTILS
@@ -439,7 +439,7 @@ void	User::mode(const string &chanName, const int chanMode, const bool add)
 }
 
 void	User::invite(const string &nickName, const string &chanName) {
-	Channel &chan = _datasPtr->getChannel(chanName);
+	Channel &chan = _datasPtr->getChannel(chanName); // ERR_NOSUCHCHANNEL
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	if (!chan.chanModeIs(MODE_I))
