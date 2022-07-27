@@ -47,7 +47,8 @@ void Server::Accept(Datas &servDatas, Socket *sk){
         std::cout << BOLDGREEN << "client fd " << fd <<": connected"<< RESET << std::endl;
         sk->_client.push_back(fd);
 	servDatas.displayServLogo(fd);
-	sendMsgToClient(fd, "Welcome to my MY-IRC !\nEnter CAP LS to continue:");
+	sendMsgToClient(fd, "Welcome to my MY-IRC !");
+	sendMsgToClient(fd, "Enter CAP LS to continue:");
 	servDatas.newUser(fd);
 	//servDatas.sendPrompt(fd);
     }

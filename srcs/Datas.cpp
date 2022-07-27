@@ -178,8 +178,14 @@ void	Datas::treatCmds(int fd, string lines)
 
 void	Datas::displayServLogo(int fd)
 {
-	cleanScreen(fd);
-	sendMsgToClient(fd, SERVLOGO);
+	vector<string>	logo = explode(SERVLOGO, '\n');
+	size_t	vecSize = logo.size();
+	size_t	i = 0;
+	while (vecSize--)
+	{
+		sendMsgToClient(fd, logo[i]);
+		i++;
+	}
 }
 
 void Datas::newChannel(const string &chanName, const int mode, const string &userName)

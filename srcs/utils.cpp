@@ -54,11 +54,6 @@ void	sendMsgToClientInChan(const std::string sender, int fd, const std::string m
 	send(fd, " | ", 3, 0);
 }
 
-void	cleanScreen(int fd)
-{
-	send(fd, "\x1B[2J\x1B[H", 7, 0);
-}
-
 size_t	strlenP(std::string str)
 {
 	size_t	l = 0;

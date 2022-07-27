@@ -260,6 +260,7 @@ void	User::join(const string &chanName)
 				_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 			}
 		} catch (datasException &e) {
+			std::cout << "HEY3" << std::endl;
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
