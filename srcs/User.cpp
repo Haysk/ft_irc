@@ -243,16 +243,20 @@ void	User::join(const string &chanName)
 		createChannel(chanName, 0);
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
-		try {
-			_datasPtr->getChannel(chanName).inactiveToActiveUser(_userName);
-			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-		} catch (datasException &e) {
+		Channel &chan = _datasPtr->getChannel(chanName);
+//		try {
+//			chan.inactiveToActiveUser(_userName);
+//
+//			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
+//		} catch (datasException &e) {
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-		}
+//		}
+		if (chan.chanModeIs(MODE_T))
+			topic(chanName);
 	}
 }
 
@@ -267,7 +271,7 @@ void	User::quit(const std::string& msg)
 	_datasPtr->responseToCmd(*this, "QUIT : " + msg);
 	size_t i = _channels.size();
 	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); i > 0 && it != ite; i--, it++) {
-		part(it->first);
+		part(it->first, msg);
 	}
 	if (msg.length())
 		std::cout << "<" + _userName + "> " + msg << std::endl;
@@ -303,12 +307,6 @@ void User::privMsg(const string &destName, const string &message) {
 				throw datasException(destName + " :Cannot send to channel", 404); // ERR_CANNOTSENDTOCHAN
 		}
 	}
-}
-
-void User::notice(const string &destName, const string &message) {
-	try {
-		privMsg(destName, message);
-	} catch (datasException &e) {}
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -470,14 +468,18 @@ void	User::invite(const string &nickName, const string &chanName)
 
 void	User::topic(const string &chanName, const string &newTopicName)
 {
-	_datasPtr->getChannel(chanName).getUser(_userName); // ERR_NOTONCHANNEL
+	Channel &chan = _datasPtr->getChannel(chanName);
+	chan.getUser(_userName); // ERR_NOTONCHANNEL
 	if (newTopicName.empty())
 	{
-		sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
+		if (chan.getTopic().empty())
+			sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
+		else
+			chan.responseToCmd(*this, "TOPIC " + chanName + " " + chan.getTopic());
 		return;
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
-	//sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
+	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + chan.getTopic());
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
