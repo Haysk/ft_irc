@@ -105,8 +105,6 @@ class User : public Datas
 
 		void privMsg(const string  &destName, const string &message);
 
-		void notice(const string  &destName, const string &message);
-
 		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
 
 		void sendRegistrationComplete(void);
@@ -117,7 +115,7 @@ class User : public Datas
 
 		void mode(const string &chanName, const int chanMode, const bool add);
 
-		void topic(const string &chanName, const string &newChanName);
+		void topic(const string &chanName, const string &newChanName = "");
 
 		void invite(const string &userName, const string &chanName);
 };

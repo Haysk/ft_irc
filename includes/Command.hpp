@@ -17,6 +17,7 @@ class	Command
 		void	join(User&);
 		void	part(User&);
 		void	privmsg(User&);
+		void	notice(User&);
 		void	quit(User&);
 		void	ping(User&);
 		void	kick(User&);

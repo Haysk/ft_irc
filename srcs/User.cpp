@@ -240,8 +240,9 @@ void	User::join(const string &chanName)
 		createChannel(chanName, 0);
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
+		Channel &chan = _datasPtr->getChannel(chanName);
 		try {
-			_datasPtr->getChannel(chanName).inactiveToActiveUser(_userName);
+			chan.inactiveToActiveUser(_userName);
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		} catch (datasException &e) {
 			if (_op)
@@ -250,6 +251,8 @@ void	User::join(const string &chanName)
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
+		if (chan.chanModeIs(MODE_T))
+			topic(chanName);
 	}
 }
 
@@ -300,12 +303,6 @@ void User::privMsg(const string &destName, const string &message) {
 				throw datasException(destName + " :Cannot send to channel", 404); // ERR_CANNOTSENDTOCHAN
 		}
 	}
-}
-
-void User::notice(const string &destName, const string &message) {
-	try {
-		privMsg(destName, message);
-	} catch (datasException &e) {}
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
@@ -466,13 +463,15 @@ void	User::invite(const string &nickName, const string &chanName)
 
 void	User::topic(const string &chanName, const string &newTopicName)
 {
-	_datasPtr->getChannel(chanName).getUser(_userName); // ERR_NOTONCHANNEL
+	Channel &chan = _datasPtr->getChannel(chanName);
+	chan.getUser(_userName); // ERR_NOTONCHANNEL
 	if (newTopicName.empty())
 	{
 		sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
 		return;
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
+	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + newTopicName);
 	//sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
 }
 
