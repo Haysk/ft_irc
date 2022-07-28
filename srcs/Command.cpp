@@ -67,7 +67,6 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	}
 	argLen = line.find_first_of(" ", tmp + 1);
 	_cmd.push_back(line.substr(tmp + 1, argLen - (tmp + 1)));
-	std::cout << "LINE END: " << line.substr(tmp + 1, pos - (tmp + 1)) << std::endl;
 }
 
 void	Command::buildCmdPrivmsg(std::string line)
