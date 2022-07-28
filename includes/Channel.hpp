@@ -74,9 +74,11 @@ class Channel : public Datas
 
 		void addUser(const string &userName, bool role);
 
+		void useInvit(const string &userName);
+
 		void deleteUser(const string &userName);
 
-		void useInvit(const string &userName);
+		void activeToInactiveUser(const string &userName);
 
 		void inactiveToActiveUser(const string &userName);
 

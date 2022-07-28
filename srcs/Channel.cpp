@@ -14,6 +14,8 @@ _mode(mode)
 Channel::~Channel()
 {
 	_users.clear();
+	_inactiveUsers.clear();
+	_invit.clear();
 }
 
 Channel &Channel::operator=(const Channel &rhs)
@@ -86,11 +88,6 @@ bool Channel::userIsChanOp(const string &userName) const
 	throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
 }
 
-//bool Channel::userIsActive(const string &userName)
-//{
-//	return (_datasPtr->getUser(userName, USERNAME).getActiveChannel() == _chanName);
-//}
-
 Datas*	Channel::getDatasPtr(void)
 {
 	return (_datasPtr);
@@ -162,15 +159,6 @@ void Channel::addUser(const string &userName, bool role = false)
 	}
 }
 
-void Channel::deleteUser(const string &userName)
-{
-	usersInChannel_const_it usr = _users.find(userName);
-	if (usr == _users.end())
-		throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
-	_inactiveUsers.insert(*usr);
-	_users.erase(userName);
-}
-
 void Channel::useInvit(const string &userName)
 {
 	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++) {
@@ -178,6 +166,24 @@ void Channel::useInvit(const string &userName)
 			return;
 	}
 	throw datasException(_chanName + " :Cannot join channel (+i)", 473); // ERR_INVITEONLYCHAN
+}
+
+void Channel::deleteUser(const string &userName) {
+	_users.erase(userName);
+	_inactiveUsers.erase(userName);
+	for (vector<string>::iterator it = _invit.begin(), ite = _invit.end(); it != ite; it++) {
+		if (!it->compare(userName))
+			_invit.erase(it);
+	}
+}
+
+void Channel::activeToInactiveUser(const string &userName)
+{
+	usersInChannel_const_it usr = _users.find(userName);
+	if (usr == _users.end())
+		throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
+	_inactiveUsers.insert(*usr);
+	_users.erase(userName);
 }
 
 void Channel::inactiveToActiveUser(const string &userName) {
