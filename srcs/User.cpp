@@ -244,17 +244,11 @@ void	User::join(const string &chanName)
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
 		Channel &chan = _datasPtr->getChannel(chanName);
-//		try {
-//			chan.inactiveToActiveUser(_userName);
-//
-//			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-//		} catch (datasException &e) {
-			if (_op)
-				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
-			else
-				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
-			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-//		}
+		if (_op)
+			_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
+		else
+			_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
+		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		if (chan.chanModeIs(MODE_T))
 			topic(chanName);
 	}

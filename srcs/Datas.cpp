@@ -127,7 +127,7 @@ void	Datas::disconnectUser(User& user)
 	{
 		try
 		{
-			it->second->deleteUser(user.getUserName());
+			it->second->activeToInactiveUser(user.getUserName());
 		}
 		catch (datasException& e)
 		{
@@ -219,13 +219,15 @@ void Datas::removeUserFromChannel(const string &userName, const string &chanName
 	Channel &chan =  getChannel(chanName);
 	User &user = getUser(userName, USERNAME);
 
-	chan.deleteUser(user.getUserName());
+	chan.activeToInactiveUser(user.getUserName());
 	if (!isKicked) {
 		chan.responseCmdToDestInChan(user, "PART " + chanName + " :" + msg);
 		responseToCmd(user, "PART " + chanName + " :" + msg);
 	}
-	else 
+	else {
+		chan.deleteUser(userName);
 		responseToCmd(kicker, "KICK " + chanName + " " + user.getNickName() + " :" + msg, user.getFd());
+	}
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);
