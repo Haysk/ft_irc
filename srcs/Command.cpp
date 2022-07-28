@@ -88,7 +88,8 @@ void	Command::buildCmdWithMsg(int nArgs, const string& line)
 		_cmd.push_back(line.substr(begin, end - begin));
 	}
 	begin = line.find_first_of(":", end);
-	_cmd.push_back(line.substr(begin + 1));
+	if (begin != std::string::npos)
+		_cmd.push_back(line.substr(begin + 1));
 	displayCmd();
 }
 

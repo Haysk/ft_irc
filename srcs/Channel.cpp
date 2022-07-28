@@ -228,7 +228,7 @@ void	Channel::sendModeChannel(User& user)
 			mode = "+it";
 			break;
 	}
-	string	msg = ":ircserv 324 " + user.getNickName() + " " + _chanName + " " + mode;
+	string	msg = ":ircserv 324 " + user.getNickName() + " " + _chanName + " :" + mode;
 	sendMsgToClient(user.getFd(), msg);
 }
 

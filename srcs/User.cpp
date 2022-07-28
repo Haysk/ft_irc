@@ -243,19 +243,20 @@ void	User::join(const string &chanName)
 		createChannel(chanName, 0);
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
-		Channel &chan = _datasPtr->getChannel(chanName);
-		try {
-			chan.inactiveToActiveUser(_userName);
-			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-		} catch (datasException &e) {
+		_datasPtr->getChannel(chanName);
+//		try {
+//			chan.inactiveToActiveUser(_userName);
+//
+//			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
+//		} catch (datasException &e) {
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
-		}
-		if (chan.chanModeIs(MODE_T))
-			topic(chanName);
+//		}
+//		if (chan.chanModeIs(MODE_T))
+//			topic(chanName);
 	}
 }
 
@@ -478,8 +479,7 @@ void	User::topic(const string &chanName, const string &newTopicName)
 		return;
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
-	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + newTopicName);
-	//chan.responseToCmd(*this, "TOPIC " + chanName + " " + newTopicName);
+	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + chan.getTopic());
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
