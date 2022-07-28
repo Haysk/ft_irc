@@ -1,28 +1,30 @@
 #include "../includes/Server.hpp"
 #include "../includes/Socket.hpp"
-#include "../includes/tester.hpp"
-#define LIMIT_MSG 512
+#include "../includes/utils.hpp"
+#include "../includes/datasException.hpp"
+#include "../includes/Datas.hpp"
+#include "../includes/User.hpp"
+
 
 Server::Server(){
     this->_buff = new char[LIMIT_MSG];
     memset(this->_buff, 0, LIMIT_MSG);
 }
 
-Server::Server(const Server &ref){
+Server::Server(const Server &ref) {
     *this = ref;
 }
 
-Server::~Server(){
+Server::~Server() {
         delete[] _buff;
 };
 
-Server &Server::operator=(const Server &ref){
+Server &Server::operator=(const Server &ref) {
     this->_buff = ref._buff;
     return (*this);
 }
 
-
-void Server::Listen(Socket *sk, int backlog){
+void Server::Listen(Socket *sk, int backlog)	{
     if (listen(sk->_fd, backlog) < 0)
         throw Server::ListenFailed();
     else{
@@ -31,13 +33,12 @@ void Server::Listen(Socket *sk, int backlog){
     }
 }
 
-void Server::Select(Socket *sk, struct timeval *timeout){
-
+void Server::Select(Socket *sk, struct timeval *timeout)	{
     if (select(sk->_max_fd + 1, &sk->_readfs, 0, 0, timeout) < 0)
         throw Server::SelectFailed();
 }
 
-void Server::Accept(Datas &servDatas, Socket *sk){
+void Server::Accept(Datas &servDatas, Socket *sk)	{
     socklen_t len = 0;
     int fd = accept(sk->_fd, 
     reinterpret_cast<struct sockaddr *>(&sk->_addr), &len);
@@ -50,7 +51,6 @@ void Server::Accept(Datas &servDatas, Socket *sk){
 	sendMsgToClient(fd, "Welcome to my MY-IRC !");
 	sendMsgToClient(fd, "Enter CAP LS to continue:");
 	servDatas.newUser(fd);
-	//servDatas.sendPrompt(fd);
     }
 }
 

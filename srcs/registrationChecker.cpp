@@ -1,18 +1,6 @@
 # include "../includes/utils.hpp"
 # include "../includes/datasException.hpp"
 
-void	isAlpha(const std::string& str)
-{
-	int	i = 0;
-
-	while (str[i])
-	{
-		if (!isalpha(str[i]))
-			throw std::invalid_argument("Not a alphabetic argument");
-		i++;
-	}
-}
-
 void	isAlphaNumSp(const std::string& str)
 {
 	int	i = 0;

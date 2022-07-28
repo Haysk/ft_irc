@@ -20,24 +20,49 @@ Channel::~Channel()
 
 Channel &Channel::operator=(const Channel &rhs)
 {
-	this->_chanName = rhs.getChanName();
-	this->_mode = rhs.getMode();
-	this->_users = rhs.getUsers();
+	_datasPtr = rhs.getDatasPtr();
+	_chanName = rhs.getChanName();
 	_topic = rhs.getTopic();
+	_mode = rhs.getMode();
+	_users = rhs.getUsers();
+	_inactiveUsers = rhs.getInactiveUsers();
 	_invit = rhs.getInvit();
 	return *this;
 }
 
 // GETTERS
 
+Datas *Channel::getDatasPtr() const {
+	return _datasPtr;
+}
+
 string Channel::getChanName() const
 {
 	return _chanName;
 }
 
+string	Channel::getTopic(void) const
+{
+	return (_topic);
+}
+
 int Channel::getMode() const
 {
 	return _mode;
+}
+
+usersInChannel Channel::getUsers() const
+{
+	return _users;
+}
+
+usersInChannel Channel::getInactiveUsers() const {
+	return _inactiveUsers;
+}
+
+vector<string>	Channel::getInvit(void) const
+{
+	return _invit;
 }
 
 bool Channel::chanModeIs(const int mode) const
@@ -52,11 +77,6 @@ bool Channel::chanModeIs(const int mode) const
 	default :
 		throw datasException("Mode doesn't exist", mode);
 	}
-}
-
-usersInChannel Channel::getUsers() const
-{
-	return _users;
 }
 
 User &Channel::getUser(const string &userName) const
@@ -88,38 +108,7 @@ bool Channel::userIsChanOp(const string &userName) const
 	throw datasException(_chanName + " : You\'re not on that Channel", 442); // ERR_NOTONCHANNEL
 }
 
-Datas*	Channel::getDatasPtr(void)
-{
-	return (_datasPtr);
-}
-
-string	Channel::getTopic(void) const
-{
-	return (_topic);
-}
-
-vector<string>	Channel::getInvit(void) const
-{
-	return (_invit);
-}
-
-
-
 // SETTERS
-
-void Channel::setChanName(const Datas &datas, const string &newName)
-{
-	usersInChannel_const_it it = _users.begin();
-	usersInChannel_const_it ite = _users.end();
-	for (;it != ite; it++)
-	{
-		User &user = datas.getUser(it->first, USERNAME);
-		bool tmp = user.getChannels().find(_chanName)->second;
-		user.deleteChannel(_chanName);
-		user.addChannel(newName, tmp);
-	}	
-	_chanName = newName;
-}
 
 void Channel::setTopic(const string &newTopic) {
 	_topic = newTopic;

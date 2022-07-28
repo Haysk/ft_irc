@@ -29,8 +29,6 @@
 #include <fstream>
 #include "Command.hpp"
 
-#define IP "127.0.0.1"
-#define PORT 8081
 #define MODE_I 1
 #define MODE_T 2
 #define BITWISE_I 0
@@ -46,48 +44,44 @@
 #define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
 #define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
 
+#define LIMIT_MSG 512
+
 using namespace std;
 
-void	signal_handler(int n);
+void				signal_handler(int n);
 
-bool	check_input(int ac, char **av);
+bool				check_input(int ac, char **av);
 
-void	sendMsgToClient(int fd, const std::string &msg);
+void				sendMsgToClient(int fd, const std::string &msg);
 
-size_t	strlenP(std::string str);
+size_t				strlenP(std::string str);
 
-const	vector<string> explode(const string& s, const char& c);
+const				vector<string> explode(const string& s, const char& c);
 
-size_t	countOccurrences(std::string charset, const std::string str);
+size_t				countOccurrences(std::string charset, const std::string str);
 
-std::string	getArgAt(const std::string& str, size_t index,
-			std::string charset, int config);
+std::string			getArgAt(const std::string& str, size_t index, std::string charset, int config);
 
-size_t	getNextArgPos(const std::string &str, size_t start,
-			std::string charset);
+size_t				getNextArgPos(const std::string &str, size_t start, std::string charset);
 
-	// REGISTRATION_CHECKER
+// REGISTRATION_CHECKER
 
-void	isAlphaNumSp(const std::string& str);
+void				isAlphaNumSp(const std::string& str);
 
-void	isAlphaNum(const std::string& str);
+void				isAlphaNum(const std::string& str);
 
-void	isAlpha(const std::string& str);
+bool				checkCmdName(const std::string cmdLine, const std::string expected);
 
-bool	checkCmdName(const std::string cmdLine, const std::string expected);
+void				checkRangeArg(const std::string cmdLine, size_t min, size_t max);
 
-void	checkRangeArg(const std::string cmdLine, size_t min, size_t max);
+void				checkNbrArg(const std::string cmdLine, size_t expected);
 
-void	checkNbrArg(const std::string cmdLine, size_t expected);
+void				checkLenArg(const std::string arg, size_t max);
 
-void	checkLenArg(const std::string arg, size_t max);
+int					checkDoublons(const std::string str);
 
-int	checkDoublons(const std::string str);
-
-void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
+void				checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
 
 map<string, string>	getOperatorsConf();
-
-string	getMsgMode(const int chanMode, const bool add);
 
 #endif //FT_IRC_UTILS_HPP

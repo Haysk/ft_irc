@@ -12,9 +12,12 @@ Socket::Socket(const Socket &ref){
 
 Socket &Socket::operator=(const Socket &ref){
     this->_addr = ref._addr;
-    this->_fd = ref._fd;
-    this->_ip = ref._ip;
-    this->_port = ref._port;
+	this->_ip = ref._ip;
+	this->_port = ref._port;
+	this->_max_fd = ref._max_fd;
+	this->_fd = ref._fd;
+	this->_client = ref._client;
+	this->_readfs = ref._readfs;
     return (*this);
 }
 

@@ -3,7 +3,6 @@
 
 Command::Command(void) : _cmd()
 {
-//	std::cout << "Command default constructor called" << std::endl;
 	_cmdMap["JOIN"] = &Command::join;
 	_cmdMap["PART"] = &Command::part;
 	_cmdMap["PRIVMSG"] = &Command::privmsg;
@@ -22,7 +21,22 @@ Command::Command(void) : _cmd()
 
 Command::~Command(void)
 {
-//	std::cout << "Command destructor called" << std::endl;
+}
+
+Command &Command::operator=(const Command &rhs)
+{
+	_cmdMap = rhs.getCmdMap();
+	_cmd = rhs.getCmd();
+
+	return *this;
+}
+
+const std::map<std::string, void (Command::*) (User&)> &Command::getCmdMap() const {
+	return _cmdMap;
+}
+
+const deque<string> &Command::getCmd() const {
+	return _cmd;
 }
 
 void	Command::checkCmd(User &user)
@@ -250,7 +264,7 @@ void	checkModeParam(Datas* datas, const std::string& param, const std::string& c
 	throw datasException(":Unknown MODE flag", 501);
 }
 
-int	convertModeParam(const std::string& param)
+int		convertModeParam(const std::string& param)
 {
 	int	ret = 0;
 
@@ -268,7 +282,7 @@ bool	isAddMode(const std::string& param)
 	return (false);
 }
 
-int	getNArgsCmdMsg(const string& cmd)
+int		getNArgsCmdMsg(const string& cmd)
 {
 	if (!cmd.compare("KICK"))
 		return (2);

@@ -6,39 +6,35 @@
 #include "utils.hpp"
 #include "Command.hpp"
 
-typedef map<string, bool> userChannels;
-typedef map<string, bool>::const_iterator userChannels_const_it;
-typedef map<string, bool>::iterator userChannels_it;
+typedef map<string, bool>					userChannels;
+typedef map<string, bool>::const_iterator	userChannels_const_it;
 
 class User : public Datas
 {
-
 	private:
-		Datas *_datasPtr;
+		Datas			*_datasPtr;
 
-		int		_fd;
+		int				_fd;
 
-		int		_step;
+		int				_step;
 
-		bool	_co;
+		bool			_co;
 
-		bool	_op;
+		bool			_op;
 
-		string _password;
+		string			_password;
 
-		string	_userName;
+		string			_userName;
 
-		string	_nickName;
+		string			_nickName;
 
-		string	_hostName;
+		string			_hostName;
 
-		string	_serverName;
+		string			_serverName;
 
-		string	_realName;
+		string			_realName;
 
-//		string	_activeChannel;
-
-		userChannels _channels; // map (chanName | role)
+ 		userChannels	_channels; // map (chanName | role)
 
 	public:
 		User();
@@ -51,76 +47,77 @@ class User : public Datas
 
 		// GETTERS
 
-		Datas*	getDatasPtr(void);
+		Datas*					getDatasPtr(void) const;
 
-		const int &getFd() const;
+		const	int				&getFd() const;
 
-		const int &getStep() const;
+		const	int				&getStep() const;
 
-		const string &getUserName() const;
+		const	bool			&getCo() const;
 
-		const string &getNickName() const;
+		const	bool			&getOp() const;
 
-		const string &getActiveChannel() const;
+		const	string 			&getPassword() const;
 
-		const userChannels &getChannels() const;
+		const	string			&getUserName() const;
 
-		Channel &getChannel(const string &chanName) const;
+		const	string			&getNickName() const;
 
-		const bool &getOp() const;
+		const	string			&getHostName() const;
 
-		bool &getOp(const string &chanName);
-		
-		bool getCo(void);
+		const	string			&getServerName() const;
+
+		const	string			&getRealName() const;
+
+		const	userChannels	&getChannels() const;
+
+		Channel					&getChannel(const string &chanName) const;
 
 		// REGISTRATION
 
-		void initUserName(string &userCmd);
+		void					initUserName(string &userCmd);
 
-		void checkCAPLS(string &arg);
+		void					checkCAPLS(string &arg);
 
-		void checkPwd(const string pwd, string &arg);
+		void					checkPwd(const string &pwd, string &arg);
 
-		void fillUser(string &arg);
+		void					fillUser(string &arg);
 
 		// UTILS
 
-		void addChannel(const string &chanName, bool role);
+		void					addChannel(const string &chanName, bool role);
 
 		// FUNCTIONS
 
-		void execCmd(const string &cmd);
+		void					execCmd(const string &cmd);
 
-		void createChannel(const string &chanName, const int mode);
+		void					createChannel(const string &chanName, const int mode);
 
-		void join(const string &chanName);
+		void					join(const string &chanName);
 
-		void part(const string &chanName, const string &msg);
+		void					part(const string &chanName, const string &msg);
 
-		void quit(const std::string& msg);
+		void					quit(const std::string& msg);
 
-		void nick(const std::string& nickName);
+		void					nick(const std::string& nickName);
 
-		void deleteChannel(const string &chanName);
+		void					deleteChannel(const string &chanName);
 
-		void privMsg(const string  &destName, const string &message);
+		void					privMsg(const string  &destName, const string &message);
 
-		void notice(const string  &destName, const string &message);
+		void					notice(const string  &destName, const string &message);
 
-		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
-
-		void sendRegistrationComplete(void);
+		void					sendRegistrationComplete(void);
 
 		// CHAN OPERATOR FUNCTION
 
-		void kick(const string &userName, const string &chanName, string& msg);
+		void					kick(const string &userName, const string &chanName, string& msg);
 
-		void mode(const string &chanName, const int chanMode, const bool add,
-			const string& strMode = "");
+		void					mode(const string &chanName, const int chanMode, const bool add, const string& strMode = "");
 
-		void topic(const string &chanName, const string &newChanName = "");
+		void					topic(const string &chanName, const string &newChanName = "");
 
-		void invite(const string &userName, const string &chanName);
+		void					invite(const string &userName, const string &chanName);
 };
 
 ostream& operator<<(ostream& os, const User& rhs);

@@ -5,26 +5,26 @@
 #include "Datas.hpp"
 #include "utils.hpp"
 
-typedef map<string, bool> usersInChannel;
-typedef map<string, bool>::iterator usersInChannel_it;
-typedef map<string, bool>::const_iterator usersInChannel_const_it;
+typedef map<string, bool> 					usersInChannel;
+typedef map<string, bool>::iterator			usersInChannel_it;
+typedef map<string, bool>::const_iterator	usersInChannel_const_it;
 
 class Channel : public Datas
 {
 	private:
-		Datas *_datasPtr;
+		Datas			*_datasPtr;
 
-		string _chanName;
+		string			_chanName;
 
-		string _topic;
+		string			_topic;
 
-		int _mode;
+		int				_mode;
 
-		usersInChannel _users; // map (userName | role)
+		usersInChannel	_users; // map (userName | role)
 
-		usersInChannel _inactiveUsers;
+		usersInChannel	_inactiveUsers;
 
-		vector<string> _invit;
+		vector<string>	_invit;
 
 	public:
 
@@ -32,61 +32,59 @@ class Channel : public Datas
 
 		Channel(Datas *datasPtr, const string &chanName, int mode, const string &userName);
 
-		virtual ~Channel();
+		virtual			~Channel();
 
-		Channel &operator=(const Channel &rhs);
+		Channel			&operator=(const Channel &rhs);
 
-		// GETTERS
+	// GETTERS
 
-		string getChanName() const;
+		Datas			*getDatasPtr() const;
 
-		int getMode() const;
+		string			getChanName() const;
 
-		bool chanModeIs(const int mode) const;
+		string			getTopic() const;
 
-		usersInChannel getUsers() const;
+		int 			getMode() const;
 
-		User &getUser(const string &userName) const;
+		usersInChannel	getUsers() const;
 
-		User &getInactiveUser(const string &userName) const;
+		usersInChannel	getInactiveUsers() const;
 
-		bool userIsChanOp(const string &userName) const;
-
-//		bool userIsActive(const string &userName);
-
-		Datas *getDatasPtr(void);
-
-		string	getTopic(void) const;
+		User			&getInactiveUser(const string &userName) const;
 
 		vector<string>	getInvit(void) const;
 
-		// SETTERS
+		bool			chanModeIs(const int mode) const;
 
-		void setChanName(const Datas &datas, const string &newName);
+		User 			&getUser(const string &userName) const;
 
-		void setTopic(const string &newTopic);
+		bool			userIsChanOp(const string &userName) const;
 
-		void setMod(const int newMode, const bool add);
+	// SETTERS
 
-		void setInvit(const string &userName);
+		void 			setTopic(const string &newTopic);
 
-		// FUNCTIONS
+		void 			setMod(const int newMode, const bool add);
 
-		void addUser(const string &userName, bool role);
+		void 			setInvit(const string &userName);
 
-		void useInvit(const string &userName);
+	// FUNCTIONS
 
-		void deleteUser(const string &userName);
+		void 			addUser(const string &userName, bool role);
 
-		void activeToInactiveUser(const string &userName);
+		void 			useInvit(const string &userName);
 
-		void inactiveToActiveUser(const string &userName);
+		void 			deleteUser(const string &userName);
 
-		void responseCmdToAllInChan(User& joiner, const std::string& msg);
+		void 			activeToInactiveUser(const string &userName);
 
-		void responseCmdToDestInChan(User& joiner, const std::string& msg);
+		void 			inactiveToActiveUser(const string &userName);
 
-		void sendModeChannel(User& user);
+		void 			responseCmdToAllInChan(User& joiner, const std::string& msg);
+
+		void 			responseCmdToDestInChan(User& joiner, const std::string& msg);
+
+		void 			sendModeChannel(User& user);
 };
 
 ostream& operator<<(ostream& os, const Channel& rhs);

@@ -19,32 +19,36 @@ class Datas;
 
 class Server {
     public:
-        // Constructor / Destructor
+		//Attribut
+		char *_buff;
+
+		// Constructor / Destructor
         Server();
+
         Server(const Server &ref);
+
         ~Server();
 
         // Operator
         Server &operator=(const Server &ref);
 
-        //Attribut
-        char *_buff;
-
     public:
-    void    Listen(Socket *sk, int backlog);
-    void    Select(Socket *sk, struct timeval *timeout);
-    void    Accept(Datas &datas, Socket *sk);
-    void    Recv(Datas &datas, Socket *sk, int idx_client, int flag);
+		void	Listen(Socket *sk, int backlog);
 
-    //Exception
-    class ListenFailed : public std::exception{
-        public:
-    	const char* what() const throw();
-    };
+		void    Select(Socket *sk, struct timeval *timeout);
 
-    class SelectFailed : public std::exception{
-        public:
-    	const char* what() const throw();
-    };     
+		void    Accept(Datas &datas, Socket *sk);
 
+		void    Recv(Datas &datas, Socket *sk, int idx_client, int flag);
+
+		//Exception
+		class ListenFailed : public std::exception {
+			public:
+    		const char* what() const throw();
+		};
+
+		class SelectFailed : public std::exception {
+			public:
+			const char* what() const throw();
+    	};
 };

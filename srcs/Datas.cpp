@@ -1,8 +1,7 @@
 #include "../includes/Datas.hpp"
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
-#include "../includes/Command.hpp"
-#include "../includes/tester.hpp"
+#include "../includes/User.hpp"
 
 Datas::Datas(): _cmd(Command()) {
 	_operatorConf = getOperatorsConf();
@@ -26,8 +25,11 @@ Datas::~Datas()
 
 Datas &Datas::operator=(const Datas &rhs)
 {
-	this->_usersDatas = rhs.getUsers();
-	this->_channelsDatas = rhs.getChannels();
+	_usersDatas = rhs.getUsers();
+	_channelsDatas = rhs.getChannels();
+	_operatorConf = rhs.getOperatorConf();
+	_pwd = rhs.getPwd();
+	_co = rhs.getCo();
 	return *this;
 }
 
@@ -106,7 +108,7 @@ const std::string &Datas::getPwd(void) const
 	return (_pwd);
 }
 
-Command	&Datas::getCmd(void)
+Command Datas::getCmd() const
 {
 	return (_cmd);
 }
@@ -235,22 +237,6 @@ void Datas::removeUserFromChannel(const string &userName, const string &chanName
 	user.deleteChannel(chanName);
 }
 
-void	Datas::updateKickedInterface(User& user, const std::string& chanName)
-{
-	std::string	msg;
-
-	displayServLogo(user.getFd());
-	msg = "You've been kicked from ";
-	msg += chanName;
-	sendMsgToClient(user.getFd(), msg);
-}
-
-void Datas::deleteChannel(const string chanName)
-{
-	if (_channelsDatas.erase(chanName) <= 0)
-		throw datasException("Channel doesn't exist", chanName);
-}
-
 void Datas::newChannelTopic(const string userName, const string chanName, const string newTopicName)
 {
 	Channel &chan = getChannel(chanName);
@@ -265,21 +251,6 @@ void Datas::newChannelTopic(const string userName, const string chanName, const 
 void Datas::clearCmd(void)
 {
 	_cmd.clearCmd();
-}
-
-void Datas::disconnectAllUsers(const string& comment)
-{
-	usersDatas_it	it = _usersDatas.begin();
-	usersDatas_it	ite = _usersDatas.end();
-
-	while (it != ite)
-	{
-		sendMsgToClient(it->first, "SERVER SHUTTING DOWN: " + comment);
-		std::cout << BOLDRED << "client fd " << it->first << ": disconnected"<< RESET << std::endl;
-		close(it->first);
-		it++;
-	}
-	_co = false;
 }
 
 void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const string &prevNickName)

@@ -19,29 +19,39 @@ class Socket {
     public:
         // Constructor / Destructor
         Socket(const char *ip, int port);
+
         Socket(const Socket &ref);
+
         ~Socket();
 
         // Operator
         Socket &operator=(const Socket &ref);
 
         // Attribut
-        struct sockaddr_in _addr;
-        const char *_ip;
-        int _port;
-        int _max_fd;
-        int _fd;
-        std::vector<int> _client;
-        fd_set _readfs;
+        struct	sockaddr_in	_addr;
+
+        const	char		*_ip;
+
+        int					_port;
+
+        int					_max_fd;
+
+        int					_fd;
+
+        std::vector<int>	_client;
+
+        fd_set				_readfs;
     
     public:
         // Method
-        void CreateFd(int domain, int type, int protocol);
-        void SetAddr(int domain);
-        void Bind();
-	void closeClientFd(void);
-	void disconnectUser(Datas&, int);
-    
+        void	CreateFd(int domain, int type, int protocol);
+
+        void	SetAddr(int domain);
+
+        void	Bind();
+
+		void	closeClientFd(void);
+
     //Exception
     class SocketFailed : public std::exception{
         public:

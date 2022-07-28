@@ -115,28 +115,6 @@ size_t	getNextArgPos(const std::string &str, size_t start, std::string charset)
 	return (pos);
 }
 
-std::string	getMsgMode(const int chanMode, const bool add)
-{
-	std::string	msg;
-
-	if (add)
-		msg = "ADD THE MODE ";
-	else
-		msg = "REMOVE THE MODE ";
-	switch (chanMode)
-	{
-		case 1:
-			msg += "<<INVITATION ONLY>>";
-			break;
-		case 2:
-			msg += "<<TOPIC EDITABLE BY OPERATORS>>";
-			break;
-		case 3:
-			msg += "<<INVITATION ONLY>> and <<TOPIC EDITABLE BY OPERATORS>>";
-	}
-	return (msg);
-}
-
 map<string, string> getOperatorsConf()
 {
 	map<string, string> list;

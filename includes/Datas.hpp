@@ -19,17 +19,17 @@ typedef channelsDatas::const_iterator channelsDatas_const_it;
 class	Datas
 {
 	private:
-		usersDatas _usersDatas;		  // map (userFD | userSettings)
+		usersDatas			_usersDatas;		  // map (userFD | userSettings)
 
-		channelsDatas _channelsDatas; // map (chanName | chanSettings)
+		channelsDatas		_channelsDatas; // map (chanName | chanSettings)
 
-		map<string, string> _operatorConf; // map (opName | opPwd)
+		map<string, string>	_operatorConf; // map (opName | opPwd)
 
-		const std::string _pwd;
+		std::string			_pwd;
 
-		Command	_cmd;
+		Command				_cmd;
 
-		bool	_co;
+		bool				_co;
 
 	public:
 
@@ -59,9 +59,9 @@ class	Datas
 
 		const std::string &getPwd() const;
 
-		Command&	getCmd(void);
+		Command getCmd() const;
 
-		bool	getCo(void) const;
+		bool	getCo() const;
 
 		// FUNCTIONS
 
@@ -71,32 +71,21 @@ class	Datas
 
 		void treatCmds(int fd, string cmds);
 
-		void sendPrompt(int fd);
-
 		void displayServLogo(int fd);
 
 		void newChannel(const string &chanName, const int mode, const string &userName);
 
 		void addUserInChannel(const string &userName, const string &chanName, bool role);
 
-		void removeUserFromChannel(const string &userName,
-			const string &chanName, const string &msg, bool isKicked,
-			User& kicker);
-
-		void updateKickedInterface(User& user, const std::string& chanName);
-
-		void deleteChannel(const string chanName);
+		void removeUserFromChannel(const string &userName, const string &chanName, const string &msg, bool isKicked, User& kicker);
 
 		void newChannelTopic(const string userName, const string chanName, const string newChanName);
 
 		void clearCmd(void);
 
-		void disconnectAllUsers(const string& comment);
-
 		void responseToCmd(User &user, const string &cmdLine, int fd = 0, const string &prevNickName = "");
 
 		void sendJoinMsgs(User& user, Channel& chan);
-
 
 		// UTILS
 
