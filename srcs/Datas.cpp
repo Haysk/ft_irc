@@ -163,7 +163,6 @@ void	Datas::treatCmds(int fd, string lines)
 		newUser(fd);
 	}
 	while (line.length() && start != std::string::npos) {
-		std::cout << "CMD: " << line << std::endl;
 		if (it->second->getStep() < 5)
 			it->second->fillUser(line);
 		else
@@ -296,7 +295,7 @@ void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const strin
 	msg += "@localhost ";
 	msg += cmdLine;
 	cmdLen = msg.length();
-	std::cout << "RESPONSETOCMD: ";
+	std::cout << "RESPONSETOCMD to " << fd << "||" << user.getFd() << " : ";
 	while (i < cmdLen)
 	{
 		buf[i] = msg[i];
