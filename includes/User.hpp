@@ -105,6 +105,8 @@ class User : public Datas
 
 		void privMsg(const string  &destName, const string &message);
 
+		void notice(const string  &destName, const string &message);
+
 		map<string, vector<string> > names(const vector<string> &channels = vector<string>());
 
 		void sendRegistrationComplete(void);

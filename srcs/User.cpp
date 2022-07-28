@@ -214,13 +214,7 @@ void	User::fillUser(string &arg)
 			nick(arg);
 			break;
 		case 4:
-			// JE NE COMPRENDS PAS
-			try {
-				initUserName(arg);
-			} catch (datasException &e) {
-				sendMsgToClient(_fd, "ERROR: " + string(e.what()));
-				_step--;
-			}
+			initUserName(arg);
 			break;
 		default:
 			throw std::out_of_range("This user is already complete");
@@ -247,21 +241,16 @@ void	User::join(const string &chanName)
 		throw datasException("Channel name must start with #");
 	try {
 		createChannel(chanName, 0);
-//		_activeChannel = chanName;
 		_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 	} catch (datasException &e) {
 		try {
 			_datasPtr->getChannel(chanName).inactiveToActiveUser(_userName);
-			//if (_activeChannel != chanName) {
-			//	_activeChannel = chanName;
-
-				_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
+			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		} catch (datasException &e) {
 			if (_op)
 				_datasPtr->addUserInChannel(_userName, chanName, true); // ERR_INVITEONLYCHAN
 			else
 				_datasPtr->addUserInChannel(_userName, chanName, false); // ERR_INVITEONLYCHAN
-//			_activeChannel = chanName;
 			_datasPtr->sendJoinMsgs(*this, _datasPtr->getChannel(chanName));
 		}
 	}
@@ -276,9 +265,10 @@ void	User::quit(const std::string& msg)
 {
 	_co = false;
 	_datasPtr->responseToCmd(*this, "QUIT : " + msg);
-//	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); it != ite; it++)
-//		part(it->first);
-//	cout << "________________________________\n";
+	size_t i = _channels.size();
+	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); i > 0 && it != ite; i--, it++) {
+		part(it->first);
+	}
 	if (msg.length())
 		std::cout << "<" + _userName + "> " + msg << std::endl;
 	else
@@ -313,6 +303,12 @@ void User::privMsg(const string &destName, const string &message) {
 				throw datasException(destName + " :Cannot send to channel", 404); // ERR_CANNOTSENDTOCHAN
 		}
 	}
+}
+
+void User::notice(const string &destName, const string &message) {
+	try {
+		privMsg(destName, message);
+	} catch (datasException &e) {}
 }
 
 map<string, vector<string> > User::names(const vector<string> &channels)
