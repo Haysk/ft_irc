@@ -55,7 +55,8 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	_cmd.push_back(arg);
 	tmp = pos;
 	if (!arg.compare("PRIVMSG") || !arg.compare("PART")
-		|| !arg.compare("KICK") || !arg.compare("QUIT"))
+		|| !arg.compare("KICK") || !arg.compare("QUIT")
+		|| !arg.compare("TOPIC"))
 	{
 		buildCmdWithMsg(getNArgsCmdMsg(arg), line);
 		return ;
@@ -80,14 +81,15 @@ void	Command::buildCmdWithMsg(int nArgs, const string& line)
 	size_t	begin;
 
 	end = _cmd[0].length();
-	while (nArgs--)
+	while (nArgs-- > 0)
 	{
 		begin = line.find_first_not_of(" ", end);
 		end = line.find_first_of(" ", begin);
 		_cmd.push_back(line.substr(begin, end - begin));
 	}
 	begin = line.find_first_of(":", end);
-	_cmd.push_back(line.substr(begin + 1));
+	if (begin != std::string::npos)
+		_cmd.push_back(line.substr(begin + 1));
 	displayCmd();
 }
 
@@ -260,7 +262,7 @@ int	getNArgsCmdMsg(const string& cmd)
 		return (2);
 	else if (!cmd.compare("QUIT"))
 		return (0);
-	else if (!cmd.compare("PRIVMSG") || !cmd.compare("PART"))
+	else if (!cmd.compare("PRIVMSG") || !cmd.compare("PART") || !cmd.compare("TOPIC"))
 		return (1);
 	return (0);
 }

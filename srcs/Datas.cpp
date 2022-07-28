@@ -296,7 +296,7 @@ void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const strin
 	msg += "@localhost ";
 	msg += cmdLine;
 	cmdLen = msg.length();
-	std::cout << "RESPONSETOCMD: ";
+	std::cout << "RESPONSETOCMD to " << fd << "||" << user.getFd() << " : ";
 	while (i < cmdLen)
 	{
 		buf[i] = msg[i];
