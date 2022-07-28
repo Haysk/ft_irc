@@ -30,7 +30,7 @@ void	Command::checkCmd(User &user)
 	std::string	str;
 
 	str = _cmd.front();
-	std::cout << "CMD: " << str << std::endl;
+	std::cout << "CMD CHECKED: " << str << std::endl;
 	for (mapper::iterator it = _cmdMap.begin();
 		it != _cmdMap.end(); it++)
 	{
@@ -51,6 +51,16 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	size_t	argLen;
 	string	arg;
 
+	pos = line.find_first_of(" ", tmp + 1);
+	arg = line.substr(tmp + 1, pos - (tmp + 1));
+	_cmd.push_back(arg);
+	tmp = pos;
+	if (!arg.compare("PRIVMSG") || !arg.compare("PART")
+		|| !arg.compare("KICK") || !arg.compare("QUIT"))
+	{
+		buildCmdWithMsg(getNArgsCmdMsg(arg), line);
+		return ;
+	}
 	while (nOpt--)
 	{
 		pos = line.find_first_of(" ", tmp + 1);
@@ -58,11 +68,6 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 		{
 			arg = line.substr(tmp + 1, pos - (tmp + 1));
 			_cmd.push_back(arg);
-			if (!arg.compare("PRIVMSG"))
-			{
-				buildCmdPrivmsg(line);
-				return ;
-			}
 			tmp = pos;
 		}
 	}
@@ -70,18 +75,21 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	_cmd.push_back(line.substr(tmp + 1, argLen - (tmp + 1)));
 }
 
-void	Command::buildCmdPrivmsg(std::string line)
+void	Command::buildCmdWithMsg(int nArgs, const string& line)
 {
-	size_t	tmp;
-	size_t	pos;
-	string	arg;
+	size_t	end;
+	size_t	begin;
 
-	pos = line.find_first_not_of(" ", _cmd[0].length());
-	tmp = line.find_first_of(" ", pos);
-	arg = line.substr(pos, tmp - pos);
-	_cmd.push_back(arg);
-	pos = line.find_first_of(":", _cmd[0].length());
-	_cmd.push_back(line.substr(pos));
+	end = _cmd[0].length();
+	while (nArgs--)
+	{
+		begin = line.find_first_not_of(" ", end);
+		end = line.find_first_of(" ", begin);
+		_cmd.push_back(line.substr(begin, end - begin));
+	}
+	begin = line.find_first_of(":", end);
+	_cmd.push_back(line.substr(begin + 1));
+	displayCmd();
 }
 
 void	Command::join(User &user)
@@ -99,13 +107,16 @@ void	Command::join(User &user)
 void	Command::part(User &user)
 {
 	size_t	vecSize;
+	string	msg = "";
 
 	if (_cmd.size() < 2)
 		throw datasException("PART :Not enough parameters", 461);
 	vector<string>	chans = explode(_cmd[1], ',');
 	vecSize = chans.size();
+	if (_cmd.size() == 3)
+		msg = _cmd[2];
 	for (unsigned int i = 0; i < vecSize; i++)
-		user.part(chans[i]);
+		user.part(chans[i], msg);
 }
 
 void	Command::privmsg(User &user) 
@@ -133,9 +144,12 @@ void	Command::ping(User &user)
 
 void	Command::kick(User &user)
 {
+	string	msg = "";
 	if (_cmd.size() < 3)
 		throw datasException("KICK :Not enough parameters", 461);
-	user.kick(_cmd[2], _cmd[1]);
+	if (_cmd.size() == 4)
+		msg = _cmd[3];
+	user.kick(_cmd[2], _cmd[1], msg);
 }
 
 void	Command::mode(User &user)
@@ -166,20 +180,8 @@ void	Command::topic(User &user)
 
 void	Command::quit(User &user)
 {
-	stringstream	msg;
-	int		i = 1;
-	int		size = _cmd.size();
-
-	if (size > 1)
-	{
-		while (i < size)
-		{
-			msg << _cmd[i];
-			msg << " ";
-			i++;
-		}
-		user.quit(msg.str());
-	}
+	if (_cmd.size() > 1)
+		user.quit(_cmd[1]);
 	else
 		user.quit("");
 }
@@ -257,4 +259,15 @@ bool	isAddMode(const std::string& param)
 	if (param.find("+") != std::string::npos)
 		return (true);
 	return (false);
+}
+
+int	getNArgsCmdMsg(const string& cmd)
+{
+	if (!cmd.compare("KICK"))
+		return (2);
+	else if (!cmd.compare("QUIT"))
+		return (0);
+	else if (!cmd.compare("PRIVMSG") || !cmd.compare("PART"))
+		return (1);
+	return (0);
 }

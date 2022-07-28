@@ -32,7 +32,7 @@ class	Command
 		Command(void);
 		~Command(void);
 		void	buildCmd(size_t, std::string);
-		void	buildCmdPrivmsg(std::string);
+		void	buildCmdWithMsg(int NArgs, const std::string&);
 		void	checkCmd(User&);
 		void	displayCmd(void);
 		void	clearCmd(void);
@@ -43,4 +43,6 @@ void	checkModeParam(Datas* datas, const std::string& param, const std::string& c
 int	convertModeParam(const std::string& param);
 
 bool	isAddMode(const std::string& param);
+
+int	getNArgsCmdMsg(const std::string& cmd);
 #endif

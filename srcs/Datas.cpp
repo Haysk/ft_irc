@@ -215,12 +215,18 @@ void Datas::addUserInChannel(const string &userName, const string &chanName, boo
 	usr.addChannel(chanName, role);
 }
 
-void Datas::removeUserFromChannel(const string &userName, const string &chanName) {
+void Datas::removeUserFromChannel(const string &userName, const string &chanName, const string &msg, bool isKicked, User& kicker)
+{
 	Channel &chan =  getChannel(chanName);
 	User &user = getUser(userName, USERNAME);
+
 	chan.deleteUser(user.getUserName());
-	chan.responseCmdToDestInChan(user, "PART " + chanName + " :");
-	responseToCmd(user, "PART " + chanName + " :");
+	if (!isKicked) {
+		chan.responseCmdToDestInChan(user, "PART " + chanName + " :" + msg);
+		responseToCmd(user, "PART " + chanName + " :" + msg);
+	}
+	else 
+		responseToCmd(kicker, "KICK " + chanName + " " + user.getNickName() + " :" + msg, user.getFd());
 	if (chan.getUsers().empty()) {
 		delete &chan;
 		_channelsDatas.erase(chanName);

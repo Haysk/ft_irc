@@ -37,13 +37,14 @@ void	isAlphaNum(const std::string& str)
 	}
 }
 
-void	checkCmdName(const std::string cmdLine, const std::string expected)
+bool	checkCmdName(const std::string cmdLine, const std::string expected)
 {
 	size_t	begin = cmdLine.find_first_not_of(" ");
 
 	if (cmdLine.find(expected) != begin
 			|| cmdLine.find_first_of(" ", begin) != begin + expected.length())
-		throw std::invalid_argument("Invalid command");
+		return (false);
+	return (true);
 }
 
 void	checkRangeArg(const std::string cmdLine, size_t min, size_t max)

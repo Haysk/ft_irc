@@ -79,7 +79,9 @@ class	Datas
 
 		void addUserInChannel(const string &userName, const string &chanName, bool role);
 
-		void removeUserFromChannel(const string &userName, const string &chanName);
+		void removeUserFromChannel(const string &userName,
+			const string &chanName, const string &msg, bool isKicked,
+			User& kicker);
 
 		void updateKickedInterface(User& user, const std::string& chanName);
 
