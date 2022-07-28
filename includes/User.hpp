@@ -113,7 +113,8 @@ class User : public Datas
 
 		void kick(const string &userName, const string &chanName, string& msg);
 
-		void mode(const string &chanName, const int chanMode, const bool add);
+		void mode(const string &chanName, const int chanMode, const bool add,
+			const string& strMode = "");
 
 		void topic(const string &chanName, const string &newChanName = "");
 

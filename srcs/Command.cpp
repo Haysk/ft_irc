@@ -160,7 +160,7 @@ void	Command::mode(User &user)
 		return ;
 	}
 	checkModeParam(user.getDatasPtr(), _cmd[2], _cmd[1]);
-	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
+	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]), _cmd[2]);
 }
 
 void	Command::invite(User &user)
