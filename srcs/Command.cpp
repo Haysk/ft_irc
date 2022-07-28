@@ -7,7 +7,7 @@ Command::Command(void) : _cmd()
 	_cmdMap["JOIN"] = &Command::join;
 	_cmdMap["PART"] = &Command::part;
 	_cmdMap["PRIVMSG"] = &Command::privmsg;
-//	_cmdMap["NOTICE"] = &Command::privmsg;
+	_cmdMap["NOTICE"] = &Command::notice;
 	_cmdMap["PING"] = &Command::ping;
 	_cmdMap["QUIT"] = &Command::quit;
 	_cmdMap["KICK"] = &Command::kick;
@@ -130,10 +130,10 @@ void	Command::privmsg(User &user)
 	user.privMsg(_cmd[1], _cmd[2]);
 }
 
-//void	Command::notice(User &user)
-//{
-//	//wip
-//}
+void	Command::notice(User &user)
+{
+	user.notice(_cmd[1], _cmd[2]);
+}
 
 void	Command::ping(User &user)
 {

@@ -301,6 +301,24 @@ void User::privMsg(const string &destName, const string &message) {
 	}
 }
 
+void User::notice(const string &destName, const string &message) {
+	if (message.empty())
+		return;
+	if (!destName.empty() && destName[0] != '#') {
+		User &dest = _datasPtr->getUser(destName, NICKNAME);
+		_datasPtr->responseToCmd(*this, "NOTICE " + destName + " " + message, dest.getFd());
+	}
+	if  (!destName.empty() && destName[0] == '#')
+	{
+		try {
+			Channel &dest = _datasPtr->getChannel(destName);
+			dest.getUser(_userName);
+			dest.responseCmdToDestInChan(*this, "NOTICE " + destName + " " + message);
+		} catch (datasException &e) {}
+	}
+
+}
+
 map<string, vector<string> > User::names(const vector<string> &channels)
 {
 	map<string, vector<string> > list;
