@@ -472,6 +472,7 @@ void	User::topic(const string &chanName, const string &newTopicName)
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
 	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + newTopicName);
+	chan.responseToCmd(*this, "TOPIC " + chanName + " " + newTopicName);
 	//sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
 }
 
