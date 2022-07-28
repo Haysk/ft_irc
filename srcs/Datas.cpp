@@ -163,7 +163,6 @@ void	Datas::treatCmds(int fd, string lines)
 		newUser(fd);
 	}
 	while (line.length() && start != std::string::npos) {
-		std::cout << "CMD: " << line << std::endl;
 		if (it->second->getStep() < 5)
 			it->second->fillUser(line);
 		else

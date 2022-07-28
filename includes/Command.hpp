@@ -26,6 +26,7 @@ class	Command
 		void	pass(User&);
 		void	user(User&);
 		void	nick(User&);
+		void	who(User&);
 
 	public:
 		Command(void);

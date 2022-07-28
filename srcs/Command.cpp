@@ -16,6 +16,7 @@ Command::Command(void) : _cmd()
 	_cmdMap["PASS"] = &Command::pass;
 	_cmdMap["USER"] = &Command::user;
 	_cmdMap["NICK"] = &Command::nick;
+	_cmdMap["WHO"] = &Command::who;
 }
 
 Command::~Command(void)
@@ -29,7 +30,6 @@ void	Command::checkCmd(User &user)
 	std::string	str;
 
 	str = _cmd.front();
-	std::cout << "CMD CHECKED: " << str << std::endl;
 	for (mapper::iterator it = _cmdMap.begin();
 		it != _cmdMap.end(); it++)
 	{
@@ -191,6 +191,11 @@ void	Command::user(User& user)
 {
 	(void)user;
 	throw datasException(":Unauthorized command (already registered)", 462);
+}
+
+void	Command::who(User& user)
+{
+	(void)user;
 }
 
 void	Command::nick(User& user)
