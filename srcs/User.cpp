@@ -283,8 +283,6 @@ void	User::deleteChannel(const string &chanName)
 {
 	if (_channels.erase(chanName) <= 0)
 		throw datasException("User not in this Channel", _userName);
-//	if (chanName == _activeChannel)
-//		_activeChannel = "";
 }
 
 void User::privMsg(const string &destName, const string &message) {
