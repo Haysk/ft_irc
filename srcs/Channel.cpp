@@ -216,19 +216,20 @@ void Channel::responseCmdToDestInChan(User& joiner, const std::string& msg)
 }
 void	Channel::sendModeChannel(User& user)
 {
-	string	msg = ":ircserv 324 " + user.getNickName() + " " + _chanName;
+	string mode;
 	switch (_mode)
 	{
 		case MODE_I:
-			msg += " +i";
+			mode = "+i";
 			break;
 		case MODE_T:
-			msg += " +t";
+			mode = "+t";
 			break;
 		case MODE_I | MODE_T:
-			msg += " +it";
+			mode = "+it";
 			break;
 	}
+	string	msg = ":ircserv 324 " + user.getNickName() + " " + _chanName + " " + mode;
 	sendMsgToClient(user.getFd(), msg);
 }
 

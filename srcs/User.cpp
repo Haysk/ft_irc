@@ -270,7 +270,7 @@ void	User::quit(const std::string& msg)
 	_datasPtr->responseToCmd(*this, "QUIT : " + msg);
 	size_t i = _channels.size();
 	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); i > 0 && it != ite; i--, it++) {
-		part(it->first);
+		part(it->first, msg);
 	}
 	if (msg.length())
 		std::cout << "<" + _userName + "> " + msg << std::endl;
@@ -469,13 +469,15 @@ void	User::topic(const string &chanName, const string &newTopicName)
 	chan.getUser(_userName); // ERR_NOTONCHANNEL
 	if (newTopicName.empty())
 	{
-		sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
+		if (chan.getTopic().empty())
+			sendMsgToClient(_fd ,chanName + " :No topic is set"); // RPL_NOTOPIC
+		else
+			chan.responseToCmd(*this, "TOPIC " + chanName + " " + chan.getTopic());
 		return;
 	}
 	_datasPtr->newChannelTopic(_userName, chanName, newTopicName); // ERR_CHANOPRIVSNEEDED ERR_NOCHANMODES
 	chan.responseCmdToAllInChan(*this, "TOPIC " + chanName + " " + newTopicName);
-	chan.responseToCmd(*this, "TOPIC " + chanName + " " + newTopicName);
-	//sendMsgToChannel(chanName,chanName + " :" + newTopicName); // RPL_TOPIC
+	//chan.responseToCmd(*this, "TOPIC " + chanName + " " + newTopicName);
 }
 
 ostream&	operator<<(ostream& os, const User& rhs)
