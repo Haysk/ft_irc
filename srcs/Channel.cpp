@@ -130,7 +130,6 @@ void Channel::setTopic(const string &newTopic) {
 
 void Channel::setMod(const int newMode, const bool add)
 {
-	// SEND ERR_KEYSET
 	if (add)
 		_mode = _mode | newMode;
 	else
@@ -189,14 +188,14 @@ void Channel::inactiveToActiveUser(const string &userName) {
 	_inactiveUsers.erase(userName);
 }
 
-void Channel::responseCmdToAllInChan(User& joiner, const std::string& msg)
+void Channel::responseCmdToAllInChan(User& executer, const std::string& msg)
 {
 	usersInChannel_it	it = _users.begin();
 	usersInChannel_it	ite = _users.end();
 
 	while (it != ite)
 	{
-		_datasPtr->responseToCmd(joiner, msg, _datasPtr->getUser(it->first, USERNAME).getFd());
+		_datasPtr->responseToCmd(executer, msg, _datasPtr->getUser(it->first, USERNAME).getFd());
 		it++;
 	}
 }

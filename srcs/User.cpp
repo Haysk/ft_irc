@@ -434,7 +434,8 @@ void	User::kick(const string &nickName, const string &chanName, string &msg)
 	chan.responseCmdToAllInChan(*this, "KICK " + chanName + " " + nickName + " :" + msg);
 }
 
-void	User::mode(const string &chanName, const int chanMode, const bool add)
+void	User::mode(const string &chanName, const int chanMode, const bool add,
+			const string& strMode)
 {
 	Channel	&chan = _datasPtr->getChannel(chanName);
 	bool isOp;
@@ -452,6 +453,7 @@ void	User::mode(const string &chanName, const int chanMode, const bool add)
 	if (!isOp)
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
 	chan.setMod(chanMode, add);
+	chan.responseCmdToAllInChan(*this, "MODE " + chanName + " " + strMode);
 }
 
 void	User::invite(const string &nickName, const string &chanName)
