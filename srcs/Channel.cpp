@@ -130,6 +130,7 @@ void Channel::setTopic(const string &newTopic) {
 
 void Channel::setMod(const int newMode, const bool add)
 {
+	// SEND ERR_KEYSET
 	if (add)
 		_mode = _mode | newMode;
 	else

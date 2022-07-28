@@ -140,9 +140,7 @@ void	Command::mode(User &user)
 		user.mode(_cmd[1], -1, 0);
 		return ;
 	}
-	else if (_cmd.size() < 3)
-		throw datasException("MODE :Not enough parameters", 461);
-	checkModeParam(_cmd[2]);
+	checkModeParam(user.getDatasPtr(), _cmd[2], _cmd[1]);
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]));
 }
 
@@ -221,12 +219,20 @@ void	Command::clearCmd(void)
 	_cmd.clear();
 }
 
-void	checkModeParam(const std::string& param)
+void	checkModeParam(Datas* datas, const std::string& param, const std::string& chanName)
 {
-	if ((param[0] != '+' && param[0] != '-')
-			|| (param.find_first_not_of("it", 1) != std::string::npos
-			&& !checkDoublons(param)))
-		throw std::invalid_argument("Error syntax\nHow to use: /topic <channel> <newName>");
+	try {
+		datas->getUser(chanName, NICKNAME);
+	}
+	catch (datasException& e) {
+		datas->getChannel(chanName);
+		if ((param[0] != '+' && param[0] != '-')
+				|| (param.find_first_not_of("it", 1) != std::string::npos
+				&& !checkDoublons(param)))
+			throw datasException(param + " :is unknown mode char to me for " + chanName, 472);
+		return ;
+	}
+	throw datasException(":Unknown MODE flag", 501);
 }
 
 int	convertModeParam(const std::string& param)

@@ -4,6 +4,7 @@
 #include "utils.hpp"
 
 class User;
+class Datas;
 
 class	Command
 {
@@ -36,7 +37,7 @@ class	Command
 		void	clearCmd(void);
 };
 
-void	checkModeParam(const std::string& param);
+void	checkModeParam(Datas* datas, const std::string& param, const std::string& chanName);
 
 int	convertModeParam(const std::string& param);
 

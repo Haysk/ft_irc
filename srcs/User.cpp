@@ -23,6 +23,11 @@ User &User::operator=(const User &rhs)
 
 // GETTERS
 
+Datas*	User::getDatasPtr(void)
+{
+	return (_datasPtr);
+}
+
 const int &User::getFd() const
 {
 	return _fd;
@@ -427,14 +432,16 @@ void	User::kick(const string &nickName, const string &chanName)
 void	User::mode(const string &chanName, const int chanMode, const bool add)
 {
 	if (!chanName.empty() && chanName[0] != '#')
-		return;
+		return ;
+
 	Channel	&chan = _datasPtr->getChannel(chanName);
+	bool isOp;
+
 	if (chanMode == -1)
 	{
 		chan.sendModeChannel(*this);
 		return;
 	}
-	bool isOp;
 	try {
 		isOp = chan.userIsChanOp(_userName);
 	} catch (datasException &e){

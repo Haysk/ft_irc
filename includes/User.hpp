@@ -51,6 +51,8 @@ class User : public Datas
 
 		// GETTERS
 
+		Datas*	getDatasPtr(void);
+
 		const int &getFd() const;
 
 		const int &getStep() const;
