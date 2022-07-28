@@ -95,7 +95,7 @@ class User : public Datas
 
 		void join(const string &chanName);
 
-		void part(const string &chanName);
+		void part(const string &chanName, const string &msg);
 
 		void quit(const std::string& msg);
 
@@ -111,7 +111,7 @@ class User : public Datas
 
 		// CHAN OPERATOR FUNCTION
 
-		void kick(const string &userName, const string &chanName);
+		void kick(const string &userName, const string &chanName, string& msg);
 
 		void mode(const string &chanName, const int chanMode, const bool add);
 

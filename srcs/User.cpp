@@ -92,7 +92,8 @@ void	User::initUserName(string &userCmd)
 	usersDatas_const_it	it = users.begin();
 	usersDatas_const_it	ite = users.end();
 
-	checkCmdName(userCmd, "USER");
+	if (!checkCmdName(userCmd, "USER"))
+		throw std::invalid_argument("You've to send us: USER <username> <unused> <unused> <:realname>");
 	checkUserCmdNbrArg(userCmd, " ");
 	name = getArgAt(userCmd, 1, " ", 0);
 	checkLenArg(name, 9);
@@ -134,7 +135,8 @@ void	User::nick(const string &nickCmd)
 	std::string	nickname;
 	std::string	prevNick = _nickName;
 
-	checkCmdName(nickCmd, "NICK");
+	if (!checkCmdName(nickCmd, "NICK"))
+		throw std::invalid_argument("You've to send us: NICK <nickname>");
 	checkRangeArg(nickCmd, 2, 2);
 	try
 	{
@@ -171,7 +173,8 @@ void	User::checkPwd(const std::string pwd, std::string &pwdLine)
 {
 	std::string	pwdSent;
 
-	checkCmdName(pwdLine, "PASS");
+	if (!checkCmdName(pwdLine, "PASS"))
+		throw std::invalid_argument("You've to send us: PASS <password>");
 	checkNbrArg(pwdLine, 2);
 	pwdSent = getArgAt(pwdLine, 1, " ", 0);
 	for (map<string, string>::const_iterator it = _datasPtr->getOperatorConf().begin(), ite = _datasPtr->getOperatorConf().end();
@@ -228,7 +231,7 @@ void	User::fillUser(string &arg)
 void	User::execCmd(const string &cmd)
 {
 	_datasPtr->clearCmd();
-	_datasPtr->getCmd().buildCmd(countOccurrences(" ", cmd), cmd);
+	_datasPtr->getCmd().buildCmd(countOccurrences(" ", cmd) - 1, cmd);
 	_datasPtr->getCmd().checkCmd(*this);
 }
 
@@ -264,9 +267,9 @@ void	User::join(const string &chanName)
 	}
 }
 
-void	User::part(const string &chanName)
+void	User::part(const string &chanName, const string &msg)
 {
-	_datasPtr->removeUserFromChannel(_userName, chanName); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
+	_datasPtr->removeUserFromChannel(_userName, chanName, msg, 0, *this); // ERR_NOSUCHCHANNEL ERR_NOTONCHANNEL
 }
 
 void	User::quit(const std::string& msg)
@@ -411,11 +414,11 @@ void	User::sendRegistrationComplete(void)
 
 // CHAN OPERATOR FUNCTION
 
-void	User::kick(const string &nickName, const string &chanName)
+void	User::kick(const string &nickName, const string &chanName, string &msg)
 {
-	std::string	msg;
-    User &user = _datasPtr->getUser(nickName, NICKNAME);
+	User &user = _datasPtr->getUser(nickName, NICKNAME);
 	Channel &chan = _datasPtr->getChannel(chanName); // ERR_NOSUCHCHANNEL
+
 	if (!chan.userIsChanOp(_userName)) // ERR_NOTONCHANNEL
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
     if (user.getOp())
@@ -425,15 +428,14 @@ void	User::kick(const string &nickName, const string &chanName)
 	} catch (datasException &e) {
 		throw datasException(chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
 	}
-	_datasPtr->removeUserFromChannel(user.getUserName(), chanName);
-	chan.responseCmdToAllInChan(*this, "KICK " + chanName + " " + nickName + " :no reason");
+	if (!msg.length())
+		msg = "no reason";
+	_datasPtr->removeUserFromChannel(user.getUserName(), chanName, msg, 1, *this);
+	chan.responseCmdToAllInChan(*this, "KICK " + chanName + " " + nickName + " :" + msg);
 }
 
 void	User::mode(const string &chanName, const int chanMode, const bool add)
 {
-	if (!chanName.empty() && chanName[0] != '#')
-		return ;
-
 	Channel	&chan = _datasPtr->getChannel(chanName);
 	bool isOp;
 
