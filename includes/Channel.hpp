@@ -52,8 +52,6 @@ class Channel : public Datas
 
 		bool userIsChanOp(const string &userName) const;
 
-//		bool userIsActive(const string &userName);
-
 		Datas *getDatasPtr(void);
 
 		string	getTopic(void) const;

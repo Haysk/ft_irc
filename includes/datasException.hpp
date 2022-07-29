@@ -13,7 +13,6 @@ class datasException : public exception
 		_msg(msg),
 		_option(option)
 	{
-		//cout << _msg;
 	}
 
 	datasException(const string msg, int option) :
@@ -22,7 +21,6 @@ class datasException : public exception
 		ostringstream convert;   // stream used for the conversion
 		convert << option;      // insert the textual representation of 'Number' in the characters in the stream
 		_option = convert.str();
-		//cout << _msg;
 	}
 
 	~datasException() throw() {}

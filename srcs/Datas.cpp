@@ -2,7 +2,7 @@
 #include "../includes/User.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Command.hpp"
-#include "../includes/tester.hpp"
+#include "../includes/headers.hpp"
 
 Datas::Datas(): _cmd(Command()) {
 	_operatorConf = getOperatorsConf();

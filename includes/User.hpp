@@ -36,8 +36,6 @@ class User : public Datas
 
 		string	_realName;
 
-//		string	_activeChannel;
-
 		userChannels _channels; // map (chanName | role)
 
 	public:
