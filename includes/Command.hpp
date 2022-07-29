@@ -41,7 +41,7 @@ class	Command
 
 void	checkModeParam(Datas* datas, const std::string& param, const std::string& chanName);
 
-int	convertModeParam(const std::string& param);
+int		convertModeParam(const std::string& param);
 
 bool	isAddMode(const std::string& param);
 

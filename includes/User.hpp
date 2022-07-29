@@ -59,8 +59,6 @@ class User : public Datas
 
 		const string &getNickName() const;
 
-		const string &getActiveChannel() const;
-
 		const userChannels &getChannels() const;
 
 		Channel &getChannel(const string &chanName) const;
