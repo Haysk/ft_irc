@@ -55,7 +55,7 @@ void	Command::buildCmd(size_t nOpt, std::string line)
 	tmp = pos;
 	if (!arg.compare("PRIVMSG") || !arg.compare("PART")
 		|| !arg.compare("KICK") || !arg.compare("QUIT")
-		|| !arg.compare("TOPIC"))
+		|| !arg.compare("TOPIC") || !arg.compare("NOTICE"))
 	{
 		buildCmdWithMsg(getNArgsCmdMsg(arg), line);
 		return ;
@@ -130,7 +130,8 @@ void	Command::privmsg(User &user)
 
 void	Command::notice(User &user)
 {
-	user.notice(_cmd[1], _cmd[2]);
+	if (_cmd.size() > 2)
+		user.notice(_cmd[1], _cmd[2]);
 }
 
 void	Command::ping(User &user)
@@ -272,7 +273,7 @@ int	getNArgsCmdMsg(const string& cmd)
 		return (2);
 	else if (!cmd.compare("QUIT"))
 		return (0);
-	else if (!cmd.compare("PRIVMSG") || !cmd.compare("PART") || !cmd.compare("TOPIC"))
+	else if (!cmd.compare("PRIVMSG") || !cmd.compare("PART") || !cmd.compare("TOPIC") || !cmd.compare("NOTICE"))
 		return (1);
 	return (0);
 }

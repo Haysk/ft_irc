@@ -256,9 +256,12 @@ void	User::quit(const std::string& msg)
 {
 	_co = false;
 	_datasPtr->responseToCmd(*this, "QUIT : " + msg);
-	size_t i = _channels.size();
-	for (userChannels::const_iterator it = _channels.begin(), ite = _channels.end(); i > 0 && it != ite; i--, it++) {
+
+	userChannels::const_iterator	it = _channels.begin();
+
+	for (size_t i = _channels.size(); i > 0; i--) {
 		part(it->first, msg);
+		it = _channels.begin();
 	}
 	if (msg.length())
 		std::cout << "<" + _userName + "> " + msg << std::endl;
