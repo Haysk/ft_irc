@@ -141,11 +141,17 @@ void	User::nick(const string &nickCmd)
 		(void)e;
 		throw datasException(":No nickname given", 431);
 	}
-	checkLenArg(nickname, 9);
+	try {
+		checkLenArg(nickname, 9);
+		isAlphaNum(nickname);
+	}
+	catch (exception &e) {
+		throw datasException(nickname + " :Erroneous nickname");
+	}
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
-			throw datasException(nickname + " :Nickname is already in use");
+			throw datasException(" :Nickname is already in use");
 		it++;
 	}
 	_nickName = nickname;

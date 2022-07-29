@@ -55,7 +55,7 @@ int main(int ac, char **av){
     }
     catch (std::exception &e){
 	sk.closeClientFd();
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "ircserv: " << e.what() << std::endl;
     }
     delete servDatas;
     close(3);
@@ -67,7 +67,7 @@ int main(int ac, char **av){
 void signal_handler (int n){
     std::cerr<<std::endl;
     std::cerr << "Interruption by signal " << n << std::endl;
-    throw std::invalid_argument("Force quit server");
+    throw std::invalid_argument("Quit server");
 }
 
 bool is_num(char *s){
