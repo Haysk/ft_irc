@@ -72,8 +72,6 @@ void	isAlphaNumSp(const std::string& str);
 
 void	isAlphaNum(const std::string& str);
 
-void	isAlpha(const std::string& str);
-
 bool	checkCmdName(const std::string cmdLine, const std::string expected);
 
 void	checkRangeArg(const std::string cmdLine, size_t min, size_t max);
@@ -87,7 +85,5 @@ int	checkDoublons(const std::string str);
 void	checkUserCmdNbrArg(const std::string& cmdLine, const std::string charset);
 
 map<string, string>	getOperatorsConf();
-
-string	getMsgMode(const int chanMode, const bool add);
 
 #endif //FT_IRC_UTILS_HPP

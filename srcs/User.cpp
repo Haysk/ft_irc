@@ -16,7 +16,6 @@ User &User::operator=(const User &rhs)
 	_nickName = rhs.getNickName();
 	_fd = rhs.getFd();
 	_step = rhs.getStep();
-//	_activeChannel = rhs.getActiveChannel();
 	_channels = rhs.getChannels();
 	return *this;
 }
@@ -47,11 +46,6 @@ const string &User::getNickName() const
 {
 	return _nickName;
 }
-
-//const string &User::getActiveChannel() const
-//{
-//	return _activeChannel;
-//}
 
 const userChannels &User::getChannels() const
 {
@@ -148,7 +142,6 @@ void	User::nick(const string &nickCmd)
 		throw datasException(":No nickname given", 431);
 	}
 	checkLenArg(nickname, 9);
-	//	check nickname syntaxe ERR_ERRONEUSNICKNAME
 	while (it != ite)
 	{
 		if (!it->second->getNickName().compare(nickname))
@@ -317,94 +310,6 @@ void User::notice(const string &destName, const string &message) {
 		} catch (datasException &e) {}
 	}
 
-}
-
-map<string, vector<string> > User::names(const vector<string> &channels)
-{
-	map<string, vector<string> > list;
-
-	for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
-	{
-		cout << *it.base() << endl;
-	}
-		//LIST CHANNELS IN PARAMS
-	if (!channels.empty())
-	{
-		for (vector<string>::const_iterator it = channels.begin(), ite = channels.end(); it != ite; it++)
-		{
-			vector<string> usersNames;
-			map<string, bool> users;
-			cout << *it.base() << endl;
-			try
-			{
-				Channel &chan = _datasPtr->getChannel(*it.base());
-				users = chan.getUsers();
-				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
-				{
-//					if (chan.userIsActive(itb->first)) {
-//						if (itb->second)
-//							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
-//						else
-//							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
-//					}
-				}
-				list.insert(list.begin(), make_pair<string, vector<string> >(*it.base(), usersNames));
-			}
-			catch (datasException &e) {}
-		}
-	}
-	else //LIST ALL CHANNELS
-	{
-		for (channelsDatas::const_iterator it = _datasPtr->getChannels().begin(),
-			ite = _datasPtr->getChannels().end(); it != ite; it++)
-		{
-			vector<string> usersNames;
-			map<string, bool> users;
-//			Channel *chan = it->second;
-			try
-			{
-				users = it->second->getUsers();
-				for (map<string, bool>::const_iterator itb = users.begin(), itbe = users.end(); itb != itbe; itb++)
-				{
-//					if (chan->userIsActive(itb->first)) {
-//						if (itb->second)
-//							usersNames.insert(usersNames.begin(), "@" + _datasPtr->getUser(itb->first, USERNAME).getNickName());
-//						else
-//							usersNames.insert(usersNames.begin(), _datasPtr->getUser(itb->first, USERNAME).getNickName());
-//					}
-				}
-				list.insert(make_pair<string, vector<string> >(it->first, usersNames));
-			}
-			catch (datasException &e) {}
-		}
-	}
-
-	//ADD USER WITHOUT CHANNELS IN LIST
-	vector<string> usersNames;
-	for (usersDatas::const_iterator it = _datasPtr->getUsers().begin(),
-		ite = _datasPtr->getUsers().end(); it != ite; it++)
-	{
-		if (it->second->getChannels().empty())
-			usersNames.insert(usersNames.begin(), it->second->getNickName());
-	}
-	if (!usersNames.empty())
-		list.insert(make_pair<string, vector<string> >("*", usersNames));
-
-	//PRINT LIST
-	map<string, vector<string> >::const_iterator it = list.begin();
-	for (map<string, vector<string> >::const_iterator ite = list.end(); it != ite; it++)
-	{
-		sendMsgToClient(_fd, "=" + it->first);
-		stringstream msg;
-		for (vector<string>::const_iterator vIt = it->second.begin(), vIte = it->second.end(); vIt != vIte; vIt++) {
-			msg << *vIt.base();
-			if (vIt + 1 != vIte)
-				msg << " * ";
-		}
-		sendMsgToClient(_fd, msg.str()); // RPL_NAMEREPLY
-	}
-	sendMsgToClient(_fd, it->first + " :End of NAMES list");
-	return(list);
 }
 
 void	User::sendRegistrationComplete(void)

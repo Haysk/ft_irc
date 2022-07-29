@@ -1,18 +1,6 @@
 # include "../includes/utils.hpp"
 # include "../includes/datasException.hpp"
 
-void	isAlpha(const std::string& str)
-{
-	int	i = 0;
-
-	while (str[i])
-	{
-		if (!isalpha(str[i]))
-			throw std::invalid_argument("Not a alphabetic argument");
-		i++;
-	}
-}
-
 void	isAlphaNumSp(const std::string& str)
 {
 	int	i = 0;
@@ -82,7 +70,7 @@ void	checkUserCmdNbrArg(const std::string& cmdLine,
 	if (count < 4 || pos == std::string::npos)
 		throw std::invalid_argument("Argument.s missing");
 	if (cmdLine[pos] != ':')
-		throw std::invalid_argument("Missing ':' for realname");
+		throw std::invalid_argument("Missing \':\' for realname");
 	if (pos + 1 == cmdLine.length())
 		throw std::invalid_argument("Argument.s missing");
 }

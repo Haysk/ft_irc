@@ -103,8 +103,6 @@ vector<string>	Channel::getInvit(void) const
 	return (_invit);
 }
 
-
-
 // SETTERS
 
 void Channel::setChanName(const Datas &datas, const string &newName)
@@ -205,7 +203,6 @@ void Channel::responseCmdToAllInChan(User& executer, const std::string& msg)
 		it++;
 	}
 }
-
 
 void Channel::responseCmdToDestInChan(User& joiner, const std::string& msg)
 {

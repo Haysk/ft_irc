@@ -3,7 +3,6 @@
 
 Command::Command(void) : _cmd()
 {
-//	std::cout << "Command default constructor called" << std::endl;
 	_cmdMap["JOIN"] = &Command::join;
 	_cmdMap["PART"] = &Command::part;
 	_cmdMap["PRIVMSG"] = &Command::privmsg;
@@ -22,7 +21,6 @@ Command::Command(void) : _cmd()
 
 Command::~Command(void)
 {
-//	std::cout << "Command destructor called" << std::endl;
 }
 
 void	Command::checkCmd(User &user)

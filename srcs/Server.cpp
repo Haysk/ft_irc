@@ -50,7 +50,6 @@ void Server::Accept(Datas &servDatas, Socket *sk){
 	sendMsgToClient(fd, "Welcome to my MY-IRC !");
 	sendMsgToClient(fd, "Enter CAP LS to continue:");
 	servDatas.newUser(fd);
-	//servDatas.sendPrompt(fd);
     }
 }
 
