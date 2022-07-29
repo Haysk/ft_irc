@@ -39,7 +39,8 @@ class	Command
 		void	clearCmd(void);
 };
 
-void	checkModeParam(Datas* datas, const std::string& param, const std::string& chanName);
+void	checkModeParam(Datas* datas, const std::string& param,
+		const std::string& chanName, const std::string& userName);
 
 int		convertModeParam(const std::string& param);
 

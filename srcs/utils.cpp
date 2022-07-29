@@ -99,6 +99,7 @@ int	checkDoublons(const std::string str)
 	{
 		for (int j = i + 1; j < strLen; j++)
 		{
+			std::cout << "i: " << str[i] << " | j: " << str[j] << endl; 
 			if (str[i] == str[j])
 				return (0);
 		}

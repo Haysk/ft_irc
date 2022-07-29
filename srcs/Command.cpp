@@ -1,5 +1,6 @@
 # include "../includes/Command.hpp"
 # include "../includes/User.hpp"
+# include "../includes/Channel.hpp"
 
 Command::Command(void) : _cmd()
 {
@@ -160,7 +161,7 @@ void	Command::mode(User &user)
 		user.mode(_cmd[1], -1, 0);
 		return ;
 	}
-	checkModeParam(user.getDatasPtr(), _cmd[2], _cmd[1]);
+	checkModeParam(user.getDatasPtr(), _cmd[2], _cmd[1], user.getUserName());
 	user.mode(_cmd[1], convertModeParam(_cmd[2]), isAddMode(_cmd[2]), _cmd[2]);
 }
 
@@ -233,16 +234,18 @@ void	Command::clearCmd(void)
 	_cmd.clear();
 }
 
-void	checkModeParam(Datas* datas, const std::string& param, const std::string& chanName)
+void	checkModeParam(Datas* datas, const std::string& param,
+		const std::string& chanName, const std::string& userName)
 {
 	try {
 		datas->getUser(chanName, NICKNAME);
 	}
 	catch (datasException& e) {
-		datas->getChannel(chanName);
+		if (!datas->getChannel(chanName).userIsChanOp(userName))
+			throw datasException(chanName + " You're not channel operator", 482);
 		if ((param[0] != '+' && param[0] != '-')
-				|| (param.find_first_not_of("it", 1) != std::string::npos
-				&& !checkDoublons(param)))
+				|| param.find_first_not_of("it", 1) != std::string::npos
+				|| !checkDoublons(param))
 			throw datasException(param + " :is unknown mode char to me for " + chanName, 472);
 		return ;
 	}
