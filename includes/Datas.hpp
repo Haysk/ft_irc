@@ -91,8 +91,6 @@ class	Datas
 
 		void clearCmd(void);
 
-		void disconnectAllUsers(const string& comment);
-
 		void responseToCmd(User &user, const string &cmdLine, int fd = 0, const string &prevNickName = "");
 
 		void sendJoinMsgs(User& user, Channel& chan);

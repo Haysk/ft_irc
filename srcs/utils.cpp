@@ -12,7 +12,6 @@ void	sendMsgToClient(int fd, const std::string &msg)
 		buf[i] = msg[i];
 	buf[i++] = '\n';
 	buf[i] = '\0';
-	std::cout << "MSG SEND TO " << fd << " : " << buf << std::endl;
 	send(fd, buf, i, 0);
 }
 

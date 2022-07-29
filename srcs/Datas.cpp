@@ -267,21 +267,6 @@ void Datas::clearCmd(void)
 	_cmd.clearCmd();
 }
 
-void Datas::disconnectAllUsers(const string& comment)
-{
-	usersDatas_it	it = _usersDatas.begin();
-	usersDatas_it	ite = _usersDatas.end();
-
-	while (it != ite)
-	{
-		sendMsgToClient(it->first, "SERVER SHUTTING DOWN: " + comment);
-		std::cout << BOLDRED << "client fd " << it->first << ": disconnected"<< RESET << std::endl;
-		close(it->first);
-		it++;
-	}
-	_co = false;
-}
-
 void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const string &prevNickName)
 {
 	size_t	cmdLen = cmdLine.length();
@@ -297,15 +282,12 @@ void Datas::responseToCmd(User &user, const string &cmdLine, int fd, const strin
 	msg += "@localhost ";
 	msg += cmdLine;
 	cmdLen = msg.length();
-	std::cout << "RESPONSETOCMD to " << fd << "||" << user.getFd() << " : ";
 	while (i < cmdLen)
 	{
 		buf[i] = msg[i];
-		std::cout << buf[i];
 		i++;
 	}
 	buf[i++] = '\n';
-	std::cout << std::endl;
 	if (fd)
 		send(fd, buf, i, 0);
 	else
@@ -360,7 +342,6 @@ void Datas::responseChanNamesList(User& user, Channel& chan)
 	char	buf[msg.length() + 1];
 	size_t	i = 0;
 
-	std::cout << "CHAN_NAMES_LIST_MSG: " << msg << std::endl;
 	while (i < msg.length())
 	{
 		buf[i] = msg[i];

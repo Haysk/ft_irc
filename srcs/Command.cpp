@@ -90,7 +90,6 @@ void	Command::buildCmdWithMsg(int nArgs, const string& line)
 	begin = line.find_first_of(":", end);
 	if (begin != std::string::npos)
 		_cmd.push_back(line.substr(begin + 1));
-	displayCmd();
 }
 
 void	Command::join(User &user)

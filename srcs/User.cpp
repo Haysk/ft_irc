@@ -366,7 +366,7 @@ void	User::mode(const string &chanName, const int chanMode, const bool add,
 	try {
 		isOp = chan.userIsChanOp(_userName);
 	} catch (datasException &e){
-		throw datasException(chanName + " :They aren't on that channel", 441); // ERR_USERNOTINCHANNEL
+		throw datasException(chanName + " :You're not on that channel", 442); // ERR_USERNOTINCHANNEL
 	}
 	if (!isOp)
 		throw datasException(chanName + " :You're not channel operator", 482); // ERR_CHANOPRIVSNEEDED
